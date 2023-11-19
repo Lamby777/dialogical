@@ -7,7 +7,7 @@
 #             - &Cherry, 11/19/2023 <3 #
 ########################################
 
-VERSION = "0.0.1"
+VERSION = "0.0.2"
 
 
 from argparse import ArgumentParser
@@ -17,7 +17,7 @@ import sys
 def main():
     args = parse_args()
 
-    if args.v:
+    if args.version:
         print(f"dialogical v{VERSION}")
         sys.exit(0)
 
@@ -37,7 +37,7 @@ def parse_args():
     parser.add_argument("-o", "--output", help="output file name")
 
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-v", help="version info", action="store_true")
+    group.add_argument("-v", "--version", help="version info", action="store_true")
     group.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
     group.add_argument("file", help="definition file", nargs="?")
 
