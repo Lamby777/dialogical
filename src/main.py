@@ -22,13 +22,9 @@ def main():
         sys.exit(0)
 
     # not printing version... so we're parsing a file
-    with open_file_or_stdin(args.file) as target:
-        print(f"parsing {target}...")
+    with sys.stdin if args.stdin else open(args.file) as target:
+        print(f"parsing {target.name}...")
         # parse(target)
-
-
-def open_file_or_stdin(file):
-    return open(file) if file else sys.stdin
 
 
 def parse_args():
@@ -37,7 +33,7 @@ def parse_args():
 
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument("-v", help="version info", action="store_true")
-    # group.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
+    group.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
     group.add_argument("file", help="definition file", nargs="?")
 
     return parser.parse_args()
