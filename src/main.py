@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ########################################
 #            - dialogical -            #
 #                                      #
@@ -7,10 +9,23 @@
 #                                      #
 ########################################
 
-# Usage:
-# dg <definition file>
-#
-# flags:
-#     -o <file>    output file name (default: stdout)
-#     -c           check syntax only
-#     -v           version info
+
+from argparse import ArgumentParser
+
+
+def parse_args():
+    parser = ArgumentParser()
+    parser.add_argument("file", help="definition file")
+    parser.add_argument("-o", "--output", help="output file name")
+    parser.add_argument("-c", "--check", help="check syntax only", action="store_true")
+    parser.add_argument("-v", "--version", help="version info", action="store_true")
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+    print(args)
+
+
+if __name__ == "__main__":
+    main()
