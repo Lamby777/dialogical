@@ -17,7 +17,6 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("file", help="definition file")
     parser.add_argument("-o", "--output", help="output file name")
-    parser.add_argument("-c", "--check", help="check syntax only", action="store_true")
     parser.add_argument("-v", "--version", help="version info", action="store_true")
     return parser.parse_args()
 
