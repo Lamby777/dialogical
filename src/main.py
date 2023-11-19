@@ -13,6 +13,8 @@ VERSION = "0.0.2"
 from argparse import ArgumentParser
 import sys
 
+from parser import parse_dg
+
 
 def main():
     args = parse_args()
@@ -24,7 +26,7 @@ def main():
     # not printing version... so we're parsing a file
     with sys.stdin if args.stdin else open(args.file) as target:
         print(f"parsing {target.name}...")
-        # parse(target)
+        parse_dg(target)
 
     # output the results
     with sys.stdout if not args.output else open(args.output, "w") as output:
@@ -36,10 +38,10 @@ def parse_args():
     parser = ArgumentParser()
     parser.add_argument("-o", "--output", help="output file name")
 
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument("-v", "--version", help="version info", action="store_true")
-    group.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
-    group.add_argument("file", help="definition file", nargs="?")
+    g = parser.add_mutually_exclusive_group(required=True)
+    g.add_argument("-v", "--version", help="version info", action="store_true")
+    g.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
+    g.add_argument("file", help="definition file", nargs="?")
 
     return parser.parse_args()
 
