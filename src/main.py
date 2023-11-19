@@ -26,6 +26,11 @@ def main():
         print(f"parsing {target.name}...")
         # parse(target)
 
+    # output the results
+    with sys.stdout if not args.output else open(args.output, "w") as output:
+        print(f"writing to {output.name}...")
+        output.write("hi")
+
 
 def parse_args():
     parser = ArgumentParser()
