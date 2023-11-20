@@ -7,7 +7,7 @@
 #             - &Cherry, 11/19/2023 <3 #
 ########################################
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 
 
 from argparse import ArgumentParser
@@ -42,6 +42,13 @@ def parse_args():
     g.add_argument("-v", "--version", help="version info", action="store_true")
     g.add_argument("-s", "--stdin", help="read from stdin", action="store_true")
     g.add_argument("file", help="definition file", nargs="?")
+
+    # show help if no args given
+    # "borrowed, not stolen"
+    # - Ferris the Crab
+    if len(sys.argv) == 1:
+        parser.print_help(sys.stderr)
+        sys.exit(1)
 
     return parser.parse_args()
 
