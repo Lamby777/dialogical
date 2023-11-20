@@ -1,4 +1,4 @@
-from .defs import Page
+from defs import Page
 
 
 def parse_dg(data):

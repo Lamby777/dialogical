@@ -1,4 +1,4 @@
-from . import comptime
+import comptime
 
 
 class Page:

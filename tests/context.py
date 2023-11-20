@@ -1,6 +1,6 @@
 import os
 import sys
 
-sys.path.append(os.path.abspath("../src"))
 
-import dialogical
+def add_path():
+    sys.path.append(os.path.abspath("../src"))

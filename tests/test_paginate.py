@@ -1,8 +1,11 @@
 from io import StringIO
 import unittest
 
-# This is the class we want to test. So, we need to import it
-from .context import dialogical
+from .context import add_path
+
+add_path()
+
+from dialogical import parser
 
 ONE_PAGE = StringIO(
     """---
@@ -54,7 +57,7 @@ VOX Siva
 
 class PaginateTest(unittest.TestCase):
     def test_one_page(self):
-        res = dialogical.paginate(ONE_PAGE)
+        res = parser.paginate(ONE_PAGE)
         self.assertEqual(
             res,
             [
@@ -72,7 +75,7 @@ class PaginateTest(unittest.TestCase):
         )
 
     def test_many_pages(self):
-        res = dialogical.paginate(MANY_PAGES)
+        res = parser.paginate(MANY_PAGES)
         self.assertEqual(
             res,
             [
