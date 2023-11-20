@@ -34,10 +34,8 @@ enum ParseState {
     ComptimeScript,
 
     /// Stuff before a message
+    /// Ends when it reaches an empty line
     Metadata,
-
-    /// Empty line before a message
-    PreLine,
 
     /// Text content said by a character
     Message,
@@ -109,18 +107,10 @@ impl DgParser {
         }
     }
 
-    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str) -> Result<()> {
-        if line == SEPARATOR {
-            self.state = ParseState::Start;
-            return Ok(());
+    fn parse_metaline(&mut self, line: &str) {
+        if line.is_empty() {
+            self.state = ParseState::Message;
         }
-
-        // push page to pages and reset page
-        let page = self.parse_page(&pagebuf);
-        self.pages.push(page);
-        pagebuf.clear();
-
-        Err(ParseError::AfterPostline(line.to_string()))
     }
 
     fn parse_message(&mut self, pagebuf: &mut Vec<String>, line: &str) {
@@ -134,10 +124,18 @@ impl DgParser {
         pagebuf.push(line.to_string());
     }
 
-    fn parse_metaline(&mut self, line: &str) {
-        if line.is_empty() {
-            self.state = ParseState::PreLine;
+    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str) -> Result<()> {
+        if line == SEPARATOR {
+            self.state = ParseState::Idle;
+            return Ok(());
         }
+
+        // push page to pages and reset page
+        let page = self.parse_page(&pagebuf);
+        self.pages.push(page);
+        pagebuf.clear();
+
+        Err(ParseError::AfterPostline(line.to_string()))
     }
 
     pub fn parse(&mut self, data: &str) -> Result<Interaction> {
@@ -160,7 +158,6 @@ impl DgParser {
                 ComptimeScript => todo!("comptime"),
 
                 Metadata => self.parse_metaline(line),
-                PreLine => todo!(),
                 Message => self.parse_message(&mut pagebuf, line),
                 PostLine => self.parse_postline(&mut pagebuf, line)?,
             }
