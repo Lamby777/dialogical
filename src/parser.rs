@@ -14,6 +14,9 @@ use crate::pages::*;
 pub enum ParseError {
     #[error("Encountered {0} instead of a separator while in PostLine state")]
     AfterPostline(String),
+
+    #[error("{0} is not a valid interaction ID")]
+    InvalidID(String),
 }
 
 type Result<T> = std::result::Result<T, ParseError>;
@@ -81,10 +84,20 @@ impl<'a> DgParser<'a> {
         page
     }
 
-    fn parse_start(&mut self, line: &str) {
-        self.state = match line.trim() {
-            "---" => return,
-            _ => todo!(),
+    fn parse_start(&mut self, line: &str) -> Result<()> {
+        let line = line.trim();
+        if line == "---" || line.is_empty() {
+            return Ok(());
+        }
+
+        let (percent, id) = line.split_at(1);
+
+        if percent != "%" {
+            Err(ParseError::InvalidID(line.to_string()))
+        } else {
+            self.interaction_id = Some(id);
+            self.state = ParseState::Idle;
+            Ok(())
         }
     }
 
@@ -139,7 +152,7 @@ impl<'a> DgParser<'a> {
             // really wish rustfmt aligned the arrows like in go
 
             match self.state {
-                Start => self.parse_start(line),
+                Start => self.parse_start(line)?,
                 Idle => self.parse_idle(line),
 
                 // besides the start, a block can either be
