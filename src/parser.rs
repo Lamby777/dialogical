@@ -1,6 +1,4 @@
-from defs import Page
-
-
+/*
 def parse_dg(data):
     pages = paginate(data)
     pages = [Page(page) for page in pages]
@@ -29,3 +27,17 @@ def paginate(data) -> list[list[str]]:
     push_page(page)
 
     return pages
+*/
+
+fn stuff() {
+    //
+}
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parser() {
+        assert_eq!(1, 1);
+    }
+}

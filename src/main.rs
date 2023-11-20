@@ -8,6 +8,8 @@
 
 use clap::Parser;
 
+mod parser;
+
 #[derive(Parser, Debug)]
 #[command(arg_required_else_help(true))]
 #[command(author, version, about)]
@@ -22,9 +24,5 @@ struct Args {
 
 fn main() {
     // parse args
-    let _args = Args::parse();
-
-    // for _ in 0..args.count {
-    //     println!("Hello {}!", args.name)
-    // }
+    let args = Args::parse();
 }
