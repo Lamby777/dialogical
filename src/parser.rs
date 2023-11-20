@@ -77,45 +77,52 @@ impl<'a> DgParser<'a> {
         page
     }
 
+    fn parse_idle(&mut self, line: &str) {
+        self.state = match line.trim() {
+            "" => return,
+            "###" => ParseState::ComptimeScript,
+            _ => ParseState::Metadata,
+        }
+    }
+
+    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str) -> Result<()> {
+        if line == SEPARATOR {
+            self.state = ParseState::Idle;
+            return Ok(());
+        }
+
+        // push page to pages and reset page
+        let page = self.parse_page(&pagebuf);
+        self.pages.push(page);
+        pagebuf.clear();
+
+        Err(ParseError::AfterPostline(line.to_string()))
+    }
+
+    fn parse_message(&mut self, pagebuf: &mut Vec<String>, line: &str) {
+        // if parsing a message, add it to the result
+        // OR stop parsing if empty line
+        if line.is_empty() {
+            self.state = ParseState::Idle;
+        } else {
+            pagebuf.push(line.to_string());
+        }
+    }
+
     pub fn parse(&mut self, data: &str) -> Result<Interaction> {
-        let lines = data.lines().peekable();
+        let lines = data.lines();
 
         // temporary buffer for the current page it's processing
         let mut pagebuf = vec![];
 
         for line in lines {
-            if let ParseState::PostLine = self.state {
-                if line == SEPARATOR {
-                    self.state = ParseState::Idle;
-                    continue;
-                }
-
-                // push page to pages and reset page
-                let page = self.parse_page(&pagebuf);
-                self.pages.push(page);
-                pagebuf.clear();
-
-                return Err(ParseError::AfterPostline(line.to_string()));
-            }
-
-            // if parsing a message, add it to the result
-            // OR stop parsing if empty line
-            if let ParseState::Message = self.state {
-                if line.is_empty() {
-                    self.state = ParseState::Idle;
-                } else {
-                    pagebuf.push(line.to_string());
-                }
-
-                continue;
-            }
-
-            if let ParseState::Idle = self.state {
-                self.state = match line.trim() {
-                    "" => continue,
-                    "###" => ParseState::ComptimeScript,
-                    _ => ParseState::Metadata,
-                }
+            match self.state {
+                ParseState::Idle => self.parse_idle(line),
+                ParseState::ComptimeScript => todo!(),
+                ParseState::Metadata => todo!(),
+                ParseState::PreLine => todo!(),
+                ParseState::Message => self.parse_message(&mut pagebuf, line),
+                ParseState::PostLine => self.parse_postline(&mut pagebuf, line)?,
             }
 
             match line {
