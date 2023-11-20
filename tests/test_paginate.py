@@ -84,8 +84,6 @@ class PaginateTest(unittest.TestCase):
                     "NAME Deez\n",
                     "VOX Deez\n",
                     "\n",
-                ],
-                [
                     "When the words are sus\n",
                     "\n",
                 ],
