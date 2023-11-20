@@ -6,16 +6,12 @@ getting basically first-class support by using this.
 
 WIP.
 
----
-
 ## WTF is this?
 
 Pretty much a "compiler" for RPG character dialogue. You can write dialogue in a
 bunch of text files in a format that's easy for git to track/diff, and this tool
 will do all the work of converting it to a table of dialogue nodes that your
 game can load into memory.
-
----
 
 ## Installation
 
@@ -26,8 +22,6 @@ Probably gonna write a Rust crate for loading these files into memory at some
 point... or maybe I'll just make that be a part of the game's code to avoid the
 extra complexity of spamming a bunch of wrapper types just to add traits to
 types from external crates.
-
----
 
 ## Usage
 
