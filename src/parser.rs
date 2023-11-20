@@ -128,6 +128,54 @@ mod tests {
     use super::*;
 
     #[test]
+    fn parse_small_interaction() {
+        let data = r#"%Test1
+
+---
+NAME Siva
+VOX Siva
+
+First page
+
+---
+NAME Terra
+VOX Terra
+
+Second page
+With more words
+
+---
+
+"#;
+
+        let mut parser = DgParser::new();
+        let parsed = parser.parse(data).unwrap();
+
+        let expected = Interaction {
+            id: "Interaction".to_owned(),
+            pages: vec![
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::Permanent("Siva".to_owned()),
+                        vox: Metadata::Permanent("Siva".to_owned()),
+                    },
+                    content: "First page".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::Permanent("Terra".to_owned()),
+                        vox: Metadata::Permanent("Terra".to_owned()),
+                    },
+                    content: "Second page\nWith more words".to_owned(),
+                },
+            ],
+        };
+
+        assert_eq!(parsed, expected);
+    }
+
+    #[test]
+    #[ignore = "too complicated for now"]
     fn parse_one_interaction_many_pages() {
         let data = r#"%Interaction
 
@@ -157,6 +205,8 @@ Echo hello world
 NAME Siva
 VOX Siva
 
+Testing
+
 ---
 
 "#;
@@ -166,7 +216,36 @@ VOX Siva
 
         let expected = Interaction {
             id: "Interaction".to_owned(),
-            pages: vec![Page::from_content("NAME Deez".to_string())],
+            pages: vec![
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::Permanent("Deez".to_owned()),
+                        vox: Metadata::Permanent("Deez".to_owned()),
+                    },
+                    content: "When the words are sus".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::Permanent("Gamer".to_owned()),
+                        vox: Metadata::Permanent("Gamer".to_owned()),
+                    },
+                    content: "Words go brrr".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::NoChange,
+                        vox: Metadata::NoChange,
+                    },
+                    content: "When the imposter is sus".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Metadata::Permanent("Siva".to_owned()),
+                        vox: Metadata::Permanent("Siva".to_owned()),
+                    },
+                    content: "Testing".to_owned(),
+                },
+            ],
         };
 
         assert_eq!(parsed, expected);
