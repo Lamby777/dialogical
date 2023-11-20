@@ -155,17 +155,11 @@ With more words
             id: "Interaction".to_owned(),
             pages: vec![
                 Page {
-                    metadata: PageMetadata {
-                        speaker: Metadata::Permanent("Siva".to_owned()),
-                        vox: Metadata::Permanent("Siva".to_owned()),
-                    },
+                    metadata: PageMetadata::new_perm_double("Siva"),
                     content: "First page".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata {
-                        speaker: Metadata::Permanent("Terra".to_owned()),
-                        vox: Metadata::Permanent("Terra".to_owned()),
-                    },
+                    metadata: PageMetadata::new_perm_double("Terra"),
                     content: "Second page\nWith more words".to_owned(),
                 },
             ],
@@ -218,17 +212,11 @@ Testing
             id: "Interaction".to_owned(),
             pages: vec![
                 Page {
-                    metadata: PageMetadata {
-                        speaker: Metadata::Permanent("Deez".to_owned()),
-                        vox: Metadata::Permanent("Deez".to_owned()),
-                    },
+                    metadata: PageMetadata::new_perm_double("Deez"),
                     content: "When the words are sus".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata {
-                        speaker: Metadata::Permanent("Gamer".to_owned()),
-                        vox: Metadata::Permanent("Gamer".to_owned()),
-                    },
+                    metadata: PageMetadata::new_perm_double("Gamer"),
                     content: "Words go brrr".to_owned(),
                 },
                 Page {
@@ -239,10 +227,7 @@ Testing
                     content: "When the imposter is sus".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata {
-                        speaker: Metadata::Permanent("Siva".to_owned()),
-                        vox: Metadata::Permanent("Siva".to_owned()),
-                    },
+                    metadata: PageMetadata::new_perm_double("Siva"),
                     content: "Testing".to_owned(),
                 },
             ],
