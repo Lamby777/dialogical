@@ -46,13 +46,13 @@ enum ParseState {
     PostLine,
 }
 
-pub struct DgParser<'a> {
+pub struct DgParser {
     state: ParseState,
     pages: Vec<Page>,
-    interaction_id: Option<&'a str>,
+    interaction_id: Option<String>,
 }
 
-impl<'a> DgParser<'a> {
+impl DgParser {
     pub fn new() -> Self {
         Self {
             state: ParseState::Start,
@@ -95,7 +95,7 @@ impl<'a> DgParser<'a> {
         if percent != "%" {
             Err(ParseError::InvalidID(line.to_string()))
         } else {
-            self.interaction_id = Some(id);
+            self.interaction_id = Some(id.to_owned());
             self.state = ParseState::Idle;
             Ok(())
         }
