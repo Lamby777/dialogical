@@ -4,6 +4,16 @@
 
 const SEPARATOR: &str = "---";
 
+use thiserror::Error;
+
+#[derive(Debug, Error, PartialEq)]
+pub enum ParseError {
+    #[error("Encountered {0} instead of a separator while in PostLine state")]
+    AfterPostline(String),
+}
+
+type Result<T> = std::result::Result<T, ParseError>;
+
 /// possible states the parser can be in
 enum ParseState {
     /// Waiting to start a new interaction or comptime script
@@ -36,12 +46,21 @@ impl DgParser {
         }
     }
 
-    pub fn parse(&mut self, data: &str) -> Vec<String> {
+    pub fn parse(&mut self, data: &str) -> Result<Vec<String>> {
         let lines = data.lines().peekable();
 
         let mut res = vec![];
 
         for line in lines {
+            if let ParseState::PostLine = self.state {
+                if line == SEPARATOR {
+                    self.state = ParseState::Idle;
+                    continue;
+                }
+
+                return Err(ParseError::AfterPostline(line.to_string()));
+            }
+
             // if parsing a message, add it to the result
             // OR stop parsing if empty line
             if let ParseState::Message = self.state {
@@ -50,6 +69,8 @@ impl DgParser {
                 } else {
                     res.push(line.to_string());
                 }
+
+                continue;
             }
 
             match line {
@@ -58,10 +79,11 @@ impl DgParser {
             }
         }
 
-        res
+        Ok(res)
     }
 }
 
+#[cfg(test)]
 mod tests {
     use super::*;
 
