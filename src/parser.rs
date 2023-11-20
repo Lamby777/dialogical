@@ -31,6 +31,9 @@ def paginate(data) -> list[list[str]]:
 
 /// possible states the parser can be in
 enum ParseState {
+    /// Waiting to start a new interaction or comptime script
+    Idle,
+
     /// Stuff before a message
     Metadata,
 
@@ -46,6 +49,12 @@ pub struct DgParser {
 }
 
 impl DgParser {
+    pub fn new() -> Self {
+        Self {
+            state: ParseState::Idle,
+        }
+    }
+
     pub fn parse(&self, data: &str) -> Vec<String> {
         let lines = data.lines();
 
@@ -99,9 +108,7 @@ VOX Siva
 
 "#;
 
-        let parser = DgParser {
-            state: ParseState::Metadata,
-        };
+        let parser = DgParser::new();
 
         let _res = parser.parse(data);
     }
