@@ -6,7 +6,7 @@ def paginate(data) -> list[list[str]]:
     pages = []
     page = []
 
-    for line in data:
+    for line in data.readlines():
         if line == "---\n":
             # don't push page if empty
             if page:
@@ -14,5 +14,8 @@ def paginate(data) -> list[list[str]]:
                 page = []
         else:
             page.append(line)
+
+    # push the last page if not empty
+    pages.append(page)
 
     return pages

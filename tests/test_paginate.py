@@ -1,9 +1,11 @@
+from io import StringIO
 import unittest
 
 # This is the class we want to test. So, we need to import it
 from src.parser import paginate
 
-ONE_PAGE = """---
+ONE_PAGE = StringIO(
+    """---
 %Interaction
 
 ---
@@ -12,6 +14,7 @@ VOX Deez
 
 When the words are sus
 """
+)
 
 
 class PaginateTest(unittest.TestCase):
@@ -20,14 +23,16 @@ class PaginateTest(unittest.TestCase):
         self.assertEqual(
             res,
             [
-                "%Interaction\n",
-                "\n",
-            ],
-            [
-                "NAME Deez\n",
-                "VOX Deez\n",
-                "\n",
-                "When the words are sus\n",
+                [
+                    "%Interaction\n",
+                    "\n",
+                ],
+                [
+                    "NAME Deez\n",
+                    "VOX Deez\n",
+                    "\n",
+                    "When the words are sus\n",
+                ],
             ],
         )
 
