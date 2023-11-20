@@ -101,7 +101,7 @@ class PaginateTest(unittest.TestCase):
                     "\n",
                 ],
                 [
-                    "###" "\n",
+                    "###\n",
                     "\n",
                     "// Another Page\n",
                     "Echo hello world\n",
