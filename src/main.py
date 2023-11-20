@@ -46,11 +46,7 @@ def parse_args():
     # show help if no args given
     # "borrowed, not stolen"
     # - Ferris the Crab
-    if len(sys.argv) == 1:
-        parser.print_help(sys.stderr)
-        sys.exit(1)
-
-    return parser.parse_args()
+    return parser.parse_args(args=None if sys.argv[1:] else ["--help"])
 
 
 if __name__ == "__main__":
