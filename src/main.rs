@@ -10,6 +10,7 @@
 
 use clap::Parser;
 
+mod comptime;
 mod pages;
 mod parser;
 

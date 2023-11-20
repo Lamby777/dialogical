@@ -7,6 +7,7 @@ const SEPARATOR: &str = "---";
 use thiserror::Error;
 
 // TODO don't wildcard import
+use crate::comptime;
 use crate::pages::*;
 
 #[derive(Debug, Error, PartialEq)]
@@ -40,7 +41,7 @@ enum ParseState {
 
 pub struct DgParser {
     state: ParseState,
-    pages: Vec<Vec<String>>,
+    pages: Vec<Page>,
 }
 
 impl DgParser {
