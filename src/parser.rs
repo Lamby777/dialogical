@@ -37,19 +37,20 @@ enum ParseState {
 
 pub struct DgParser {
     state: ParseState,
+    pages: Vec<Vec<String>>,
 }
 
 impl DgParser {
     pub fn new() -> Self {
         Self {
             state: ParseState::Idle,
+            pages: vec![],
         }
     }
 
-    pub fn parse(&mut self, data: &str) -> Result<Vec<Vec<String>>> {
+    pub fn parse(&mut self, data: &str) -> Result<()> {
         let lines = data.lines().peekable();
 
-        let mut pages = vec![];
         let mut page = vec![];
 
         for line in lines {
@@ -83,7 +84,7 @@ impl DgParser {
             }
 
             // push page to pages and reset page
-            pages.push(page.clone());
+            self.pages.push(page.clone());
             page.clear();
 
             match line {
@@ -92,7 +93,7 @@ impl DgParser {
             }
         }
 
-        Ok(pages)
+        Ok(())
     }
 }
 
