@@ -74,6 +74,14 @@ impl DgParser {
                 continue;
             }
 
+            if let ParseState::Idle = self.state {
+                self.state = match line.trim() {
+                    "" => continue,
+                    "###" => ParseState::ComptimeScript,
+                    _ => ParseState::Metadata,
+                }
+            }
+
             // push page to pages and reset page
             pages.push(page.clone());
             page.clear();
