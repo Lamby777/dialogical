@@ -26,5 +26,5 @@ struct Args {
 
 fn main() {
     // parse args
-    let args = Args::parse();
+    let _args = Args::parse();
 }

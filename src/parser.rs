@@ -46,10 +46,11 @@ impl DgParser {
         }
     }
 
-    pub fn parse(&mut self, data: &str) -> Result<Vec<String>> {
+    pub fn parse(&mut self, data: &str) -> Result<Vec<Vec<String>>> {
         let lines = data.lines().peekable();
 
-        let mut res = vec![];
+        let mut pages = vec![];
+        let mut page = vec![];
 
         for line in lines {
             if let ParseState::PostLine = self.state {
@@ -67,11 +68,15 @@ impl DgParser {
                 if line.is_empty() {
                     self.state = ParseState::Idle;
                 } else {
-                    res.push(line.to_string());
+                    page.push(line.to_string());
                 }
 
                 continue;
             }
+
+            // push page to pages and reset page
+            pages.push(page.clone());
+            page.clear();
 
             match line {
                 SEPARATOR => (),
@@ -79,7 +84,7 @@ impl DgParser {
             }
         }
 
-        Ok(res)
+        Ok(pages)
     }
 }
 
@@ -122,6 +127,10 @@ VOX Siva
 "#;
 
         let mut parser = DgParser::new();
-        let _res = parser.parse(data);
+        let _parsed = parser.parse(data).unwrap();
+
+        // let expected: Vec<Vec<String>> = vec![];
+
+        // assert_eq!(parsed, expected);
     }
 }
