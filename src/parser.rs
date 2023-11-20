@@ -7,7 +7,7 @@ const SEPARATOR: &str = "---";
 use thiserror::Error;
 
 // TODO don't wildcard import
-use crate::comptime;
+// use crate::comptime;
 use crate::pages::*;
 
 #[derive(Debug, Error, PartialEq)]
@@ -52,10 +52,19 @@ impl DgParser {
         }
     }
 
+    pub fn parse_page(&mut self, page: &[String]) -> Page {
+        let page = Page::from_content(page.join("\n"));
+
+        // TODO check if pageonly/perm/nochange
+
+        page
+    }
+
     pub fn parse(&mut self, data: &str) -> Result<()> {
         let lines = data.lines().peekable();
 
-        let mut page = vec![];
+        // temporary buffer for the current page it's processing
+        let mut pagebuf = vec![];
 
         for line in lines {
             if let ParseState::PostLine = self.state {
@@ -63,6 +72,11 @@ impl DgParser {
                     self.state = ParseState::Idle;
                     continue;
                 }
+
+                // push page to pages and reset page
+                let page = self.parse_page(&pagebuf);
+                self.pages.push(page);
+                pagebuf.clear();
 
                 return Err(ParseError::AfterPostline(line.to_string()));
             }
@@ -73,7 +87,7 @@ impl DgParser {
                 if line.is_empty() {
                     self.state = ParseState::Idle;
                 } else {
-                    page.push(line.to_string());
+                    pagebuf.push(line.to_string());
                 }
 
                 continue;
@@ -86,10 +100,6 @@ impl DgParser {
                     _ => ParseState::Metadata,
                 }
             }
-
-            // push page to pages and reset page
-            self.pages.push(page.clone());
-            page.clear();
 
             match line {
                 SEPARATOR => (),
