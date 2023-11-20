@@ -1,4 +1,4 @@
-import comptime
+from . import comptime
 
 
 class Page:
@@ -10,6 +10,9 @@ class Page:
     """
 
     lines: list[str]
+
+    def __init__(self, lines: list[str]):
+        self.lines = lines
 
 
 class Segment:

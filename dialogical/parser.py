@@ -1,5 +1,9 @@
+from .defs import Page
+
+
 def parse_dg(data):
     pages = paginate(data)
+    pages = [Page(page) for page in pages]
 
     for page in pages:
         print(page)
