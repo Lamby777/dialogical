@@ -12,7 +12,7 @@ def paginate(data) -> list[list[str]]:
     for line in data.readlines():
         if line == "---\n":
             # don't push page if empty
-            if page:
+            if filter(lambda x: x != "\n", page):
                 pages.append(page)
                 page = []
         else:
