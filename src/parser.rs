@@ -22,6 +22,7 @@ pub enum ParseError {
 type Result<T> = std::result::Result<T, ParseError>;
 
 /// possible states the parser can be in
+#[derive(Debug)]
 enum ParseState {
     /// Interaction-wide metadata not set yet, we're at the
     /// top of an interaction
@@ -103,6 +104,7 @@ impl DgParser {
         self.state = match line.trim() {
             "" => return,
             "###" => ParseState::ComptimeScript,
+            "%%%" => ParseState::Start,
             _ => ParseState::Metadata,
         }
     }
@@ -117,17 +119,20 @@ impl DgParser {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
-            self.state = ParseState::Start;
+            self.state = ParseState::PostLine;
             return;
         }
 
         pagebuf.push(line.to_string());
     }
 
+    // TODO: allow empty lines in message, and remove the last
+    // empty line retroactively when it encounters a separator
     fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str) -> Result<()> {
-        if line == SEPARATOR {
-            self.state = ParseState::Idle;
-            return Ok(());
+        println!("Printing page... {}", line);
+
+        if line != SEPARATOR {
+            return Err(ParseError::AfterPostline(line.to_string()));
         }
 
         // push and reset the page buffer
@@ -135,10 +140,13 @@ impl DgParser {
         self.pages.push(page);
         pagebuf.clear();
 
-        Err(ParseError::AfterPostline(line.to_string()))
+        println!("Printed");
+        self.state = ParseState::Idle;
+        Ok(())
     }
 
     pub fn parse(&mut self, data: &str) -> Result<Interaction> {
+        println!("Parsing...");
         let lines = data.lines();
 
         // temporary buffer for the current page it's processing
@@ -146,6 +154,8 @@ impl DgParser {
 
         for line in lines {
             use ParseState::*;
+
+            dbg!(&self.state);
 
             match self.state {
                 Start => self.parse_start(line)?,
@@ -194,7 +204,7 @@ With more words
         let parsed = parser.parse(data).unwrap();
 
         let expected = Interaction {
-            id: "Interaction",
+            id: "Test1",
             pages: vec![
                 Page {
                     metadata: PageMetadata::new_perm_double("Siva"),
