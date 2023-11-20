@@ -2,19 +2,27 @@
 //! Stuff for parsing dg files
 //!
 
+const SEPARATOR: &str = "---";
+
 /// possible states the parser can be in
 enum ParseState {
     /// Waiting to start a new interaction or comptime script
     Idle,
 
+    /// Script content
+    ComptimeScript,
+
     /// Stuff before a message
     Metadata,
+
+    // Empty line before a message
+    PreLine,
 
     /// Text content said by a character
     Message,
 
-    /// Script content
-    ComptimeScript,
+    // Empty line after message, before the separator
+    PostLine,
 }
 
 pub struct DgParser {
@@ -28,14 +36,24 @@ impl DgParser {
         }
     }
 
-    pub fn parse(&self, data: &str) -> Vec<String> {
-        let lines = data.lines();
+    pub fn parse(&mut self, data: &str) -> Vec<String> {
+        let lines = data.lines().peekable();
 
-        let res = vec![];
+        let mut res = vec![];
 
         for line in lines {
+            // if parsing a message, add it to the result
+            // OR stop parsing if empty line
+            if let ParseState::Message = self.state {
+                if line.is_empty() {
+                    self.state = ParseState::Idle;
+                } else {
+                    res.push(line.to_string());
+                }
+            }
+
             match line {
-                "---" => (),
+                SEPARATOR => (),
                 _ => (),
             }
         }
@@ -81,8 +99,7 @@ VOX Siva
 
 "#;
 
-        let parser = DgParser::new();
-
+        let mut parser = DgParser::new();
         let _res = parser.parse(data);
     }
 }
