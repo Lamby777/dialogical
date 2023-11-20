@@ -52,6 +52,18 @@ impl DgParser {
         }
     }
 
+    /// Finish parsing 1 interaction, and clear the state
+    /// to prepare for another one.
+    ///
+    /// `Err` if the parser is in a state where it's not
+    /// prepared to finish just yet.
+    fn result(&self) -> Result<Interaction> {
+        Ok(Interaction {
+            id: "Interaction".to_owned(),
+            pages: self.pages.clone(),
+        })
+    }
+
     pub fn parse_page(&mut self, page: &[String]) -> Page {
         let page = Page::from_content(page.join("\n"));
 
@@ -60,7 +72,7 @@ impl DgParser {
         page
     }
 
-    pub fn parse(&mut self, data: &str) -> Result<()> {
+    pub fn parse(&mut self, data: &str) -> Result<Interaction> {
         let lines = data.lines().peekable();
 
         // temporary buffer for the current page it's processing
@@ -107,7 +119,7 @@ impl DgParser {
             }
         }
 
-        Ok(())
+        self.result()
     }
 }
 
@@ -116,7 +128,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn parse_many() {
+    fn parse_one_interaction_many_pages() {
         let data = r#"%Interaction
 
 ---
@@ -150,10 +162,13 @@ VOX Siva
 "#;
 
         let mut parser = DgParser::new();
-        let _parsed = parser.parse(data).unwrap();
+        let parsed = parser.parse(data).unwrap();
 
-        // let expected: Vec<Vec<String>> = vec![];
+        let expected = Interaction {
+            id: "Interaction".to_owned(),
+            pages: vec![Page::from_content("NAME Deez".to_string())],
+        };
 
-        // assert_eq!(parsed, expected);
+        assert_eq!(parsed, expected);
     }
 }

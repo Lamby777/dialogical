@@ -1,3 +1,16 @@
+//!
+//! Data structures used by the parser
+//!
+//! TODO less `String`, more `&'a str`
+//!
+
+#[derive(Debug, PartialEq)]
+pub struct Interaction {
+    pub id: String,
+    pub pages: Vec<Page>,
+}
+
+#[derive(Clone, Debug, PartialEq)]
 pub struct Page {
     pub metadata: PageMetadata,
     pub content: String,
@@ -12,12 +25,13 @@ impl Page {
     }
 }
 
-#[derive(Default)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct PageMetadata {
     pub speaker: Metadata<String>,
     pub vox: Metadata<String>,
 }
 
+#[derive(Clone, Debug, PartialEq)]
 pub enum Metadata<T> {
     Permanent(T),
     PageOnly(T),
