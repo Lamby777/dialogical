@@ -5,8 +5,8 @@
 //!
 
 #[derive(Debug, PartialEq)]
-pub struct Interaction {
-    pub id: String,
+pub struct Interaction<'a> {
+    pub id: &'a str,
     pub pages: Vec<Page>,
 }
 

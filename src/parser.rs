@@ -39,18 +39,18 @@ enum ParseState {
     PostLine,
 }
 
-pub struct DgParser {
+pub struct DgParser<'a> {
     state: ParseState,
     pages: Vec<Page>,
-    interaction_id: String,
+    interaction_id: Option<&'a str>,
 }
 
-impl DgParser {
+impl<'a> DgParser<'a> {
     pub fn new() -> Self {
         Self {
             state: ParseState::Idle,
             pages: vec![],
-            interaction_id: "".to_owned(),
+            interaction_id: None,
         }
     }
 
@@ -61,7 +61,10 @@ impl DgParser {
     /// prepared to finish just yet.
     fn result(&self) -> Result<Interaction> {
         Ok(Interaction {
-            id: self.interaction_id.clone(),
+            id: self
+                .interaction_id
+                .as_ref()
+                .expect("interaction id should not be empty"),
             pages: self.pages.clone(),
         })
     }
@@ -154,7 +157,7 @@ With more words
         let parsed = parser.parse(data).unwrap();
 
         let expected = Interaction {
-            id: "Interaction".to_owned(),
+            id: "Interaction",
             pages: vec![
                 Page {
                     metadata: PageMetadata::new_perm_double("Siva"),
@@ -211,7 +214,7 @@ Testing
         let parsed = parser.parse(data).unwrap();
 
         let expected = Interaction {
-            id: "Interaction".to_owned(),
+            id: "Interaction",
             pages: vec![
                 Page {
                     metadata: PageMetadata::new_perm_double("Deez"),
