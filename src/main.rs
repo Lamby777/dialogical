@@ -10,6 +10,7 @@
 
 use clap::Parser;
 
+mod pages;
 mod parser;
 
 #[derive(Parser, Debug)]

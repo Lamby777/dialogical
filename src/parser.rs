@@ -6,6 +6,9 @@ const SEPARATOR: &str = "---";
 
 use thiserror::Error;
 
+// TODO don't wildcard import
+use crate::pages::*;
+
 #[derive(Debug, Error, PartialEq)]
 pub enum ParseError {
     #[error("Encountered {0} instead of a separator while in PostLine state")]
