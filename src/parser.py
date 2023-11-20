@@ -1,6 +1,9 @@
 def parse_dg(data):
     pages = paginate(data)
 
+    for page in pages:
+        print(page)
+
 
 def paginate(data) -> list[list[str]]:
     pages = []
