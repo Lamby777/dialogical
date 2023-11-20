@@ -66,7 +66,43 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_parser() {
-        assert_eq!(1, 1);
+    fn parse_many() {
+        let data = r#"%Interaction
+
+---
+NAME Deez
+VOX Deez
+
+When the words are sus
+
+---
+NAME Gamer
+
+Words go brrr
+
+---
+
+When the imposter is sus
+
+---
+###
+
+// Another Page
+Echo hello world
+
+###
+---
+NAME Siva
+VOX Siva
+
+---
+
+"#;
+
+        let parser = DgParser {
+            state: ParseState::Metadata,
+        };
+
+        let _res = parser.parse(data);
     }
 }
