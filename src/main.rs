@@ -9,8 +9,8 @@
 use clap::Parser;
 
 #[derive(Parser, Debug)]
+#[command(arg_required_else_help(true))]
 #[command(author, version, about)]
-
 /// P/E/T/S Dialogue Compiler
 struct Args {
     #[arg(short, long)]
