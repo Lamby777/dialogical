@@ -1,15 +1,17 @@
-def parse_dg(file):
-    pages = paginate(file)
+def parse_dg(data):
+    pages = paginate(data)
 
 
-def paginate(file):
+def paginate(data) -> list[list[str]]:
     pages = []
     page = []
 
-    for line in file:
+    for line in data:
         if line == "---\n":
-            pages.append(page)
-            page = []
+            # don't push page if empty
+            if page:
+                pages.append(page)
+                page = []
         else:
             page.append(line)
 
