@@ -6,6 +6,8 @@
 //!  - &Cherry, 11/20/2023
 //!
 
+#![allow(dead_code)]
+
 use clap::Parser;
 
 mod parser;

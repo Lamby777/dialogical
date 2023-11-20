@@ -41,14 +41,25 @@ enum ParseState {
     ComptimeScript,
 }
 
-pub fn parse_dg(data: &str) -> Vec<String> {
-    let lines = data.lines();
+pub struct DgParser {
+    state: ParseState,
+}
 
-    let res = vec![];
+impl DgParser {
+    pub fn parse(&self, data: &str) -> Vec<String> {
+        let lines = data.lines();
 
-    for line in lines {}
+        let res = vec![];
 
-    res
+        for line in lines {
+            match line {
+                "---" => (),
+                _ => (),
+            }
+        }
+
+        res
+    }
 }
 
 mod tests {
