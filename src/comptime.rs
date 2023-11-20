@@ -1,3 +1,3 @@
-fn exec_comptime(code: &str) -> Result<(), ()> {
+fn exec_comptime(_code: &str) -> Result<(), ()> {
     Ok(())
 }

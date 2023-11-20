@@ -42,6 +42,7 @@ enum ParseState {
 pub struct DgParser {
     state: ParseState,
     pages: Vec<Page>,
+    interaction_id: String,
 }
 
 impl DgParser {
@@ -49,6 +50,7 @@ impl DgParser {
         Self {
             state: ParseState::Idle,
             pages: vec![],
+            interaction_id: "".to_owned(),
         }
     }
 
@@ -59,7 +61,7 @@ impl DgParser {
     /// prepared to finish just yet.
     fn result(&self) -> Result<Interaction> {
         Ok(Interaction {
-            id: "Interaction".to_owned(),
+            id: self.interaction_id.clone(),
             pages: self.pages.clone(),
         })
     }
