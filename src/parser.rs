@@ -30,11 +30,11 @@ enum ParseState {
     /// Waiting to start a new interaction or comptime script
     Idle,
 
-    /// Script content
+    /// Compile-time script block
     ComptimeScript,
 
-    /// Stuff before a message
-    /// Ends when it reaches an empty line
+    /// Directives written before a message
+    /// Separated from the actual message by an empty line
     Metadata,
 
     /// Text content said by a character
@@ -130,7 +130,7 @@ impl DgParser {
             return Ok(());
         }
 
-        // push page to pages and reset page
+        // push and reset the page buffer
         let page = self.parse_page(&pagebuf);
         self.pages.push(page);
         pagebuf.clear();
@@ -146,8 +146,6 @@ impl DgParser {
 
         for line in lines {
             use ParseState::*;
-
-            // really wish rustfmt aligned the arrows like in go
 
             match self.state {
                 Start => self.parse_start(line)?,
