@@ -29,8 +29,26 @@ def paginate(data) -> list[list[str]]:
     return pages
 */
 
-fn stuff() {
-    //
+/// possible states the parser can be in
+enum ParseState {
+    /// Stuff before a message
+    Metadata,
+
+    /// Text content said by a character
+    Message,
+
+    /// Script content
+    ComptimeScript,
+}
+
+pub fn parse_dg(data: &str) -> Vec<String> {
+    let lines = data.lines();
+
+    let res = vec![];
+
+    for line in lines {}
+
+    res
 }
 
 mod tests {
