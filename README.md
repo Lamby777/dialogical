@@ -2,7 +2,8 @@
 
 Dialogue editor toolkit tailor-made for P/E/T/S 2037's dialogue system. This is
 the same tool I'll be using for actual vanilla dialogue, so modders will be
-getting basically first-class support by using this.
+getting basically first-class support by using this... unless the
+open-sourcerors decide to make their own tool, which is certified epic.
 
 WIP.
 
