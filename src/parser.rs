@@ -107,15 +107,16 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_message(&mut self, line: &str) {
+    fn parse_message(&mut self, line: &str) -> Result<()> {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
             self.state = ParseState::PostLine;
-            return;
+        } else {
+            self.pagebuf.push(line.to_string());
         }
 
-        self.pagebuf.push(line.to_string());
+        Ok(())
     }
 
     // TODO: allow empty lines in message, and remove the last
@@ -153,18 +154,18 @@ impl DgParser {
 
             println!("{:?} >> {:?}", &self.state, line);
 
-            match self.state {
-                Start => self.parse_start(line)?,
-                Idle => self.parse_idle(line)?,
+            (match self.state {
+                Start => Self::parse_start,
+                Idle => Self::parse_idle,
 
                 // besides the start, a block can either be
                 // a comptime script or a message section
                 ComptimeScript => todo!("comptime"),
 
-                Metadata => self.parse_metaline(line)?,
-                Message => self.parse_message(line),
-                PostLine => self.parse_postline(line)?,
-            }
+                Metadata => Self::parse_metaline,
+                Message => Self::parse_message,
+                PostLine => Self::parse_postline,
+            })(self, line)?;
         }
 
         self.build_result()
