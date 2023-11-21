@@ -7,9 +7,9 @@
 //!
 
 #![allow(dead_code)]
+#![feature(if_let_guard)]
 
 use clap::Parser;
-
 mod comptime;
 mod pages;
 mod parser;

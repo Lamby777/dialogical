@@ -77,7 +77,7 @@ impl DgParser {
             "VOX" => &mut self.page.metadata.vox,
 
             // set interaction
-            "%" => return self.set_ix_id(&res.unwrap()),
+            "%" if let Permanent(id) = res => return self.set_ix_id(&id),
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
