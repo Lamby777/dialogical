@@ -8,7 +8,7 @@ use thiserror::Error;
 #[derive(Clone, Debug, Default)]
 pub enum ParseState {
     /// Waiting to start a new interaction or comptime script
-    #[default]
+    // TODO rm idle mode, should start in metaline mode
     Idle,
 
     /// Compile-time script block
@@ -16,6 +16,7 @@ pub enum ParseState {
 
     /// Directives written before a message
     /// Separated from the actual message by an empty line
+    #[default]
     Metadata,
 
     /// Text content said by a character
@@ -92,4 +93,17 @@ pub enum Metadata<T> {
 
     #[default]
     NoChange,
+}
+
+impl<T> Metadata<T> {
+    pub fn try_unwrap(&self) -> Option<&T> {
+        match self {
+            Self::Permanent(val) | Self::PageOnly(val) => Some(val),
+            Self::NoChange => None,
+        }
+    }
+
+    pub fn unwrap(&self) -> &T {
+        self.try_unwrap().unwrap()
+    }
 }

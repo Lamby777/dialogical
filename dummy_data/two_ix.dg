@@ -1,6 +1,4 @@
-%First
-
----
+% First
 NAME Porky
 VOX Porky
 
@@ -13,9 +11,7 @@ VOX Ethan
 Second page
 
 ---
-%Second
-
----
+% Second
 NAME Terra
 VOX Terra
 

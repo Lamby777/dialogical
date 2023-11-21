@@ -23,38 +23,25 @@ pub struct DgParser {
 }
 
 impl DgParser {
-    fn parse_start(&mut self, line: &str) -> Result<()> {
-        let line = line.trim();
-        if line == "---" || line.is_empty() {
-            return Ok(());
-        }
-
-        let (percent, id) = line.split_at(1);
-
-        if percent != "%" {
-            Err(ParseError::InvalidID(line.to_string()))
+    fn set_ix_id(&mut self, id: &str) -> Result<()> {
+        if let Some(ix) = &self.interaction {
+            println!("End of current interaction {}", ix.id);
+            self.push_ix()?;
         } else {
-            if self.interaction.is_some() {
-                println!("Encountered a %... Pushing!");
-                self.push_ix()?;
-            } else {
-                println!("Not some");
-            }
-
-            self.interaction = Some(Interaction {
-                id: id.to_owned(),
-                pages: vec![],
-            });
-
-            self.state = ParseState::Idle;
-            Ok(())
+            println!("Not some");
         }
+
+        self.interaction = Some(Interaction {
+            id: id.to_owned(),
+            pages: vec![],
+        });
+
+        // self.state = ParseState::Idle;
+        Ok(())
     }
 
     fn parse_idle(&mut self, line: &str) -> Result<()> {
         self.state = match line.trim() {
-            _ if line.starts_with('%') => return self.parse_start(line),
-
             "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
             "---" => ParseState::Metadata,
@@ -100,6 +87,9 @@ impl DgParser {
         let target = match key {
             "NAME" => &mut self.page.metadata.speaker,
             "VOX" => &mut self.page.metadata.vox,
+
+            // set interaction
+            "%" => return self.set_ix_id(&res.unwrap()),
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
