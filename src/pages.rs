@@ -64,8 +64,21 @@ impl Page {
 }
 
 #[derive(Clone, Debug, Default, PartialEq)]
+pub enum Speaker {
+    /// "Character's Name"
+    Name(String),
+
+    /// ""
+    #[default]
+    Narrator,
+
+    /// "???"
+    Unknown,
+}
+
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct PageMetadata {
-    pub speaker: Metadata<String>,
+    pub speaker: Metadata<Speaker>,
     pub vox: Metadata<String>,
 }
 
@@ -99,6 +112,14 @@ pub enum Metadata<T> {
 }
 
 impl<T> Metadata<T> {
+    pub fn new(val: T, pageonly: bool) -> Self {
+        if pageonly {
+            Self::PageOnly(val)
+        } else {
+            Self::Permanent(val)
+        }
+    }
+
     /// None if NoChange
     ///
     /// I guess you can think of Metadata like

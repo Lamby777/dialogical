@@ -15,11 +15,11 @@ macro_rules! include_dummy {
 /// shorthand for permanent change of speaker and vox with same string
 /// good for writing quick unit tests
 fn meta_double(name: &str) -> PageMetadata {
-    let meta = Metadata::Permanent(name.to_owned());
+    use Metadata::Permanent;
 
     PageMetadata {
-        speaker: meta.clone(),
-        vox: meta,
+        speaker: Permanent(Speaker::Name(name.to_owned())),
+        vox: Permanent(name.to_owned()),
     }
 }
 
