@@ -178,24 +178,8 @@ mod tests {
 
     #[test]
     fn parse_small_interaction() {
-        let data = r#"%Test1
-
----
-NAME Siva
-VOX Siva
-
-First page
-
----
-NAME Terra
-VOX Terra
-
-Second page
-With more words
-
----
-
-"#;
+        // you're giving me some real small ix energy right now
+        let data = include_str!("../dummy-data/small-ix.dg");
 
         let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
@@ -220,39 +204,7 @@ With more words
     #[test]
     #[ignore = "too complicated for now"]
     fn parse_one_interaction_many_pages() {
-        let data = r#"%Interaction
-
----
-NAME Deez
-VOX Deez
-
-When the words are sus
-
----
-NAME Gamer
-
-Words go brrr
-
----
-
-When the imposter is sus
-
----
-###
-
-// Another Page
-Echo hello world
-
-###
----
-NAME Siva
-VOX Siva
-
-Testing
-
----
-
-"#;
+        let data = include_str!("../dummy-data/one-ix-many-pages.dg");
 
         let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
