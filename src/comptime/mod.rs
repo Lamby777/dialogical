@@ -46,12 +46,16 @@ impl Script {
                 continue;
             }
 
-            let (key, val) = line.split_once(' ').ok_or(ScriptError::TestPanic)?;
+            // split into key and value, but the value is optional
+            let (key, val) = line.split_once(' ').unwrap_or((line, ""));
 
             match key {
                 "Echo" => {
                     out.push(val.to_owned());
                 }
+
+                "###" => return Ok(()),
+
                 _ => {
                     return Err(ScriptError::TestPanic);
                 }
@@ -72,6 +76,20 @@ mod tests {
             let res = Script::from($code).execute(&mut out);
             (res, out)
         }};
+    }
+
+    #[test]
+    fn block_end() {
+        let (res, out) = comptime!(
+            r#"
+        Echo I just wanted to say...
+        ###
+        I love you.
+        "#
+        );
+
+        assert!(res.is_ok());
+        assert_eq!(out, vec!["I just wanted to say...".to_owned()]);
     }
 
     #[test]
