@@ -15,31 +15,59 @@ enum ScriptError {
 
 type Result<T> = std::result::Result<T, ScriptError>;
 
-struct Script {
-    content: String,
+#[derive(Default)]
+enum ComptimeState {
+    #[default]
+    Normal,
+
+    Autolink,
 }
 
-fn exec_comptime(script: &str, output: &mut Vec<String>) -> Result<()> {
-    let lines = script.lines();
+struct Script {
+    content: String,
+    state: ComptimeState,
+}
 
-    for line in lines {
-        if line.trim().is_empty() {
-            continue;
-        }
-
-        let (key, val) = line.split_once(' ').ok_or(ScriptError::TestPanic)?;
-
-        match key {
-            "Echo" => {
-                output.push(val.to_owned());
-            }
-            _ => {
-                return Err(ScriptError::TestPanic);
-            }
+impl From<&str> for Script {
+    fn from(content: &str) -> Self {
+        Self {
+            content: content.to_owned(),
+            state: ComptimeState::default(),
         }
     }
+}
 
-    Ok(())
+impl Script {
+    fn exec_comptime(&self, out: &mut Vec<String>) -> Result<()> {
+        let lines = self.content.lines();
+
+        for line in lines {
+            if line.trim().is_empty() {
+                continue;
+            }
+
+            let (key, val) = line.split_once(' ').ok_or(ScriptError::TestPanic)?;
+
+            match key {
+                "Echo" => {
+                    out.push(val.to_owned());
+                }
+                _ => {
+                    return Err(ScriptError::TestPanic);
+                }
+            }
+        }
+
+        Ok(())
+    }
+}
+
+macro_rules! comptime {
+    ($code:expr) => {{
+        let mut out = vec![];
+        let res = Script::from($code).exec_comptime(&mut out);
+        (res, out)
+    }};
 }
 
 #[cfg(test)]
@@ -48,27 +76,32 @@ mod tests {
 
     #[test]
     fn blanked_out() {
-        let code = r#"
+        let script = Script::from(
+            r#"
 
 
-
-
-
-
-        "#;
-        let mut output = vec![];
-        let res = exec_comptime(code, &mut output);
+        "#,
+        );
+        let mut out = vec![];
+        let res = script.exec_comptime(&mut out);
         assert!(res.is_ok());
-        assert_eq!(output.len(), 0);
+        assert_eq!(out.len(), 0);
+
+        // let (res, out) = comptime!(
+        //     r#"
+        //
+        //
+        // "#
+        // );
     }
 
     #[test]
     fn hello_world() {
         let code = r#"Echo Hello, world!"#;
 
-        let mut output = vec![];
-        let res = exec_comptime(code, &mut output);
+        let mut out = vec![];
+        let res = exec_comptime(code, &mut out);
         assert!(res.is_ok());
-        assert_eq!(output, vec!["Hello, world!".to_string()]);
+        assert_eq!(out, vec!["Hello, world!".to_string()]);
     }
 }
