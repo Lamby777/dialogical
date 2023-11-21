@@ -81,15 +81,19 @@ impl DgParser {
         //
         // WTF RUST THIS IS VALID SYNTAX?
         // BASED LANGUAGE
-        let Some((mut key, mut val)) = line.split_once(' ') else {
-            return Err(ParseError::NotMeta(line.to_string()));
-        };
-
-        if let "PageOnly" = key {
-            (key, val) = val
+        let (key, val) = {
+            let (mut key, mut val) = line
                 .split_once(' ')
                 .ok_or(ParseError::NotMeta(line.to_string()))?;
-        }
+
+            if key == "PageOnly" {
+                (key, val) = val
+                    .split_once(' ')
+                    .ok_or(ParseError::NotMeta(line.to_string()))?;
+            }
+
+            (key.trim(), val.trim())
+        };
 
         match key {
             "NAME" => {
