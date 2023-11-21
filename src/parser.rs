@@ -179,7 +179,7 @@ mod tests {
     #[test]
     fn parse_small_interaction() {
         // you're giving me some real small ix energy right now
-        let data = include_str!("../dummy-data/small-ix.dg");
+        let data = include_str!("../dummy_data/small_ix.dg");
 
         let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
@@ -204,7 +204,7 @@ mod tests {
     #[test]
     #[ignore = "too complicated for now"]
     fn parse_one_interaction_many_pages() {
-        let data = include_str!("../dummy-data/one-ix-many-pages.dg");
+        let data = include_str!("../dummy_data/one_ix_many_pages.dg");
 
         let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
