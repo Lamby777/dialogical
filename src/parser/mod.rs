@@ -35,7 +35,10 @@ impl DgParser {
             Err(ParseError::InvalidID(line.to_string()))
         } else {
             if self.interaction.is_some() {
+                println!("Encountered a %... Pushing!");
                 self.push_ix()?;
+            } else {
+                println!("Not some");
             }
 
             self.interaction = Some(Interaction {
@@ -50,6 +53,8 @@ impl DgParser {
 
     fn parse_idle(&mut self, line: &str) -> Result<()> {
         self.state = match line.trim() {
+            _ if line.starts_with('%') => return self.parse_start(line),
+
             "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
             "---" => ParseState::Metadata,
@@ -173,7 +178,6 @@ impl DgParser {
             println!("{:?} >> {:?}", &self.state, line);
 
             (match self.state {
-                Start => Self::parse_start,
                 Idle => Self::parse_idle,
 
                 // besides the start, a block can either be

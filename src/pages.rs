@@ -7,12 +7,8 @@ use thiserror::Error;
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
 pub enum ParseState {
-    /// Interaction-wide metadata not set yet, we're at the
-    /// top of an interaction
-    #[default]
-    Start,
-
     /// Waiting to start a new interaction or comptime script
+    #[default]
     Idle,
 
     /// Compile-time script block
