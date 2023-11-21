@@ -8,6 +8,7 @@ type Result<T> = std::result::Result<T, ParseError>;
 // TODO don't wildcard import
 use crate::pages::*;
 
+#[derive(Default)]
 pub struct DgParser {
     state: ParseState,
     pages: Vec<Page>,
@@ -15,14 +16,6 @@ pub struct DgParser {
 }
 
 impl DgParser {
-    pub fn new() -> Self {
-        Self {
-            state: ParseState::Start,
-            pages: vec![],
-            interaction_id: None,
-        }
-    }
-
     /// Finish parsing 1 interaction, and clear the state
     /// to prepare for another one.
     ///
@@ -204,7 +197,7 @@ With more words
 
 "#;
 
-        let mut parser = DgParser::new();
+        let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
 
         let expected = Interaction {
@@ -261,7 +254,7 @@ Testing
 
 "#;
 
-        let mut parser = DgParser::new();
+        let mut parser = DgParser::default();
         let parsed = parser.parse(data).unwrap();
 
         let expected = Interaction {

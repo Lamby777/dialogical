@@ -7,10 +7,11 @@
 use thiserror::Error;
 
 /// possible states the parser can be in
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub enum ParseState {
     /// Interaction-wide metadata not set yet, we're at the
     /// top of an interaction
+    #[default]
     Start,
 
     /// Waiting to start a new interaction or comptime script
@@ -44,8 +45,6 @@ pub enum ParseError {
     #[error("{0} is not a valid metadata directive")]
     InvalidMeta(String),
 }
-
-type Result<T> = std::result::Result<T, ParseError>;
 
 #[derive(Debug, PartialEq)]
 pub struct Interaction<'a> {
