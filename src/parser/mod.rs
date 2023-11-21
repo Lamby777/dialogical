@@ -165,7 +165,6 @@ impl DgParser {
         }
 
         self.push_ix()?;
-
         Ok(&self.interactions)
     }
 }

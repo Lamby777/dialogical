@@ -24,6 +24,33 @@ fn meta_double(name: &str) -> PageMetadata {
 }
 
 #[test]
+fn parse_filter_empties() {
+    let data = include_dummy!("empties");
+
+    let mut parser = DgParser::default();
+    let parsed = parser.parse_all(data).unwrap();
+
+    let expected = vec![Interaction {
+        id: "Empties Test".to_string(),
+        pages: vec![
+            Page {
+                metadata: meta_double("Siva"),
+                content: "So uhh... what's your name?".to_owned(),
+            },
+            Page {
+                metadata: meta_double("L'yembo"),
+                content: "...".to_owned(),
+            },
+            Page {
+                metadata: meta_double("L'yembo"),
+                content: "*runs away*".to_owned(),
+            },
+        ],
+    }];
+
+    assert_eq!(parsed, expected);
+}
+
 fn parse_two_ix() {
     let data = include_dummy!("two_ix");
 
