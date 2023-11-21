@@ -13,7 +13,6 @@ macro_rules! include_dummy {
 }
 
 #[test]
-#[ignore]
 fn parse_pageonly() {
     let data = include_dummy!("pageonly");
 

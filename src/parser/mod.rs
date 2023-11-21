@@ -145,6 +145,7 @@ impl DgParser {
         self.page.content = self.pagebuf.join("\n");
         self.pages.push(self.page.clone());
         self.pagebuf.clear();
+        self.page = Page::default();
         println!("Printed!");
     }
 
