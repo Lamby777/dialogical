@@ -13,6 +13,40 @@ macro_rules! include_dummy {
 }
 
 #[test]
+fn parse_pageonly() {
+    let data = include_dummy!("pageonly");
+
+    let mut parser = DgParser::default();
+    let parsed = parser.parse(data).unwrap();
+
+    let expected = Interaction {
+        id: "PageOnly Test",
+        pages: vec![
+            Page {
+                metadata: PageMetadata::new_perm_double("Mira"),
+                content: "What's up?".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata {
+                    speaker: Metadata::NoChange,
+                    vox: Metadata::PageOnly("Ethan".to_owned()),
+                },
+
+                content: "Nothing much...".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::default(),
+                content: r#"Alright, why am I talking to myself?
+Who's making me do this?"#
+                    .to_owned(),
+            },
+        ],
+    };
+
+    assert_eq!(parsed, expected);
+}
+
+#[test]
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
     let data = include_dummy!("small_ix");

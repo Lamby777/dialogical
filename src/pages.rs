@@ -84,15 +84,11 @@ impl PageMetadata {
     }
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub enum Metadata<T> {
     Permanent(T),
     PageOnly(T),
-    NoChange,
-}
 
-impl<T> Default for Metadata<T> {
-    fn default() -> Self {
-        Self::NoChange
-    }
+    #[default]
+    NoChange,
 }
