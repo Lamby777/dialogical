@@ -2,9 +2,6 @@
 //! Stuff for parsing dg files
 //!
 
-#[cfg(test)]
-mod tests;
-
 const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
@@ -174,3 +171,6 @@ impl DgParser {
         self.build_result()
     }
 }
+
+#[cfg(test)]
+mod tests;

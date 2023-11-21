@@ -1,9 +1,21 @@
 use super::*;
 
+macro_rules! dummy_file {
+    ($name:expr) => {
+        concat!("../../dummy_data/", $name, ".dg")
+    };
+}
+
+macro_rules! include_dummy {
+    ($name:expr) => {
+        include_str!(dummy_file!($name))
+    };
+}
+
 #[test]
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
-    let data = include_str!("../../dummy_data/small_ix.dg");
+    let data = include_dummy!("small_ix");
 
     let mut parser = DgParser::default();
     let parsed = parser.parse(data).unwrap();
@@ -28,7 +40,7 @@ fn parse_small_interaction() {
 #[test]
 #[ignore = "too complicated for now"]
 fn parse_one_interaction_many_pages() {
-    let data = include_str!("../../dummy_data/one_ix_many_pages.dg");
+    let data = include_dummy!("one_ix_many_pages");
 
     let mut parser = DgParser::default();
     let parsed = parser.parse(data).unwrap();
