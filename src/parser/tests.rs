@@ -12,6 +12,17 @@ macro_rules! include_dummy {
     };
 }
 
+/// shorthand for permanent change of speaker and vox with same string
+/// good for writing quick unit tests
+fn meta_double(name: &str) -> PageMetadata {
+    let meta = Metadata::Permanent(name.to_owned());
+
+    PageMetadata {
+        speaker: meta.clone(),
+        vox: meta,
+    }
+}
+
 #[test]
 fn parse_two_ix() {
     let data = include_dummy!("two_ix");
@@ -24,11 +35,11 @@ fn parse_two_ix() {
             id: "First".to_string(),
             pages: vec![
                 Page {
-                    metadata: PageMetadata::new_perm_double("Porky"),
+                    metadata: meta_double("Porky"),
                     content: "First page".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata::new_perm_double("Ethan"),
+                    metadata: meta_double("Ethan"),
                     content: "Second page".to_owned(),
                 },
             ],
@@ -37,11 +48,11 @@ fn parse_two_ix() {
             id: "Second".to_string(),
             pages: vec![
                 Page {
-                    metadata: PageMetadata::new_perm_double("Terra"),
+                    metadata: meta_double("Terra"),
                     content: "Third page".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata::new_perm_double("Siva"),
+                    metadata: meta_double("Siva"),
                     content: "Fourth page".to_owned(),
                 },
             ],
@@ -62,7 +73,7 @@ fn parse_pageonly() {
         id: "PageOnly Test".to_string(),
         pages: vec![
             Page {
-                metadata: PageMetadata::new_perm_double("Mira"),
+                metadata: meta_double("Mira"),
                 content: "What's up?".to_owned(),
             },
             Page {
@@ -97,11 +108,11 @@ fn parse_small_interaction() {
         id: "Test1".to_string(),
         pages: vec![
             Page {
-                metadata: PageMetadata::new_perm_double("Siva"),
+                metadata: meta_double("Siva"),
                 content: "First page".to_owned(),
             },
             Page {
-                metadata: PageMetadata::new_perm_double("Terra"),
+                metadata: meta_double("Terra"),
                 content: "Second page\nWith more words".to_owned(),
             },
         ],
@@ -122,11 +133,11 @@ fn parse_one_ix_many_pages() {
         id: "Interaction".to_string(),
         pages: vec![
             Page {
-                metadata: PageMetadata::new_perm_double("Deez"),
+                metadata: meta_double("Deez"),
                 content: "When the words are sus".to_owned(),
             },
             Page {
-                metadata: PageMetadata::new_perm_double("Gamer"),
+                metadata: meta_double("Gamer"),
                 content: "Words go brrr".to_owned(),
             },
             Page {
@@ -137,7 +148,7 @@ fn parse_one_ix_many_pages() {
                 content: "When the imposter is sus".to_owned(),
             },
             Page {
-                metadata: PageMetadata::new_perm_double("Siva"),
+                metadata: meta_double("Siva"),
                 content: "Testing".to_owned(),
             },
         ],

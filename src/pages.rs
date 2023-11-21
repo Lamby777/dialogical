@@ -69,19 +69,6 @@ pub struct PageMetadata {
     pub vox: Metadata<String>,
 }
 
-impl PageMetadata {
-    /// shorthand for permanent change of speaker and vox with same string
-    /// good for writing quick unit tests
-    pub fn new_perm_double(speaker: &str) -> Self {
-        let meta = Metadata::Permanent(speaker.to_owned());
-
-        Self {
-            speaker: meta.clone(),
-            vox: meta,
-        }
-    }
-}
-
 /// Represents a metadata directive
 #[derive(Clone, Debug, Default, PartialEq)]
 pub enum Metadata<T> {
