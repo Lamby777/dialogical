@@ -42,7 +42,7 @@ fn parse_filter_empties() {
                 content: "...".to_owned(),
             },
             Page {
-                metadata: meta_double("L'yembo"),
+                metadata: PageMetadata::nochange(),
                 content: "*runs away*".to_owned(),
             },
         ],

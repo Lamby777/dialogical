@@ -69,6 +69,17 @@ pub struct PageMetadata {
     pub vox: Metadata<String>,
 }
 
+impl PageMetadata {
+    pub fn nochange() -> Self {
+        use Metadata::NoChange;
+
+        Self {
+            speaker: NoChange,
+            vox: NoChange,
+        }
+    }
+}
+
 /// Represents a metadata directive
 #[derive(Clone, Debug, Default, PartialEq)]
 pub enum Metadata<T> {
