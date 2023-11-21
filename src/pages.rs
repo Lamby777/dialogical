@@ -4,6 +4,49 @@
 //! TODO less `String`, more `&'a str`
 //!
 
+use thiserror::Error;
+
+/// possible states the parser can be in
+#[derive(Clone, Debug)]
+pub enum ParseState {
+    /// Interaction-wide metadata not set yet, we're at the
+    /// top of an interaction
+    Start,
+
+    /// Waiting to start a new interaction or comptime script
+    Idle,
+
+    /// Compile-time script block
+    ComptimeScript,
+
+    /// Directives written before a message
+    /// Separated from the actual message by an empty line
+    Metadata,
+
+    /// Text content said by a character
+    Message,
+
+    /// Empty line after message, before the separator
+    PostLine,
+}
+
+#[derive(Debug, Error, PartialEq)]
+pub enum ParseError {
+    #[error("Encountered {0} instead of a separator while in PostLine state")]
+    AfterPostline(String),
+
+    #[error("{0} is not a valid interaction ID")]
+    InvalidID(String),
+
+    #[error("Could not split {0}. Is this supposed to be metadata?")]
+    NotMeta(String),
+
+    #[error("{0} is not a valid metadata directive")]
+    InvalidMeta(String),
+}
+
+type Result<T> = std::result::Result<T, ParseError>;
+
 #[derive(Debug, PartialEq)]
 pub struct Interaction<'a> {
     pub id: &'a str,
