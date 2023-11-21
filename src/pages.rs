@@ -7,10 +7,6 @@ use thiserror::Error;
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
 pub enum ParseState {
-    /// Waiting to start a new interaction or comptime script
-    // TODO rm idle mode, should start in metaline mode
-    Idle,
-
     /// Compile-time script block
     ComptimeScript,
 

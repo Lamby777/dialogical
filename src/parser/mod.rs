@@ -36,18 +36,6 @@ impl DgParser {
             pages: vec![],
         });
 
-        // self.state = ParseState::Idle;
-        Ok(())
-    }
-
-    fn parse_idle(&mut self, line: &str) -> Result<()> {
-        self.state = match line.trim() {
-            "" => return Ok(()),
-            "###" => ParseState::ComptimeScript,
-            "---" => ParseState::Metadata,
-            _ => panic!("wtf"),
-        };
-
         Ok(())
     }
 
@@ -168,8 +156,6 @@ impl DgParser {
             println!("{:?} >> {:?}", &self.state, line);
 
             (match self.state {
-                Idle => Self::parse_idle,
-
                 // besides the start, a block can either be
                 // a comptime script or a message section
                 ComptimeScript => todo!("comptime"),
