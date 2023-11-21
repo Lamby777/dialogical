@@ -28,7 +28,7 @@ pub enum ParseError {
 type Result<T> = std::result::Result<T, ParseError>;
 
 /// possible states the parser can be in
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 enum ParseState {
     /// Interaction-wide metadata not set yet, we're at the
     /// top of an interaction
@@ -81,14 +81,6 @@ impl DgParser {
         })
     }
 
-    pub fn parse_page(&mut self, page: &[String]) -> Page {
-        let page = Page::from_content(page.join("\n"));
-
-        // TODO check if pageonly/perm/nochange
-
-        page
-    }
-
     fn parse_start(&mut self, line: &str) -> Result<()> {
         let line = line.trim();
         if line == "---" || line.is_empty() {
@@ -106,13 +98,16 @@ impl DgParser {
         }
     }
 
-    fn parse_idle(&mut self, line: &str) {
+    fn parse_idle(&mut self, line: &str, page: &mut Page) -> Result<()> {
         self.state = match line.trim() {
-            "" => return,
+            "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
             "%%%" => ParseState::Start,
-            _ => ParseState::Metadata,
-        }
+            "---" => ParseState::Metadata,
+            _ => panic!("wtf"),
+        };
+
+        Ok(())
     }
 
     fn parse_metaline(&mut self, line: &str, page: &mut Page) -> Result<()> {
@@ -178,12 +173,16 @@ impl DgParser {
         }
 
         // push and reset the page buffer
-        let page = self.parse_page(&pagebuf);
+        let mut page = page.clone();
+        page.content = pagebuf.join("\n");
         self.pages.push(page);
         pagebuf.clear();
 
         println!("Printed");
-        self.state = ParseState::Idle;
+
+        // TODO this is prob a bad idea for parsing
+        // multiple interactions in one file
+        self.state = ParseState::Metadata;
         Ok(())
     }
 
@@ -203,11 +202,11 @@ impl DgParser {
         for line in lines {
             use ParseState::*;
 
-            dbg!(&self.state);
+            println!("{:?} >> {:?}", &self.state, line);
 
             match self.state {
                 Start => self.parse_start(line)?,
-                Idle => self.parse_idle(line),
+                Idle => self.parse_idle(line, &mut page)?,
 
                 // besides the start, a block can either be
                 // a comptime script or a message section
