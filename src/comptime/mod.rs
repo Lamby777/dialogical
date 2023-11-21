@@ -62,45 +62,33 @@ impl Script {
     }
 }
 
-macro_rules! comptime {
-    ($code:expr) => {{
-        let mut out = vec![];
-        let res = Script::from($code).exec_comptime(&mut out);
-        (res, out)
-    }};
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
+    macro_rules! comptime {
+        ($code:expr) => {{
+            let mut out = vec![];
+            let res = Script::from($code).exec_comptime(&mut out);
+            (res, out)
+        }};
+    }
+
     #[test]
     fn blanked_out() {
-        let script = Script::from(
+        let (res, out) = comptime!(
             r#"
 
 
-        "#,
+        "#
         );
-        let mut out = vec![];
-        let res = script.exec_comptime(&mut out);
         assert!(res.is_ok());
         assert_eq!(out.len(), 0);
-
-        // let (res, out) = comptime!(
-        //     r#"
-        //
-        //
-        // "#
-        // );
     }
 
     #[test]
     fn hello_world() {
-        let code = r#"Echo Hello, world!"#;
-
-        let mut out = vec![];
-        let res = exec_comptime(code, &mut out);
+        let (res, out) = comptime!(r#"Echo Hello, world!"#);
         assert!(res.is_ok());
         assert_eq!(out, vec!["Hello, world!".to_string()]);
     }
