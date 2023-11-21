@@ -150,9 +150,8 @@ impl DgParser {
     /// `Err` if the parser is in a state where it's not
     /// prepared to finish just yet.
     pub fn push_ix(&mut self) -> Result<()> {
-        // TODO custom error instead of panic
         self.interactions
-            .push(self.interaction.take().expect("no interaction built...?"));
+            .push(self.interaction.take().ok_or(ParseError::PushEmpty)?);
         Ok(())
     }
 

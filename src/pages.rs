@@ -43,6 +43,9 @@ pub enum ParseError {
 
     #[error("{0} is not a valid metadata directive")]
     InvalidMeta(String),
+
+    #[error("No interaction to push")]
+    PushEmpty,
 }
 
 #[derive(Debug, PartialEq)]
