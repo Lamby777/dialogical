@@ -77,17 +77,19 @@ impl DgParser {
             return Ok(());
         }
 
-        /////////////////////////////////////////////////////
-        // TODO check if pageonly
-        /////////////////////////////////////////////////////
-
         // everything after the space is the value
         //
         // WTF RUST THIS IS VALID SYNTAX?
         // BASED LANGUAGE
-        let Some((key, val)) = line.split_once(' ') else {
+        let Some((mut key, mut val)) = line.split_once(' ') else {
             return Err(ParseError::NotMeta(line.to_string()));
         };
+
+        if let "PageOnly" = key {
+            (key, val) = val
+                .split_once(' ')
+                .ok_or(ParseError::NotMeta(line.to_string()))?;
+        }
 
         match key {
             "NAME" => {
@@ -99,6 +101,7 @@ impl DgParser {
                 let meta = Metadata::Permanent(val.to_owned());
                 self.page.metadata.vox = meta;
             }
+
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
             }
