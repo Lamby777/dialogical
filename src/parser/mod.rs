@@ -40,6 +40,8 @@ impl DgParser {
     }
 
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
+        use Metadata::*;
+
         // TODO consider trimming whitespace before it gets
         // sent to any of these functions... might be a bad
         // idea to reduce the level of control these functions
@@ -69,23 +71,27 @@ impl DgParser {
             (key.trim(), val.trim(), pageonly)
         };
 
-        use Metadata::*;
-        let res = (if pageonly { PageOnly } else { Permanent })(val.to_owned());
+        // closure that puts values into either PageOnly() or Permanent()
+        let to_metadata = |v| (if pageonly { PageOnly } else { Permanent })(v);
 
-        let target = match key {
-            "NAME" => &mut self.page.metadata.speaker,
-            "VOX" => &mut self.page.metadata.vox,
+        match key {
+            "NAME" => self.page.metadata.speaker = to_metadata(val.to_owned()),
+            "VOX" => self.page.metadata.vox = to_metadata(val.to_owned()),
+
+            // message spoken by narrator...
+            // how this will be interpreted is an implementation detail
+            "NARRATOR" => {
+                // TODO enum instead of magic string
+                self.page.metadata.speaker = to_metadata("NARRATOR".to_owned());
+            }
 
             // set interaction
-            "%" if let Permanent(id) = res => return self.set_ix_id(&id),
+            "%" => self.set_ix_id(val)?,
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
             }
         };
-
-        // set the value
-        *target = res;
 
         Ok(())
     }
