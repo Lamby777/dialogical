@@ -17,6 +17,12 @@ pub enum ParseError {
 
     #[error("{0} is not a valid interaction ID")]
     InvalidID(String),
+
+    #[error("Could not split {0}. Is this supposed to be metadata?")]
+    NotMeta(String),
+
+    #[error("{0} is not a valid metadata directive")]
+    InvalidMeta(String),
 }
 
 type Result<T> = std::result::Result<T, ParseError>;
@@ -109,10 +115,46 @@ impl DgParser {
         }
     }
 
-    fn parse_metaline(&mut self, line: &str) {
+    fn parse_metaline(&mut self, line: &str, page: &mut Page) -> Result<()> {
+        // TODO consider trimming whitespace before it gets
+        // sent to any of these functions... might be a bad
+        // idea to reduce the level of control these functions
+        // have, but it would also reduce the complexity
+        let line = line.trim();
+
         if line.is_empty() {
             self.state = ParseState::Message;
+            return Ok(());
         }
+
+        /////////////////////////////////////////////////////
+        // TODO check if pageonly
+        /////////////////////////////////////////////////////
+
+        // everything after the space is the value
+        //
+        // WTF RUST THIS IS VALID SYNTAX?
+        // BASED LANGUAGE
+        let Some((key, val)) = line.split_once(' ') else {
+            return Err(ParseError::NotMeta(line.to_string()));
+        };
+
+        match key {
+            "NAME" => {
+                let meta = Metadata::Permanent(val.to_owned());
+                page.metadata.speaker = meta;
+            }
+
+            "VOX" => {
+                let meta = Metadata::Permanent(val.to_owned());
+                page.metadata.vox = meta;
+            }
+            _ => {
+                return Err(ParseError::InvalidMeta(line.to_string()));
+            }
+        }
+
+        Ok(())
     }
 
     fn parse_message(&mut self, pagebuf: &mut Vec<String>, line: &str) {
@@ -128,7 +170,7 @@ impl DgParser {
 
     // TODO: allow empty lines in message, and remove the last
     // empty line retroactively when it encounters a separator
-    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str) -> Result<()> {
+    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str, page: &Page) -> Result<()> {
         println!("Printing page... {}", line);
 
         if line != SEPARATOR {
@@ -152,6 +194,12 @@ impl DgParser {
         // temporary buffer for the current page it's processing
         let mut pagebuf = vec![];
 
+        // TODO maybe use MaybeUninit and partially initialize
+        let mut page = Page {
+            metadata: PageMetadata::default(),
+            content: "".to_owned(),
+        };
+
         for line in lines {
             use ParseState::*;
 
@@ -165,9 +213,10 @@ impl DgParser {
                 // a comptime script or a message section
                 ComptimeScript => todo!("comptime"),
 
-                Metadata => self.parse_metaline(line),
+                // TODO args order is weird
+                Metadata => self.parse_metaline(line, &mut page)?,
                 Message => self.parse_message(&mut pagebuf, line),
-                PostLine => self.parse_postline(&mut pagebuf, line)?,
+                PostLine => self.parse_postline(&mut pagebuf, line, &page)?,
             }
         }
 
