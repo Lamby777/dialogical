@@ -13,26 +13,36 @@ bunch of text files in a format that's easy for git to track/diff, and this tool
 will do all the work of converting it to a table of dialogue nodes that your
 game can load into memory.
 
-## Installation
+## Building
 
-idk. TODO. For now, just symlink `dg` in one of your PATH directories to
-`main.py` or something like that lol
+Simple as shit.
 
-Probably gonna write a Rust crate for loading these files into memory at some
+```
+cargo build
+```
+
+Probably gonna write a crate for loading these files into memory at some
 point... or maybe I'll just make that be a part of the game's code to avoid the
 extra complexity of spamming a bunch of wrapper types just to add traits to
 types from external crates.
 
 ## Usage
 
-Run `dg`, `dg -h`, or `dg --help` for a list of flags.
+All of these commands will print the help screen. Pick your favorite, and don't
+forget it!
+
+```
+dg
+dg -h
+dg --help
+```
 
 Here's an example of how you'd use it for a project... Ideally, you'd slap this
 line into your build script or Makefile or something like that before all your
 other build steps.
 
 ```
-$ dg pets37.dg -o ./pets37.dgc
+dg pets37.dg -o ./pets37.dgc
 ```
 
 ---

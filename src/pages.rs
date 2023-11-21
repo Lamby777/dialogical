@@ -1,8 +1,6 @@
 //!
 //! Data structures used by the parser
 //!
-//! TODO less `String`, more `&'a str`
-//!
 
 use thiserror::Error;
 
