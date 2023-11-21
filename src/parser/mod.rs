@@ -17,28 +17,13 @@ pub struct DgParser {
 
     // temp buffers for parsing
     // TODO maybe use MaybeUninit and partially initialize
-    interaction_id: Option<String>,
+    interaction: Option<Interaction>,
     pages: Vec<Page>,
     page: Page,
     pagebuf: Vec<String>,
 }
 
 impl DgParser {
-    /// Finish parsing 1 interaction, and clear the state
-    /// to prepare for another one.
-    ///
-    /// `Err` if the parser is in a state where it's not
-    /// prepared to finish just yet.
-    fn build_result(&self) -> Result<Interaction> {
-        Ok(Interaction {
-            id: self
-                .interaction_id
-                .clone()
-                .expect("interaction id should not be empty"),
-            pages: self.pages.clone(),
-        })
-    }
-
     fn parse_start(&mut self, line: &str) -> Result<()> {
         let line = line.trim();
         if line == "---" || line.is_empty() {
@@ -50,7 +35,15 @@ impl DgParser {
         if percent != "%" {
             Err(ParseError::InvalidID(line.to_string()))
         } else {
-            self.interaction_id = Some(id.to_owned());
+            if self.interaction.is_some() {
+                self.push_ix()?;
+            }
+
+            self.interaction = Some(Interaction {
+                id: id.to_owned(),
+                pages: vec![],
+            });
+
             self.state = ParseState::Idle;
             Ok(())
         }
@@ -60,10 +53,6 @@ impl DgParser {
         self.state = match line.trim() {
             "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
-            "%%%" => {
-                self.push_ix()?;
-                ParseState::Start
-            }
             "---" => ParseState::Metadata,
             _ => panic!("wtf"),
         };
@@ -155,8 +144,15 @@ impl DgParser {
         println!("Printed!");
     }
 
+    /// Finish parsing 1 interaction, and clear the state
+    /// to prepare for another one.
+    ///
+    /// `Err` if the parser is in a state where it's not
+    /// prepared to finish just yet.
     pub fn push_ix(&mut self) -> Result<()> {
-        self.interactions.push(self.build_result()?);
+        // TODO custom error instead of panic
+        self.interactions
+            .push(self.interaction.take().expect("no interaction built...?"));
         Ok(())
     }
 
@@ -185,6 +181,8 @@ impl DgParser {
                 PostLine => Self::parse_postline,
             })(self, line)?;
         }
+
+        self.push_ix()?;
 
         Ok(&self.interactions)
     }
