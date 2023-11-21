@@ -46,8 +46,9 @@ pub enum ParseError {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Interaction<'a> {
-    pub id: &'a str,
+pub struct Interaction {
+    // TODO use &'static str
+    pub id: String,
     pub pages: Vec<Page>,
 }
 

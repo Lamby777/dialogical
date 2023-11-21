@@ -11,11 +11,14 @@ use crate::pages::*;
 #[derive(Default)]
 pub struct DgParser {
     state: ParseState,
-    pages: Vec<Page>,
-    interaction_id: Option<String>,
+
+    // the end result it's putting together
+    interactions: Vec<Interaction>,
 
     // temp buffers for parsing
     // TODO maybe use MaybeUninit and partially initialize
+    interaction_id: Option<String>,
+    pages: Vec<Page>,
     page: Page,
     pagebuf: Vec<String>,
 }
@@ -30,7 +33,7 @@ impl DgParser {
         Ok(Interaction {
             id: self
                 .interaction_id
-                .as_ref()
+                .clone()
                 .expect("interaction id should not be empty"),
             pages: self.pages.clone(),
         })
@@ -57,7 +60,10 @@ impl DgParser {
         self.state = match line.trim() {
             "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
-            "%%%" => ParseState::Start,
+            "%%%" => {
+                self.push_ix()?;
+                ParseState::Start
+            }
             "---" => ParseState::Metadata,
             _ => panic!("wtf"),
         };
@@ -149,7 +155,12 @@ impl DgParser {
         println!("Printed!");
     }
 
-    pub fn parse_all(&mut self, data: &str) -> Result<Interaction> {
+    pub fn push_ix(&mut self) -> Result<()> {
+        self.interactions.push(self.build_result()?);
+        Ok(())
+    }
+
+    pub fn parse_all(&mut self, data: &str) -> Result<&[Interaction]> {
         println!("Parsing...");
         let lines = data.lines();
 
@@ -175,7 +186,7 @@ impl DgParser {
             })(self, line)?;
         }
 
-        self.build_result()
+        Ok(&self.interactions)
     }
 }
 

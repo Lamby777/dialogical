@@ -21,7 +21,7 @@ fn parse_two_ix() {
 
     let expected = vec![
         Interaction {
-            id: "First",
+            id: "First".to_string(),
             pages: vec![
                 Page {
                     metadata: PageMetadata::new_perm_double("Porky"),
@@ -34,7 +34,7 @@ fn parse_two_ix() {
             ],
         },
         Interaction {
-            id: "Second",
+            id: "Second".to_string(),
             pages: vec![
                 Page {
                     metadata: PageMetadata::new_perm_double("Terra"),
@@ -59,7 +59,7 @@ fn parse_pageonly() {
     let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
-        id: "PageOnly Test",
+        id: "PageOnly Test".to_string(),
         pages: vec![
             Page {
                 metadata: PageMetadata::new_perm_double("Mira"),
@@ -82,7 +82,7 @@ Who's making me do this?"#
         ],
     };
 
-    assert_eq!(parsed, expected);
+    assert_eq!(parsed, vec![expected]);
 }
 
 #[test]
@@ -94,7 +94,7 @@ fn parse_small_interaction() {
     let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
-        id: "Test1",
+        id: "Test1".to_string(),
         pages: vec![
             Page {
                 metadata: PageMetadata::new_perm_double("Siva"),
@@ -107,7 +107,7 @@ fn parse_small_interaction() {
         ],
     };
 
-    assert_eq!(parsed, expected);
+    assert_eq!(parsed, vec![expected]);
 }
 
 #[test]
@@ -119,7 +119,7 @@ fn parse_one_ix_many_pages() {
     let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
-        id: "Interaction",
+        id: "Interaction".to_string(),
         pages: vec![
             Page {
                 metadata: PageMetadata::new_perm_double("Deez"),
@@ -143,5 +143,5 @@ fn parse_one_ix_many_pages() {
         ],
     };
 
-    assert_eq!(parsed, expected);
+    assert_eq!(parsed, vec![expected]);
 }
