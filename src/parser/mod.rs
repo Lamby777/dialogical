@@ -51,6 +51,12 @@ impl DgParser {
             return Ok(());
         }
 
+        // enter comptime scripting block
+        if line == "###" {
+            self.state = ParseState::ComptimeScript;
+            return Ok(());
+        }
+
         let (key, val, pageonly) = {
             // everything after the space is the value
             let (mut key, mut val) = line

@@ -153,7 +153,6 @@ fn parse_small_interaction() {
 }
 
 #[test]
-#[ignore = "too complicated for now"]
 fn parse_one_ix_many_pages() {
     let data = include_dummy!("one_ix_many_pages");
 
