@@ -82,16 +82,29 @@ impl PageMetadata {
     }
 }
 
+/// Represents a metadata directive
 #[derive(Clone, Debug, Default, PartialEq)]
 pub enum Metadata<T> {
+    /// Any change is implicitly permanent
+    /// Example:
+    /// `NAME &Cherry`
     Permanent(T),
+
+    /// PageOnly changes must be explicitly marked as such
+    /// Example:
+    /// `PageOnly NAME &Cherry`
     PageOnly(T),
 
+    /// If no change is specified, the variant `NoChange` is used
     #[default]
     NoChange,
 }
 
 impl<T> Metadata<T> {
+    /// None if NoChange
+    ///
+    /// I guess you can think of Metadata like
+    /// Option<T> but with 3 variants instead of 2
     pub fn try_unwrap(&self) -> Option<&T> {
         match self {
             Self::Permanent(val) | Self::PageOnly(val) => Some(val),
@@ -99,6 +112,7 @@ impl<T> Metadata<T> {
         }
     }
 
+    /// shorthand to "just get it done"
     pub fn unwrap(&self) -> &T {
         self.try_unwrap().unwrap()
     }
