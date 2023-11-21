@@ -43,6 +43,10 @@ fn parse_filter_empties() {
             },
             Page {
                 metadata: PageMetadata::nochange(),
+                content: "---\n---".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::nochange(),
                 content: "*runs away*".to_owned(),
             },
         ],
