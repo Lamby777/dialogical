@@ -111,8 +111,6 @@ impl DgParser {
 
         self.push_page();
 
-        // TODO this is prob a bad idea for parsing
-        // multiple interactions in one file
         self.state = ParseState::Metadata;
         Ok(())
     }
