@@ -13,11 +13,50 @@ macro_rules! include_dummy {
 }
 
 #[test]
+fn parse_two_ix() {
+    let data = include_dummy!("two_ix");
+
+    let mut parser = DgParser::default();
+    let parsed = parser.parse_all(data).unwrap();
+
+    let expected = vec![
+        Interaction {
+            id: "First",
+            pages: vec![
+                Page {
+                    metadata: PageMetadata::new_perm_double("Porky"),
+                    content: "First page".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata::new_perm_double("Ethan"),
+                    content: "Second page".to_owned(),
+                },
+            ],
+        },
+        Interaction {
+            id: "Second",
+            pages: vec![
+                Page {
+                    metadata: PageMetadata::new_perm_double("Terra"),
+                    content: "Third page".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata::new_perm_double("Siva"),
+                    content: "Fourth page".to_owned(),
+                },
+            ],
+        },
+    ];
+
+    assert_eq!(parsed, expected);
+}
+
+#[test]
 fn parse_pageonly() {
     let data = include_dummy!("pageonly");
 
     let mut parser = DgParser::default();
-    let parsed = parser.parse(data).unwrap();
+    let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "PageOnly Test",
@@ -52,7 +91,7 @@ fn parse_small_interaction() {
     let data = include_dummy!("small_ix");
 
     let mut parser = DgParser::default();
-    let parsed = parser.parse(data).unwrap();
+    let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "Test1",
@@ -73,11 +112,11 @@ fn parse_small_interaction() {
 
 #[test]
 #[ignore = "too complicated for now"]
-fn parse_one_interaction_many_pages() {
+fn parse_one_ix_many_pages() {
     let data = include_dummy!("one_ix_many_pages");
 
     let mut parser = DgParser::default();
-    let parsed = parser.parse(data).unwrap();
+    let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "Interaction",

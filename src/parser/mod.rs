@@ -149,7 +149,7 @@ impl DgParser {
         println!("Printed!");
     }
 
-    pub fn parse(&mut self, data: &str) -> Result<Interaction> {
+    pub fn parse_all(&mut self, data: &str) -> Result<Interaction> {
         println!("Parsing...");
         let lines = data.lines();
 

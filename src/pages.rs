@@ -26,6 +26,7 @@ pub enum ParseState {
     Message,
 
     /// Empty line after message, before the separator
+    /// TODO change this to options and parse 'em into a vec
     PostLine,
 }
 
