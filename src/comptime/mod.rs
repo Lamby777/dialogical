@@ -38,7 +38,7 @@ impl From<&str> for Script {
 }
 
 impl Script {
-    fn exec_comptime(&self, out: &mut Vec<String>) -> Result<()> {
+    fn execute(&self, out: &mut Vec<String>) -> Result<()> {
         let lines = self.content.lines();
 
         for line in lines {
@@ -69,7 +69,7 @@ mod tests {
     macro_rules! comptime {
         ($code:expr) => {{
             let mut out = vec![];
-            let res = Script::from($code).exec_comptime(&mut out);
+            let res = Script::from($code).execute(&mut out);
             (res, out)
         }};
     }
