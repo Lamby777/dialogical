@@ -13,6 +13,11 @@ pub struct DgParser {
     state: ParseState,
     pages: Vec<Page>,
     interaction_id: Option<String>,
+
+    // temp buffers for parsing
+    // TODO maybe use MaybeUninit and partially initialize
+    page: Page,
+    pagebuf: Vec<String>,
 }
 
 impl DgParser {
@@ -21,7 +26,7 @@ impl DgParser {
     ///
     /// `Err` if the parser is in a state where it's not
     /// prepared to finish just yet.
-    fn result(&self) -> Result<Interaction> {
+    fn build_result(&self) -> Result<Interaction> {
         Ok(Interaction {
             id: self
                 .interaction_id
@@ -48,7 +53,7 @@ impl DgParser {
         }
     }
 
-    fn parse_idle(&mut self, line: &str, page: &mut Page) -> Result<()> {
+    fn parse_idle(&mut self, line: &str) -> Result<()> {
         self.state = match line.trim() {
             "" => return Ok(()),
             "###" => ParseState::ComptimeScript,
@@ -60,7 +65,7 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_metaline(&mut self, line: &str, page: &mut Page) -> Result<()> {
+    fn parse_metaline(&mut self, line: &str) -> Result<()> {
         // TODO consider trimming whitespace before it gets
         // sent to any of these functions... might be a bad
         // idea to reduce the level of control these functions
@@ -87,12 +92,12 @@ impl DgParser {
         match key {
             "NAME" => {
                 let meta = Metadata::Permanent(val.to_owned());
-                page.metadata.speaker = meta;
+                self.page.metadata.speaker = meta;
             }
 
             "VOX" => {
                 let meta = Metadata::Permanent(val.to_owned());
-                page.metadata.vox = meta;
+                self.page.metadata.vox = meta;
             }
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
@@ -102,7 +107,7 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_message(&mut self, line: &str, pagebuf: &mut Vec<String>) {
+    fn parse_message(&mut self, line: &str) {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
@@ -110,25 +115,17 @@ impl DgParser {
             return;
         }
 
-        pagebuf.push(line.to_string());
+        self.pagebuf.push(line.to_string());
     }
 
     // TODO: allow empty lines in message, and remove the last
     // empty line retroactively when it encounters a separator
-    fn parse_postline(&mut self, line: &str, pagebuf: &mut Vec<String>, page: &Page) -> Result<()> {
-        println!("Printing page... {}", line);
-
+    fn parse_postline(&mut self, line: &str) -> Result<()> {
         if line != SEPARATOR {
             return Err(ParseError::AfterPostline(line.to_string()));
         }
 
-        // push and reset the page buffer
-        let mut page = page.clone();
-        page.content = pagebuf.join("\n");
-        self.pages.push(page);
-        pagebuf.clear();
-
-        println!("Printed");
+        self.push_page();
 
         // TODO this is prob a bad idea for parsing
         // multiple interactions in one file
@@ -136,18 +133,20 @@ impl DgParser {
         Ok(())
     }
 
+    /// push page buffer to the pages vec, then clear the buffer
+    pub fn push_page(&mut self) {
+        self.page.content = self.pagebuf.join("\n");
+        self.pages.push(self.page.clone());
+        self.pagebuf.clear();
+        println!("Printed!");
+    }
+
     pub fn parse(&mut self, data: &str) -> Result<Interaction> {
         println!("Parsing...");
         let lines = data.lines();
 
-        // temporary buffer for the current page it's processing
-        let mut pagebuf = vec![];
-
-        // TODO maybe use MaybeUninit and partially initialize
-        let mut page = Page {
-            metadata: PageMetadata::default(),
-            content: "".to_owned(),
-        };
+        self.pagebuf.clear();
+        self.page = Page::default();
 
         for line in lines {
             use ParseState::*;
@@ -156,19 +155,19 @@ impl DgParser {
 
             match self.state {
                 Start => self.parse_start(line)?,
-                Idle => self.parse_idle(line, &mut page)?,
+                Idle => self.parse_idle(line)?,
 
                 // besides the start, a block can either be
                 // a comptime script or a message section
                 ComptimeScript => todo!("comptime"),
 
-                Metadata => self.parse_metaline(line, &mut page)?,
-                Message => self.parse_message(line, &mut pagebuf),
-                PostLine => self.parse_postline(line, &mut pagebuf, &page)?,
+                Metadata => self.parse_metaline(line)?,
+                Message => self.parse_message(line),
+                PostLine => self.parse_postline(line)?,
             }
         }
 
-        self.result()
+        self.build_result()
     }
 }
 

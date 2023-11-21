@@ -52,7 +52,7 @@ pub struct Interaction<'a> {
     pub pages: Vec<Page>,
 }
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq)]
 pub struct Page {
     pub metadata: PageMetadata,
     pub content: String,
