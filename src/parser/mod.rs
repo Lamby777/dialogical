@@ -77,39 +77,38 @@ impl DgParser {
             return Ok(());
         }
 
-        // everything after the space is the value
-        //
-        // WTF RUST THIS IS VALID SYNTAX?
-        // BASED LANGUAGE
-        let (key, val) = {
+        let (key, val, pageonly) = {
+            // everything after the space is the value
             let (mut key, mut val) = line
                 .split_once(' ')
                 .ok_or(ParseError::NotMeta(line.to_string()))?;
 
-            if key == "PageOnly" {
+            // ...unless the key is PageOnly, in which case we
+            // repeat the process again
+            let pageonly = key == "PageOnly";
+            if pageonly {
                 (key, val) = val
                     .split_once(' ')
                     .ok_or(ParseError::NotMeta(line.to_string()))?;
             }
 
-            (key.trim(), val.trim())
+            (key.trim(), val.trim(), pageonly)
         };
 
-        match key {
-            "NAME" => {
-                let meta = Metadata::Permanent(val.to_owned());
-                self.page.metadata.speaker = meta;
-            }
+        use Metadata::*;
+        let res = (if pageonly { PageOnly } else { Permanent })(val.to_owned());
 
-            "VOX" => {
-                let meta = Metadata::Permanent(val.to_owned());
-                self.page.metadata.vox = meta;
-            }
+        let target = match key {
+            "NAME" => &mut self.page.metadata.speaker,
+            "VOX" => &mut self.page.metadata.vox,
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
             }
-        }
+        };
+
+        // set the value
+        *target = res;
 
         Ok(())
     }
