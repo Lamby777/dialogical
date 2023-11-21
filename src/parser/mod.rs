@@ -18,7 +18,6 @@ pub struct DgParser {
     // temp buffers for parsing
     // TODO maybe use MaybeUninit and partially initialize
     interaction: Option<Interaction>,
-    pages: Vec<Page>,
     page: Page,
     pagebuf: Vec<String>,
 }
@@ -138,7 +137,13 @@ impl DgParser {
     /// push page buffer to the pages vec, then clear the buffer
     pub fn push_page(&mut self) {
         self.page.content = self.pagebuf.join("\n");
-        self.pages.push(self.page.clone());
+
+        self.interaction
+            .as_mut()
+            .unwrap()
+            .pages
+            .push(self.page.clone());
+
         self.pagebuf.clear();
         self.page = Page::default();
         println!("Printed!");
