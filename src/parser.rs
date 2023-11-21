@@ -152,7 +152,7 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_message(&mut self, pagebuf: &mut Vec<String>, line: &str) {
+    fn parse_message(&mut self, line: &str, pagebuf: &mut Vec<String>) {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
@@ -165,7 +165,7 @@ impl DgParser {
 
     // TODO: allow empty lines in message, and remove the last
     // empty line retroactively when it encounters a separator
-    fn parse_postline(&mut self, pagebuf: &mut Vec<String>, line: &str, page: &Page) -> Result<()> {
+    fn parse_postline(&mut self, line: &str, pagebuf: &mut Vec<String>, page: &Page) -> Result<()> {
         println!("Printing page... {}", line);
 
         if line != SEPARATOR {
@@ -212,10 +212,9 @@ impl DgParser {
                 // a comptime script or a message section
                 ComptimeScript => todo!("comptime"),
 
-                // TODO args order is weird
                 Metadata => self.parse_metaline(line, &mut page)?,
-                Message => self.parse_message(&mut pagebuf, line),
-                PostLine => self.parse_postline(&mut pagebuf, line, &page)?,
+                Message => self.parse_message(line, &mut pagebuf),
+                PostLine => self.parse_postline(line, &mut pagebuf, &page)?,
             }
         }
 
