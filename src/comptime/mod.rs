@@ -1,3 +1,10 @@
+//!
+//! Compile-time scripting, basically macros but
+//! will have some more features.
+//!
+//! (yes the name was inspired by Zig, but it's
+//! nowhere near as powerful, just means "compile-time" :P)
+//!
 use thiserror::Error;
 
 #[derive(Error, Debug)]
