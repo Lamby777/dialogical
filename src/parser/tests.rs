@@ -18,7 +18,7 @@ fn meta_double(name: &str) -> PageMetadata {
     use Metadata::Permanent;
 
     PageMetadata {
-        speaker: Permanent(Speaker::Name(name.to_owned())),
+        speaker: Permanent(Speaker::Named(name.to_owned())),
         vox: Permanent(name.to_owned()),
     }
 }
@@ -168,7 +168,7 @@ fn parse_one_ix_many_pages() {
             },
             Page {
                 metadata: PageMetadata {
-                    speaker: Metadata::Permanent(Speaker::Name("Gamer".to_owned())),
+                    speaker: Metadata::Permanent(Speaker::Named("Gamer".to_owned())),
                     vox: Metadata::NoChange,
                 },
                 content: "Words go brrr".to_owned(),

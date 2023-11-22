@@ -104,7 +104,7 @@ impl DgParser {
 
         match key {
             "NAME" => {
-                let name = Speaker::Name(val.to_owned());
+                let name = Speaker::Named(val.to_owned());
                 self.page.metadata.speaker = Metadata::new(name, pageonly)
             }
 

@@ -80,7 +80,7 @@ impl Page {
 #[derive(Clone, Debug, Default, PartialEq)]
 pub enum Speaker {
     /// "Character's Name"
-    Name(String),
+    Named(String),
 
     /// ""
     #[default]
