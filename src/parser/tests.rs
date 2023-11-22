@@ -1,5 +1,8 @@
 use super::*;
 
+use Metadata::*;
+use Speaker::*;
+
 macro_rules! dummy_file {
     ($name:expr) => {
         concat!("../../dummy_data/", $name, ".dg")
@@ -15,10 +18,8 @@ macro_rules! include_dummy {
 /// shorthand for permanent change of speaker and vox with same string
 /// good for writing quick unit tests
 fn meta_double(name: &str) -> PageMetadata {
-    use Metadata::Permanent;
-
     PageMetadata {
-        speaker: Permanent(Speaker::Named(name.to_owned())),
+        speaker: Permanent(Named(name.to_owned())),
         vox: Permanent(name.to_owned()),
     }
 }
@@ -109,8 +110,8 @@ fn parse_pageonly() {
             },
             Page {
                 metadata: PageMetadata {
-                    speaker: Metadata::NoChange,
-                    vox: Metadata::PageOnly("Ethan".to_owned()),
+                    speaker: NoChange,
+                    vox: PageOnly("Ethan".to_owned()),
                 },
 
                 content: "Nothing much...".to_owned(),
@@ -168,16 +169,13 @@ fn parse_one_ix_many_pages() {
             },
             Page {
                 metadata: PageMetadata {
-                    speaker: Metadata::Permanent(Speaker::Named("Gamer".to_owned())),
-                    vox: Metadata::NoChange,
+                    speaker: Permanent(Named("Gamer".to_owned())),
+                    vox: NoChange,
                 },
                 content: "Words go brrr".to_owned(),
             },
             Page {
-                metadata: PageMetadata {
-                    speaker: Metadata::NoChange,
-                    vox: Metadata::NoChange,
-                },
+                metadata: PageMetadata::nochange(),
                 content: "When the imposter is sus".to_owned(),
             },
             Page {
