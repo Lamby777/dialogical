@@ -7,8 +7,8 @@
 //!
 use thiserror::Error;
 
-#[derive(Error, Debug)]
-enum ScriptError {
+#[derive(Error, Debug, PartialEq)]
+pub enum ScriptError {
     #[error("Panic for whatever dumb reason")]
     TestPanic,
 }
@@ -23,7 +23,7 @@ enum ComptimeState {
     Autolink,
 }
 
-struct Script {
+pub struct Script {
     content: String,
     state: ComptimeState,
 }
@@ -38,20 +38,23 @@ impl From<&str> for Script {
 }
 
 impl Script {
-    fn execute(&self, out: &mut Vec<String>) -> Result<()> {
+    pub fn execute(&self, out: &mut Vec<String>) -> Result<()> {
         let lines = self.content.lines();
 
         for line in lines {
-            if line.trim().is_empty() {
-                continue;
-            }
-
             // split into key and value, but the value is optional
-            let (key, val) = line.split_once(' ').unwrap_or((line, ""));
+            let mut split = line.split_whitespace();
+            let Some(key) = split.next() else {
+                continue;
+            };
+
+            dbg!(&key);
+            println!("{}", key.is_empty());
 
             match key {
                 "Echo" => {
-                    out.push(val.to_owned());
+                    let rest = split.collect::<Vec<_>>().join(" ");
+                    out.push(rest.to_owned());
                 }
 
                 "###" => return Ok(()),

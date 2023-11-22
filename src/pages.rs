@@ -4,6 +4,8 @@
 
 use thiserror::Error;
 
+use crate::comptime::ScriptError;
+
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
 pub enum ParseState {
@@ -39,6 +41,15 @@ pub enum ParseError {
 
     #[error("No interaction to push")]
     PushEmpty,
+
+    #[error("Failed while running comptime script")]
+    Panic(ScriptError),
+}
+
+impl From<ScriptError> for ParseError {
+    fn from(value: ScriptError) -> Self {
+        Self::Panic(value)
+    }
 }
 
 #[derive(Debug, PartialEq)]

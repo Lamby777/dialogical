@@ -6,7 +6,7 @@ const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
 // TODO don't wildcard import
-use crate::pages::*;
+use crate::{comptime::Script, pages::*};
 
 #[derive(Default)]
 pub struct DgParser {
@@ -36,6 +36,16 @@ impl DgParser {
             pages: vec![],
         });
 
+        Ok(())
+    }
+
+    fn parse_comptime(&mut self, line: &str) -> Result<()> {
+        // if parsing a comptime script, execute it
+        // and add the result to the page buffer
+        let script = Script::from(line);
+        let mut out = vec![];
+        script.execute(&mut out)?;
+        self.pagebuf.extend(out);
         Ok(())
     }
 
@@ -166,7 +176,7 @@ impl DgParser {
             (match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section
-                ComptimeScript => todo!("comptime"),
+                ComptimeScript => Self::parse_comptime,
 
                 Metadata => Self::parse_metaline,
                 Message => Self::parse_message,
