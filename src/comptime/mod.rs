@@ -7,6 +7,8 @@
 //!
 use thiserror::Error;
 
+const COMMENT_PREFIX: &str = "//";
+
 #[derive(Error, Debug, PartialEq)]
 pub enum ScriptError {
     #[error("Panic for whatever dumb reason")]
@@ -42,6 +44,10 @@ impl Script {
         let lines = self.content.lines();
 
         for line in lines {
+            if line.starts_with(COMMENT_PREFIX) {
+                continue;
+            }
+
             // split into key and value, but the value is optional
             let mut split = line.split_whitespace();
             let Some(key) = split.next() else {

@@ -40,22 +40,21 @@ impl DgParser {
     }
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
-        // if parsing a comptime script, execute it
-        // and add the result to the page buffer
-        if line == "###" {
-            self.state = match &self.state {
-                ParseState::ComptimeScript(state) => *state.clone(),
-                _ => unreachable!(),
-            };
-
+        // TODO don't send entire line to script
+        if line != "###" {
+            let script = Script::from(line);
+            let mut out = vec![];
+            script.execute(&mut out)?;
+            self.pagebuf.extend(out);
             return Ok(());
         }
 
-        let script = Script::from(line);
-        let mut out = vec![];
-        script.execute(&mut out)?;
-        self.pagebuf.extend(out);
-        Ok(())
+        self.state = match &self.state {
+            ParseState::ComptimeScript(state) => *state.clone(),
+            _ => unreachable!(),
+        };
+
+        return Ok(());
     }
 
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
