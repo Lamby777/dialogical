@@ -57,7 +57,7 @@ impl Script {
                     out.push(rest.to_owned());
                 }
 
-                "###" => return Ok(()),
+                "Quit" => return Ok(()),
 
                 _ => {
                     return Err(ScriptError::TestPanic);
@@ -82,12 +82,12 @@ mod tests {
     }
 
     #[test]
-    fn block_end() {
+    fn quit_cmd() {
         let (res, out) = comptime!(
             r#"
         Echo I just wanted to say...
-        ###
-        I love you.
+        Quit
+        Echo I love you.
         "#
         );
 
