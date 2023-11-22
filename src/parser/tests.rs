@@ -153,7 +153,6 @@ fn parse_small_interaction() {
 }
 
 #[test]
-#[ignore]
 fn parse_one_ix_many_pages() {
     let data = include_dummy!("one_ix_many_pages");
 
@@ -168,7 +167,10 @@ fn parse_one_ix_many_pages() {
                 content: "When the words are sus".to_owned(),
             },
             Page {
-                metadata: meta_double("Gamer"),
+                metadata: PageMetadata {
+                    speaker: Metadata::Permanent(Speaker::Name("Gamer".to_owned())),
+                    vox: Metadata::NoChange,
+                },
                 content: "Words go brrr".to_owned(),
             },
             Page {
