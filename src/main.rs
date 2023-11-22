@@ -19,10 +19,15 @@ mod parser;
 #[command(author, version, about)]
 /// P/E/T/S Dialogue Compiler
 struct Args {
+    /// The output file, or stdout if not specified
     #[arg(short, long)]
     output: String,
 
-    // if `None`, read stdin
+    /// Whether or not to silence script output
+    #[arg(short, long)]
+    silent: bool,
+
+    /// The input file, or stdin if not specified
     file: Option<String>,
 }
 
