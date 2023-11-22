@@ -5,19 +5,22 @@
 //! (yes the name was inspired by Zig, but it's
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
-use std::{cell::RefCell, rc::Rc};
 
+use std::{cell::RefCell, rc::Rc};
 use thiserror::Error;
 
+mod autolink;
+use autolink::Autolink;
+
 const COMMENT_PREFIX: &str = "//";
+
+type Result<T> = std::result::Result<T, ScriptError>;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ScriptError {
     #[error("Panic for whatever dumb reason")]
     TestPanic,
 }
-
-type Result<T> = std::result::Result<T, ScriptError>;
 
 #[derive(Default)]
 enum ComptimeState {
@@ -38,27 +41,6 @@ impl From<&str> for Script {
         Self {
             content: content.to_owned(),
             state: Rc::new(RefCell::new(ComptimeState::default())),
-        }
-    }
-}
-
-struct AutolinkKVPair(String, String);
-
-struct Autolink {
-    from: AutolinkKVPair,
-    linked: Vec<AutolinkKVPair>,
-}
-
-impl Autolink {
-    pub fn new(property: &str, target: &str) -> Self {
-        let pair = AutolinkKVPair(property.to_owned(), target.to_owned());
-        Self::from_pair(pair)
-    }
-
-    pub fn from_pair(from: AutolinkKVPair) -> Self {
-        Self {
-            from,
-            linked: vec![],
         }
     }
 }
