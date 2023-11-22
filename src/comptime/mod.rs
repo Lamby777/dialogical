@@ -26,7 +26,7 @@ pub enum ScriptError {
     InvalidLink,
 }
 
-#[derive(Default)]
+#[derive(Clone, Default)]
 enum ComptimeState {
     #[default]
     Normal,
@@ -37,14 +37,14 @@ enum ComptimeState {
 
 pub struct Script {
     content: String,
-    state: Rc<RefCell<ComptimeState>>,
+    state: RefCell<ComptimeState>,
 }
 
 impl From<&str> for Script {
     fn from(content: &str) -> Self {
         Self {
             content: content.to_owned(),
-            state: Rc::new(RefCell::new(ComptimeState::default())),
+            state: RefCell::new(ComptimeState::default()),
         }
     }
 }
@@ -76,6 +76,7 @@ impl Script {
 
                 let link = Link::new(link_key, &link_target);
 
+                println!("Gaming: {:?}", link);
                 self.state.replace(ComptimeState::Link(link));
             }
 
@@ -89,19 +90,33 @@ impl Script {
         Ok(false)
     }
 
-    fn execute_link(&self, line: &str, _out: &mut Vec<String>) -> Result<()> {
+    fn execute_link(
+        &self,
+        line: &str,
+        _out: &mut Vec<String>,
+        links: &mut Vec<Link>,
+    ) -> Result<()> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(());
+        }
+
+        // TODO push to links
+
+        if line.is_empty() {
+            self.state.replace(ComptimeState::Normal);
         }
 
         Ok(())
     }
 
-    pub fn execute(&mut self, out: &mut Vec<String>, _links: &mut Vec<Link>) -> Result<()> {
+    pub fn execute(&mut self, out: &mut Vec<String>, links: &mut Vec<Link>) -> Result<()> {
         let lines = self.content.lines();
 
         for line in lines {
-            match *self.state.borrow() {
+            let state = self.state.clone();
+            let state = state.borrow();
+
+            match *state {
                 ComptimeState::Normal => {
                     let should_quit = self.execute_normal(line, out)?;
                     if should_quit {
@@ -109,7 +124,7 @@ impl Script {
                     }
                 }
 
-                ComptimeState::Link(_) => self.execute_link(line, out)?,
+                ComptimeState::Link(_) => self.execute_link(line, out, links)?,
             }
         }
 

@@ -1,5 +1,8 @@
+#[derive(Clone, Debug)]
 pub struct LinkKVPair(String, String);
 
+/// One section of link commands...
+#[derive(Clone, Debug)]
 pub struct Link {
     from: LinkKVPair,
     linked: Vec<LinkKVPair>,
