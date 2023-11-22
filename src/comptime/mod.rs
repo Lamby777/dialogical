@@ -24,7 +24,8 @@ enum ComptimeState {
     #[default]
     Normal,
 
-    Autolink,
+    // the result is stored in the tuple
+    Autolink(Autolink),
 }
 
 pub struct Script {
@@ -41,10 +42,25 @@ impl From<&str> for Script {
     }
 }
 
-struct Autolinker {
-    key: String,
-    value: String,
-    linked: Vec<String>,
+struct AutolinkKVPair(String, String);
+
+struct Autolink {
+    from: AutolinkKVPair,
+    linked: Vec<AutolinkKVPair>,
+}
+
+impl Autolink {
+    pub fn new(property: &str, target: &str) -> Self {
+        let pair = AutolinkKVPair(property.to_owned(), target.to_owned());
+        Self::from_pair(pair)
+    }
+
+    pub fn from_pair(from: AutolinkKVPair) -> Self {
+        Self {
+            from,
+            linked: vec![],
+        }
+    }
 }
 
 impl Script {
@@ -67,7 +83,13 @@ impl Script {
             }
 
             "Autolink" => {
-                self.state.replace(ComptimeState::Autolink);
+                let link_key = split.next();
+                let link_target = split.collect::<Vec<_>>().join(" ");
+
+                // TODO no panic
+                let link = Autolink::new(link_key.unwrap(), &link_target);
+
+                self.state.replace(ComptimeState::Autolink(link));
             }
 
             "Quit" => return Ok(true),
@@ -78,6 +100,14 @@ impl Script {
         };
 
         Ok(false)
+    }
+
+    fn execute_autolink(&self, line: &str, _out: &mut Vec<String>) -> Result<()> {
+        if line.starts_with(COMMENT_PREFIX) {
+            return Ok(());
+        }
+
+        Ok(())
     }
 
     pub fn execute(&mut self, out: &mut Vec<String>) -> Result<()> {
@@ -91,7 +121,8 @@ impl Script {
                         return Ok(());
                     }
                 }
-                ComptimeState::Autolink => todo!(),
+
+                ComptimeState::Autolink(_) => self.execute_autolink(line, out)?,
             }
         }
 

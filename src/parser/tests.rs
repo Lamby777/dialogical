@@ -25,6 +25,30 @@ fn meta_double(name: &str) -> PageMetadata {
 }
 
 #[test]
+fn autolink_name_to_vox() {
+    let data = include_dummy!("autolink");
+
+    let mut parser = DgParser::default();
+    let parsed = parser.parse_all(data).unwrap();
+
+    let expected = Interaction {
+        id: "Test1".to_string(),
+        pages: vec![
+            Page {
+                metadata: meta_double("Siva"),
+                content: "First page".to_owned(),
+            },
+            Page {
+                metadata: meta_double("Terra"),
+                content: "Second page\nWith more words".to_owned(),
+            },
+        ],
+    };
+
+    assert_eq!(parsed, vec![expected]);
+}
+
+#[test]
 fn parse_filter_empties() {
     let data = include_dummy!("empties");
 
