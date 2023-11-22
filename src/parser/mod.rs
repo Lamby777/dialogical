@@ -43,23 +43,24 @@ impl DgParser {
     }
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
-        // TODO don't send entire line to script
-        if line != COMPTIME_BORDER {
+        // if current line is the closing `---`
+        if line == SEPARATOR && self.script.last() == Some(&COMPTIME_BORDER.to_owned()) {
+            self.script.pop();
+
+            let mut out = vec![];
+            let script_content = self.script.join("\n");
+            let script = Script::from(&script_content[..]);
+            script.execute(&mut out)?;
+
+            self.state = match &self.state {
+                ParseState::ComptimeScript(state) => *state.clone(),
+                _ => unreachable!(),
+            };
+        } else {
             self.script.push(line.to_owned());
-            return Ok(());
         }
 
-        let mut out = vec![];
-        let script_content = self.script.join("\n");
-        let script = Script::from(&script_content[..]);
-        script.execute(&mut out)?;
-
-        self.state = match &self.state {
-            ParseState::ComptimeScript(state) => *state.clone(),
-            _ => unreachable!(),
-        };
-
-        return Ok(());
+        Ok(())
     }
 
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
