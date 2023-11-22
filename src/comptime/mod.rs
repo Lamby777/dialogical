@@ -5,6 +5,8 @@
 //! (yes the name was inspired by Zig, but it's
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
+use std::{cell::RefCell, rc::Rc};
+
 use thiserror::Error;
 
 const COMMENT_PREFIX: &str = "//";
@@ -27,47 +29,63 @@ enum ComptimeState {
 
 pub struct Script {
     content: String,
-    state: ComptimeState,
+    state: Rc<RefCell<ComptimeState>>,
 }
 
 impl From<&str> for Script {
     fn from(content: &str) -> Self {
         Self {
             content: content.to_owned(),
-            state: ComptimeState::default(),
+            state: Rc::new(RefCell::new(ComptimeState::default())),
         }
     }
 }
 
+struct Autolinker {
+    key: String,
+    value: String,
+    linked: Vec<String>,
+}
+
 impl Script {
-    pub fn execute(&self, out: &mut Vec<String>) -> Result<()> {
+    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<()> {
+        if line.starts_with(COMMENT_PREFIX) {
+            return Ok(());
+        }
+
+        // split into key and value, but the value is optional
+        let mut split = line.split_whitespace();
+        let Some(key) = split.next() else {
+            return Ok(());
+        };
+
+        match key {
+            "Echo" => {
+                let rest = split.collect::<Vec<_>>().join(" ");
+                out.push(rest.to_owned());
+            }
+
+            "Autolink" => {
+                self.state.replace(ComptimeState::Autolink);
+            }
+
+            "Quit" => return Ok(()),
+
+            _ => {
+                return Err(ScriptError::TestPanic);
+            }
+        };
+
+        Ok(())
+    }
+
+    pub fn execute(&mut self, out: &mut Vec<String>) -> Result<()> {
         let lines = self.content.lines();
 
         for line in lines {
-            if line.starts_with(COMMENT_PREFIX) {
-                continue;
-            }
-
-            // split into key and value, but the value is optional
-            let mut split = line.split_whitespace();
-            let Some(key) = split.next() else {
-                continue;
-            };
-
-            dbg!(&key);
-            println!("{}", key.is_empty());
-
-            match key {
-                "Echo" => {
-                    let rest = split.collect::<Vec<_>>().join(" ");
-                    out.push(rest.to_owned());
-                }
-
-                "Quit" => return Ok(()),
-
-                _ => {
-                    return Err(ScriptError::TestPanic);
-                }
+            match *self.state.borrow() {
+                ComptimeState::Normal => self.execute_normal(line, out)?,
+                ComptimeState::Autolink => todo!(),
             }
         }
 
