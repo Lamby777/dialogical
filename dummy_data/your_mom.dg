@@ -35,10 +35,10 @@ there was a better way to combine these 2...
 // There is! This is a comptime block which can be used
 // for metaprogramming stuff! For example...
 
-Autolink NAME Mira
+Link NAME Mira
 VOX Mira
 
-// ^^^ empty line marks end of the Autolink command
+// ^^^ empty line marks end of the Link command
 // And now, any time you use NAME Mira, it will
 // default to her voice as well!
 

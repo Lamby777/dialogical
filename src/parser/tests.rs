@@ -25,8 +25,8 @@ fn meta_double(name: &str) -> PageMetadata {
 }
 
 #[test]
-fn autolink_name_to_vox() {
-    let data = include_dummy!("autolink");
+fn link_name_to_vox() {
+    let data = include_dummy!("link");
 
     let mut parser = DgParser::default();
     let parsed = parser.parse_all(data).unwrap();

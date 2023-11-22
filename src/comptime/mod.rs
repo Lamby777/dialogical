@@ -9,8 +9,8 @@
 use std::{cell::RefCell, rc::Rc};
 use thiserror::Error;
 
-mod autolink;
-use autolink::Autolink;
+mod link;
+use link::Link;
 
 const COMMENT_PREFIX: &str = "//";
 
@@ -21,8 +21,8 @@ pub enum ScriptError {
     #[error("No such command")]
     NoSuchCommand,
 
-    #[error("Incorrect usage of autolink")]
-    InvalidAutolink,
+    #[error("Incorrect usage of Link directive")]
+    InvalidLink,
 }
 
 #[derive(Default)]
@@ -31,7 +31,7 @@ enum ComptimeState {
     Normal,
 
     // the result is stored in the tuple
-    Autolink(Autolink),
+    Link(Link),
 }
 
 pub struct Script {
@@ -67,15 +67,15 @@ impl Script {
                 out.push(rest.to_owned());
             }
 
-            "Autolink" => {
-                let link_key = split.next().ok_or(ScriptError::InvalidAutolink)?;
+            "Link" => {
+                let link_key = split.next().ok_or(ScriptError::InvalidLink)?;
                 let link_target = split.collect::<Vec<_>>().join(" ");
 
                 // TODO what happens if link_target is empty?
 
-                let link = Autolink::new(link_key, &link_target);
+                let link = Link::new(link_key, &link_target);
 
-                self.state.replace(ComptimeState::Autolink(link));
+                self.state.replace(ComptimeState::Link(link));
             }
 
             "Quit" => return Ok(true),
@@ -88,7 +88,7 @@ impl Script {
         Ok(false)
     }
 
-    fn execute_autolink(&self, line: &str, _out: &mut Vec<String>) -> Result<()> {
+    fn execute_link(&self, line: &str, _out: &mut Vec<String>) -> Result<()> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(());
         }
@@ -108,7 +108,7 @@ impl Script {
                     }
                 }
 
-                ComptimeState::Autolink(_) => self.execute_autolink(line, out)?,
+                ComptimeState::Link(_) => self.execute_link(line, out)?,
             }
         }
 
