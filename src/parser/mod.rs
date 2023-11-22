@@ -21,6 +21,8 @@ pub struct DgParser {
     interaction: Option<Interaction>,
     page: Page,
     pagebuf: Vec<String>,
+
+    script: Vec<String>,
 }
 
 impl DgParser {
@@ -43,12 +45,14 @@ impl DgParser {
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
         // TODO don't send entire line to script
         if line != COMPTIME_BORDER {
-            let script = Script::from(line);
-            let mut out = vec![];
-            script.execute(&mut out)?;
-            self.pagebuf.extend(out);
+            self.script.push(line.to_owned());
             return Ok(());
         }
+
+        let mut out = vec![];
+        let script_content = self.script.join("\n");
+        let script = Script::from(&script_content[..]);
+        script.execute(&mut out)?;
 
         self.state = match &self.state {
             ParseState::ComptimeScript(state) => *state.clone(),
