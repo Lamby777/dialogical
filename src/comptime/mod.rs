@@ -48,15 +48,16 @@ struct Autolinker {
 }
 
 impl Script {
-    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<()> {
+    /// result is whether or not to quit early
+    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<bool> {
         if line.starts_with(COMMENT_PREFIX) {
-            return Ok(());
+            return Ok(false);
         }
 
         // split into key and value, but the value is optional
         let mut split = line.split_whitespace();
         let Some(key) = split.next() else {
-            return Ok(());
+            return Ok(false);
         };
 
         match key {
@@ -69,14 +70,14 @@ impl Script {
                 self.state.replace(ComptimeState::Autolink);
             }
 
-            "Quit" => return Ok(()),
+            "Quit" => return Ok(true),
 
             _ => {
                 return Err(ScriptError::TestPanic);
             }
         };
 
-        Ok(())
+        Ok(false)
     }
 
     pub fn execute(&mut self, out: &mut Vec<String>) -> Result<()> {
@@ -84,7 +85,12 @@ impl Script {
 
         for line in lines {
             match *self.state.borrow() {
-                ComptimeState::Normal => self.execute_normal(line, out)?,
+                ComptimeState::Normal => {
+                    let should_quit = self.execute_normal(line, out)?;
+                    if should_quit {
+                        return Ok(());
+                    }
+                }
                 ComptimeState::Autolink => todo!(),
             }
         }
