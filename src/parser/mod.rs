@@ -2,6 +2,7 @@
 //! Stuff for parsing dg files
 //!
 
+const COMPTIME_BORDER: &str = "###";
 const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
@@ -41,7 +42,7 @@ impl DgParser {
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
         // TODO don't send entire line to script
-        if line != "###" {
+        if line != COMPTIME_BORDER {
             let script = Script::from(line);
             let mut out = vec![];
             script.execute(&mut out)?;
@@ -70,7 +71,7 @@ impl DgParser {
         }
 
         // enter comptime scripting block
-        if line == "###" {
+        if line == COMPTIME_BORDER {
             // comptime script inside a comptime script is 100% a parsing error
             debug_assert!(!matches!(self.state, ParseState::ComptimeScript(_)));
 
