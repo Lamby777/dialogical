@@ -7,10 +7,8 @@ const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
 // TODO don't wildcard import
-use crate::{
-    comptime::{Link, Script},
-    pages::*,
-};
+use crate::comptime::{Link, Script};
+use crate::pages::*;
 
 #[derive(Default)]
 pub struct DgParser {

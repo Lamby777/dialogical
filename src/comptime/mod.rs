@@ -6,7 +6,8 @@
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
 
-use std::{cell::RefCell, rc::Rc};
+use std::cell::RefCell;
+use std::rc::Rc;
 use thiserror::Error;
 
 mod link;
