@@ -42,6 +42,15 @@ impl DgParser {
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
         // if parsing a comptime script, execute it
         // and add the result to the page buffer
+        if line == "###" {
+            self.state = match &self.state {
+                ParseState::ComptimeScript(state) => *state.clone(),
+                _ => unreachable!(),
+            };
+
+            return Ok(());
+        }
+
         let script = Script::from(line);
         let mut out = vec![];
         script.execute(&mut out)?;
@@ -63,7 +72,10 @@ impl DgParser {
 
         // enter comptime scripting block
         if line == "###" {
-            self.state = ParseState::ComptimeScript;
+            // comptime script inside a comptime script is 100% a parsing error
+            debug_assert!(!matches!(self.state, ParseState::ComptimeScript(_)));
+
+            self.state = ParseState::ComptimeScript(Box::new(self.state.clone()));
             return Ok(());
         }
 
@@ -176,7 +188,7 @@ impl DgParser {
             (match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section
-                ComptimeScript => Self::parse_comptime,
+                ComptimeScript(_) => Self::parse_comptime,
 
                 Metadata => Self::parse_metaline,
                 Message => Self::parse_message,

@@ -10,7 +10,10 @@ use crate::comptime::ScriptError;
 #[derive(Clone, Debug, Default)]
 pub enum ParseState {
     /// Compile-time script block
-    ComptimeScript,
+    ///
+    /// Also carries the previous parser state so it
+    /// can return to it once the script is done
+    ComptimeScript(Box<ParseState>),
 
     /// Directives written before a message
     /// Separated from the actual message by an empty line
