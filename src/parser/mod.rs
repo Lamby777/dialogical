@@ -27,11 +27,8 @@ pub struct DgParser {
 
 impl DgParser {
     fn set_ix_id(&mut self, id: &str) -> Result<()> {
-        if let Some(ix) = &self.interaction {
-            println!("End of current interaction {}", ix.id);
+        if self.interaction.is_some() {
             self.push_ix()?;
-        } else {
-            println!("Not some");
         }
 
         self.interaction = Some(Interaction {
