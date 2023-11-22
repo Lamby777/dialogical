@@ -3,14 +3,15 @@ use super::*;
 macro_rules! comptime {
     ($code:expr) => {{
         let mut out = vec![];
-        let res = Script::from($code).execute(&mut out);
-        (res, out)
+        let mut links = vec![];
+        let res = Script::from($code).execute(&mut out, &mut links);
+        (res, out, links)
     }};
 }
 
 #[test]
 fn quit_cmd() {
-    let (res, out) = comptime!(
+    let (res, out, _links) = comptime!(
         r#"
         Echo I just wanted to say...
         Quit
@@ -24,7 +25,7 @@ fn quit_cmd() {
 
 #[test]
 fn blanked_out() {
-    let (res, out) = comptime!(
+    let (res, out, _links) = comptime!(
         r#"
 
 
@@ -36,7 +37,7 @@ fn blanked_out() {
 
 #[test]
 fn hello_world() {
-    let (res, out) = comptime!(r#"Echo Hello, world!"#);
+    let (res, out, _links) = comptime!(r#"Echo Hello, world!"#);
     assert!(res.is_ok());
     assert_eq!(out, vec!["Hello, world!".to_string()]);
 }

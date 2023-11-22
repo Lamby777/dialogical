@@ -10,7 +10,7 @@ use std::{cell::RefCell, rc::Rc};
 use thiserror::Error;
 
 mod link;
-use link::Link;
+pub use link::Link;
 
 const COMMENT_PREFIX: &str = "//";
 
@@ -96,7 +96,7 @@ impl Script {
         Ok(())
     }
 
-    pub fn execute(&mut self, out: &mut Vec<String>) -> Result<()> {
+    pub fn execute(&mut self, out: &mut Vec<String>, _links: &mut Vec<Link>) -> Result<()> {
         let lines = self.content.lines();
 
         for line in lines {

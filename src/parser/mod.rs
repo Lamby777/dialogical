@@ -7,7 +7,10 @@ const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
 // TODO don't wildcard import
-use crate::{comptime::Script, pages::*};
+use crate::{
+    comptime::{Link, Script},
+    pages::*,
+};
 
 #[derive(Default)]
 pub struct DgParser {
@@ -21,8 +24,8 @@ pub struct DgParser {
     interaction: Option<Interaction>,
     page: Page,
     pagebuf: Vec<String>,
-
     script: Vec<String>,
+    links: Vec<Link>,
 }
 
 impl DgParser {
@@ -47,7 +50,7 @@ impl DgParser {
             let mut out = vec![];
             let script_content = self.script.join("\n");
             let mut script = Script::from(&script_content[..]);
-            script.execute(&mut out)?;
+            script.execute(&mut out, &mut self.links)?;
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),
