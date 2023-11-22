@@ -18,8 +18,11 @@ type Result<T> = std::result::Result<T, ScriptError>;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ScriptError {
-    #[error("Panic for whatever dumb reason")]
-    TestPanic,
+    #[error("No such command")]
+    NoSuchCommand,
+
+    #[error("Incorrect usage of autolink")]
+    InvalidAutolink,
 }
 
 #[derive(Default)]
@@ -65,11 +68,12 @@ impl Script {
             }
 
             "Autolink" => {
-                let link_key = split.next();
+                let link_key = split.next().ok_or(ScriptError::InvalidAutolink)?;
                 let link_target = split.collect::<Vec<_>>().join(" ");
 
-                // TODO no panic
-                let link = Autolink::new(link_key.unwrap(), &link_target);
+                // TODO what happens if link_target is empty?
+
+                let link = Autolink::new(link_key, &link_target);
 
                 self.state.replace(ComptimeState::Autolink(link));
             }
@@ -77,7 +81,7 @@ impl Script {
             "Quit" => return Ok(true),
 
             _ => {
-                return Err(ScriptError::TestPanic);
+                return Err(ScriptError::NoSuchCommand);
             }
         };
 
