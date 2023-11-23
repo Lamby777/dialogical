@@ -68,12 +68,12 @@ pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 pub struct Args {
     /// The output file, or stdout if not specified
     #[arg(short, long)]
-    pub output: Option<String>,
+    output: Option<String>,
 
     /// The input file, or stdin if not specified
-    pub file: Option<String>,
+    file: Option<String>,
 
     /// Silences progress "info" stderr messages.
     #[arg(short, long)]
-    pub silent: bool,
+    silent: bool,
 }
