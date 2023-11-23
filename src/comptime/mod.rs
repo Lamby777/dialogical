@@ -90,6 +90,7 @@ impl Script {
         &self,
         line: &str,
         _out: &mut Vec<String>,
+        link: &mut Link,
         links: &mut Vec<Link>,
     ) -> Result<()> {
         if line.starts_with(COMMENT_PREFIX) {
@@ -97,29 +98,15 @@ impl Script {
         }
 
         if line.is_empty() {
-            let link = self.state.replace(ComptimeState::Normal);
-            if let ComptimeState::Link(link) = link {
-                links.push(link);
-            } else {
-                unreachable!()
-            }
+            links.push(link.clone());
+            self.state.replace(ComptimeState::Normal);
 
             return Ok(());
         }
 
         let mut split = line.split_whitespace();
         let pair = LinkKVPair::from_words(&mut split)?;
-
-        // Add the link
-        //
-        // NOTE: THIS is how you mutate the value inside
-        // an enum variant wrapped in a RefCell. WTF?
-        if let ComptimeState::Link(link) = &mut *self.state.borrow_mut() {
-            link.add_link(pair);
-        } else {
-            // maybe remove this branch later after testing
-            unreachable!();
-        }
+        link.add_link(pair);
 
         Ok(())
     }
@@ -128,12 +115,9 @@ impl Script {
         let lines = self.content.lines();
 
         for line in lines {
-            let state = self.state.clone();
-            let state = state.borrow();
+            println!("state: {:?}", self.state);
 
-            println!("state: {:?}", state);
-
-            match *state {
+            match &mut *self.state.borrow_mut() {
                 ComptimeState::Normal => {
                     let should_quit = self.execute_normal(line, out)?;
                     if should_quit {
@@ -141,7 +125,7 @@ impl Script {
                     }
                 }
 
-                ComptimeState::Link(_) => self.execute_link(line, out, links)?,
+                ComptimeState::Link(link) => self.execute_link(line, out, link, links)?,
             }
         }
 
