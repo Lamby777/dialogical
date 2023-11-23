@@ -10,7 +10,9 @@
 #![feature(if_let_guard)]
 
 use clap::Parser;
+
 mod comptime;
+mod consts;
 mod pages;
 mod parser;
 

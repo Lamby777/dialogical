@@ -2,9 +2,9 @@
 //! Stuff for parsing dg files
 //!
 
-const COMPTIME_BORDER: &str = "###";
-const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
+
+use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 
 use crate::comptime::{Link, Script};
 use crate::pages::{Interaction, Metadata, Page, ParseError, ParseState, Speaker};
