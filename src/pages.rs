@@ -2,6 +2,7 @@
 //! Data structures used by the parser
 //!
 
+use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
@@ -55,14 +56,14 @@ impl From<ScriptError> for ParseError {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct Interaction {
     // TODO use &'static str
     pub id: String,
     pub pages: Vec<Page>,
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Page {
     pub metadata: PageMetadata,
     pub content: String,
@@ -77,7 +78,7 @@ impl Page {
     }
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub enum Speaker {
     /// "Character's Name"
     Named(String),
@@ -91,7 +92,7 @@ pub enum Speaker {
     Unknown,
 }
 
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct PageMetadata {
     pub speaker: Metadata<Speaker>,
     pub vox: Metadata<String>,
@@ -109,7 +110,7 @@ impl PageMetadata {
 }
 
 /// Represents a metadata directive
-#[derive(Clone, Debug, Default, PartialEq)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub enum Metadata<T> {
     /// Any change is implicitly permanent
     /// Example:
