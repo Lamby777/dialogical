@@ -102,7 +102,6 @@ impl Script {
 
         if line.is_empty() {
             links.push(link.clone());
-
             return Ok(Some(ComptimeState::Normal));
         }
 
@@ -115,10 +114,10 @@ impl Script {
 
     pub fn execute(&mut self, out: &mut Vec<String>, links: &mut Vec<Link>) -> Result<()> {
         use ComptimeState::*;
-        let lines = self.content.lines();
+        let lines = self.content.lines().chain(std::iter::once(""));
 
         for line in lines {
-            println!("state: {:?}", self.state);
+            println!("state before: {:?}", self.state);
 
             let new_state = match &mut *self.state.borrow_mut() {
                 Normal => self.execute_normal(line, out)?,
