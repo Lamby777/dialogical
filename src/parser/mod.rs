@@ -161,7 +161,6 @@ impl DgParser {
 
         self.pagebuf.clear();
         self.page = Page::default();
-        println!("Printed!");
     }
 
     /// Finish parsing 1 interaction, and clear the state
@@ -176,7 +175,6 @@ impl DgParser {
     }
 
     pub fn parse_all(&mut self, data: &str) -> Result<&[Interaction]> {
-        println!("Parsing...");
         let lines = data.lines();
 
         self.pagebuf.clear();

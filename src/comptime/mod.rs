@@ -73,7 +73,6 @@ impl Script {
                 let pair = LinkKVPair::from_words(&mut split)?;
                 let link = Link::from_pair(pair);
 
-                println!("Gaming: {:?}", link);
                 self.state.replace(ComptimeState::Link(link));
             }
 
