@@ -7,11 +7,12 @@
 //!
 
 use std::cell::RefCell;
-use std::rc::Rc;
 use thiserror::Error;
 
 mod link;
 pub use link::Link;
+
+use crate::comptime::link::LinkKVPair;
 
 const COMMENT_PREFIX: &str = "//";
 
@@ -69,12 +70,9 @@ impl Script {
             }
 
             "Link" => {
-                let link_key = split.next().ok_or(ScriptError::InvalidLink)?;
-                let link_target = split.collect::<Vec<_>>().join(" ");
-
-                // TODO what happens if link_target is empty?
-
-                let link = Link::new(link_key, &link_target);
+                // TODO what happens the target part is empty?
+                let pair = LinkKVPair::from_words(&mut split)?;
+                let link = Link::from_pair(pair);
 
                 println!("Gaming: {:?}", link);
                 self.state.replace(ComptimeState::Link(link));
@@ -105,12 +103,10 @@ impl Script {
             return Ok(());
         }
 
-        // TODO abstract this "split" behavior into a function
         let mut split = line.split_whitespace();
-        let link_key = split.next().ok_or(ScriptError::InvalidLink)?;
-        let link_target = split.collect::<Vec<_>>().join(" ");
+        let pair = LinkKVPair::from_words(&mut split)?;
+        let link = Link::from_pair(pair);
 
-        let link = Link::new(link_key, &link_target);
         links.push(link);
 
         Ok(())
