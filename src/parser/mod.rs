@@ -67,6 +67,8 @@ impl DgParser {
         // have, but it would also reduce the complexity
         let line = line.trim();
 
+        // TODO break up this function (wtf like 4 billion lines)
+
         if line.is_empty() {
             self.state = ParseState::Message;
             return Ok(());
@@ -104,30 +106,40 @@ impl DgParser {
         };
 
         match key {
-            "NAME" => {
-                let name = Speaker::Named(val.to_owned());
-                self.page.metadata.speaker = Metadata::new(name, pageonly)
-            }
-
-            "VOX" => self.page.metadata.vox = Metadata::new(val.to_owned(), pageonly),
-
             "SOMEONE" => {
                 self.page.metadata.speaker = Metadata::new(Speaker::Unknown, pageonly);
+                return Ok(());
             }
 
             // message spoken by narrator...
             // how this will be interpreted is an implementation detail
             "NARRATOR" => {
                 self.page.metadata.speaker = Metadata::new(Speaker::Narrator, pageonly);
+                return Ok(());
             }
 
-            // set interaction
-            "%" if !pageonly => self.set_ix_id(val)?,
-
-            _ => {
-                return Err(ParseError::InvalidMeta(line.to_string()));
+            "%" if !pageonly => {
+                return self.set_ix_id(val);
             }
-        };
+
+            _ => {}
+        }
+
+        let keys = std::iter::once(key);
+        for key in keys {
+            match key {
+                "NAME" => {
+                    let name = Speaker::Named(val.to_owned());
+                    self.page.metadata.speaker = Metadata::new(name, pageonly)
+                }
+
+                "VOX" => self.page.metadata.vox = Metadata::new(val.to_owned(), pageonly),
+
+                _ => {
+                    return Err(ParseError::InvalidMeta(line.to_string()));
+                }
+            };
+        }
 
         Ok(())
     }
