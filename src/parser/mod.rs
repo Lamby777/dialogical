@@ -81,19 +81,23 @@ impl DgParser {
             return Ok(());
         }
 
+        /// split into first "word" and the rest
+        fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
+            full.split_once(char::is_whitespace)
+                .ok_or(ParseError::NotMeta(full.to_string()))
+                .map(|(k, v)| (k, v.trim_start()))
+        }
+
         let (key, val, pageonly) = {
             // everything after the space is the value
-            let (mut key, mut val) = line
-                .split_once(' ')
-                .ok_or(ParseError::NotMeta(line.to_string()))?;
+            let (mut key, mut val) = split_first_whitespace(line)?;
 
             // ...unless the key is PageOnly, in which case we
             // repeat the process again
             let pageonly = key == "PageOnly";
+
             if pageonly {
-                (key, val) = val
-                    .split_once(' ')
-                    .ok_or(ParseError::NotMeta(line.to_string()))?;
+                (key, val) = split_first_whitespace(val)?;
             }
 
             (key.trim(), val.trim(), pageonly)
@@ -106,6 +110,10 @@ impl DgParser {
             }
 
             "VOX" => self.page.metadata.vox = Metadata::new(val.to_owned(), pageonly),
+
+            "SOMEONE" => {
+                self.page.metadata.speaker = Metadata::new(Speaker::Unknown, pageonly);
+            }
 
             // message spoken by narrator...
             // how this will be interpreted is an implementation detail

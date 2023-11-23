@@ -119,7 +119,7 @@ impl Script {
         for line in lines {
             println!("state before: {:?}", self.state);
 
-            let new_state = match &mut *self.state.borrow_mut() {
+            let new_state = match *self.state.borrow_mut() {
                 Normal => self.execute_normal(line, out)?,
                 Link(ref mut link) => self.execute_link(line, out, link, links)?,
 
