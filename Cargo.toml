@@ -17,3 +17,6 @@ categories = ["command-line-utilities"]
 [dependencies]
 clap = { version = "4.4.8", features = ["derive"] }
 thiserror = "1.0.50"
+
+[[bin]]
+name="dg"
