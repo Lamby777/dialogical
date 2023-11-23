@@ -3,7 +3,16 @@ name = "dialogical"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+authors = ["Cherry <dieselguitar@sparklet.org>"]
+license = "GPL-3.0-only"
+
+description = "P/E/T/S 2037 Dialogue Tree Compiler"
+readme = "README.md"
+
+homepage = "https://github.com/Lamby777/dialogical"
+repository  = "https://github.com/Lamby777/dialogical"
+keywords = ["cli", "gamedev", "dialogue", "parser", "dsl"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 clap = { version = "4.4.8", features = ["derive"] }
