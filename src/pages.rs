@@ -43,8 +43,11 @@ pub enum ParseError {
     #[error("{0} is not a valid metadata directive")]
     InvalidMeta(String),
 
-    #[error("No interaction to push")]
-    PushEmpty,
+    #[error("No interaction to push the page into!")]
+    PushPageNoIX,
+
+    #[error("No interaction to push onto the parser's list!")]
+    PushEmptyIX,
 
     #[error("Failed while running comptime script")]
     Panic(ScriptError),

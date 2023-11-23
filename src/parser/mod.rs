@@ -181,24 +181,26 @@ impl DgParser {
             return Err(ParseError::AfterPostline(line.to_string()));
         }
 
-        self.push_page();
+        self.push_page()?;
 
         self.state = ParseState::Metadata;
         Ok(())
     }
 
     /// push page buffer to the pages vec, then clear the buffer
-    fn push_page(&mut self) {
+    fn push_page(&mut self) -> Result<()> {
         self.page.content = self.pagebuf.join("\n");
 
         self.interaction
             .as_mut()
-            .unwrap()
+            .ok_or(ParseError::PushPageNoIX)?
             .pages
             .push(self.page.clone());
 
         self.pagebuf.clear();
         self.page = Page::default();
+
+        Ok(())
     }
 
     /// Finish parsing 1 interaction, and clear the state
@@ -208,7 +210,7 @@ impl DgParser {
     /// prepared to finish just yet.
     fn push_ix(&mut self) -> Result<()> {
         self.interactions
-            .push(self.interaction.take().ok_or(ParseError::PushEmpty)?);
+            .push(self.interaction.take().ok_or(ParseError::PushEmptyIX)?);
         Ok(())
     }
 
