@@ -196,6 +196,8 @@ impl DgParser {
             })(self, line)?;
         }
 
+        println!("{:?}", self.links);
+
         self.push_ix()?;
         Ok(&self.interactions)
     }

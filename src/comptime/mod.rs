@@ -26,7 +26,7 @@ pub enum ScriptError {
     InvalidLink,
 }
 
-#[derive(Clone, Default)]
+#[derive(Clone, Debug, Default)]
 enum ComptimeState {
     #[default]
     Normal,
@@ -97,15 +97,29 @@ impl Script {
         }
 
         if line.is_empty() {
-            self.state.replace(ComptimeState::Normal);
+            let link = self.state.replace(ComptimeState::Normal);
+            if let ComptimeState::Link(link) = link {
+                links.push(link);
+            } else {
+                unreachable!()
+            }
+
             return Ok(());
         }
 
         let mut split = line.split_whitespace();
         let pair = LinkKVPair::from_words(&mut split)?;
-        let link = Link::from_pair(pair);
 
-        links.push(link);
+        // Add the link
+        //
+        // NOTE: THIS is how you mutate the value inside
+        // an enum variant wrapped in a RefCell. WTF?
+        if let ComptimeState::Link(link) = &mut *self.state.borrow_mut() {
+            link.add_link(pair);
+        } else {
+            // maybe remove this branch later after testing
+            unreachable!();
+        }
 
         Ok(())
     }
@@ -116,6 +130,8 @@ impl Script {
         for line in lines {
             let state = self.state.clone();
             let state = state.borrow();
+
+            println!("state: {:?}", state);
 
             match *state {
                 ComptimeState::Normal => {

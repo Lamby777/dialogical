@@ -33,4 +33,8 @@ impl Link {
             linked: vec![],
         }
     }
+
+    pub fn add_link(&mut self, pair: LinkKVPair) {
+        self.linked.push(pair);
+    }
 }
