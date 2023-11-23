@@ -75,7 +75,7 @@ struct Args {
     /// The input file, or stdin if not specified
     file: Option<String>,
 
-    /// Whether or not to silence script output
+    /// Silences progress "info" stderr messages.
     #[arg(short, long)]
     silent: bool,
 }
