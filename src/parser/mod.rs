@@ -221,8 +221,6 @@ impl DgParser {
         for line in lines {
             use ParseState::*;
 
-            println!("{:?} >> {:?}", &self.state, line);
-
             (match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section
@@ -233,8 +231,6 @@ impl DgParser {
                 PostLine => Self::parse_postline,
             })(self, line)?;
         }
-
-        println!("{:?}", self.links);
 
         self.push_ix()?;
         Ok(&self.interactions)
