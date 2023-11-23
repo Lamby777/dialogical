@@ -90,22 +90,20 @@ impl DgParser {
                 .map(|(k, v)| (k, v.trim_start()))
         }
 
-        let (key, val, pageonly) = {
+        let (kv, pageonly) = {
             // everything after the space is the value
-            let (mut key, mut val) = split_first_whitespace(line)?;
+            let kv = split_first_whitespace(line)?;
 
             // ...unless the key is PageOnly, in which case we
             // repeat the process again
-            let pageonly = key == "PageOnly";
-
-            if pageonly {
-                (key, val) = split_first_whitespace(val)?;
+            if kv.0 == "PageOnly" {
+                (split_first_whitespace(kv.1)?, true)
+            } else {
+                (kv, false)
             }
-
-            (key, val, pageonly)
         };
 
-        match key {
+        match kv.0 {
             "SOMEONE" => {
                 self.page.metadata.speaker = Metadata::new(Speaker::Unknown, pageonly);
                 return Ok(());
@@ -119,14 +117,18 @@ impl DgParser {
             }
 
             "%" if !pageonly => {
-                return self.set_ix_id(val);
+                return self.set_ix_id(kv.1);
             }
 
             _ => {}
         }
 
-        let keys = std::iter::once(key);
-        for key in keys {
+        // the pair + any pairs linked using the `Link` directive
+        let kvpairs = std::iter::once(kv); //.chain(
+                                           // self.get_links_for(key, val)?
+                                           // );
+
+        for (key, val) in kvpairs {
             match key {
                 "NAME" => {
                     let name = Speaker::Named(val.to_owned());
