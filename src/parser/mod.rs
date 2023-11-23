@@ -6,9 +6,8 @@ const COMPTIME_BORDER: &str = "###";
 const SEPARATOR: &str = "---";
 type Result<T> = std::result::Result<T, ParseError>;
 
-// TODO don't wildcard import
 use crate::comptime::{Link, Script};
-use crate::pages::*;
+use crate::pages::{Interaction, Metadata, Page, ParseError, ParseState, Speaker};
 
 #[derive(Default)]
 pub struct DgParser {
