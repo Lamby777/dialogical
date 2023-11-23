@@ -4,9 +4,8 @@
 
 type Result<T> = std::result::Result<T, ParseError>;
 
-use crate::consts::{COMPTIME_BORDER, SEPARATOR};
-
 use crate::comptime::{Link, LinkKVPair, Script};
+use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Metadata, Page, ParseError, ParseState, Speaker};
 
 #[derive(Default)]
@@ -175,7 +174,7 @@ impl DgParser {
         Ok(())
     }
 
-    // TODO: allow empty lines in message, and remove the last
+    // TODO allow empty lines in message, and remove the last
     // empty line retroactively when it encounters a separator
     fn parse_postline(&mut self, line: &str) -> Result<()> {
         if line != SEPARATOR {
@@ -189,7 +188,7 @@ impl DgParser {
     }
 
     /// push page buffer to the pages vec, then clear the buffer
-    pub fn push_page(&mut self) {
+    fn push_page(&mut self) {
         self.page.content = self.pagebuf.join("\n");
 
         self.interaction
@@ -207,7 +206,7 @@ impl DgParser {
     ///
     /// `Err` if the parser is in a state where it's not
     /// prepared to finish just yet.
-    pub fn push_ix(&mut self) -> Result<()> {
+    fn push_ix(&mut self) -> Result<()> {
         self.interactions
             .push(self.interaction.take().ok_or(ParseError::PushEmpty)?);
         Ok(())
