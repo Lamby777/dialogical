@@ -31,7 +31,10 @@ enum ComptimeState {
     #[default]
     Normal,
 
-    // the result is stored in the tuple
+    /// Exit at end of interpreter loop
+    Quit,
+
+    /// the result is stored in the tuple
     Link(Link),
 }
 
@@ -50,16 +53,16 @@ impl From<&str> for Script {
 }
 
 impl Script {
-    /// result is whether or not to quit early
-    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<bool> {
+    /// result is the new state (`None` = no change)
+    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
-            return Ok(false);
+            return Ok(None);
         }
 
         // split into key and value, but the value is optional
         let mut split = line.split_whitespace();
         let Some(key) = split.next() else {
-            return Ok(false);
+            return Ok(None);
         };
 
         match key {
@@ -73,17 +76,17 @@ impl Script {
                 let pair = LinkKVPair::from_words(&mut split)?;
                 let link = Link::from_pair(pair);
 
-                self.state.replace(ComptimeState::Link(link));
+                return Ok(Some(ComptimeState::Link(link)));
             }
 
-            "Quit" => return Ok(true),
+            "Quit" => return Ok(Some(ComptimeState::Quit)),
 
             _ => {
                 return Err(ScriptError::NoSuchCommand);
             }
         };
 
-        Ok(false)
+        Ok(None)
     }
 
     fn execute_link(
@@ -92,41 +95,49 @@ impl Script {
         _out: &mut Vec<String>,
         link: &mut Link,
         links: &mut Vec<Link>,
-    ) -> Result<()> {
+    ) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
-            return Ok(());
+            return Ok(None);
         }
 
         if line.is_empty() {
             links.push(link.clone());
-            self.state.replace(ComptimeState::Normal);
 
-            return Ok(());
+            return Ok(Some(ComptimeState::Normal));
         }
 
         let mut split = line.split_whitespace();
         let pair = LinkKVPair::from_words(&mut split)?;
         link.add_link(pair);
 
-        Ok(())
+        Ok(None)
     }
 
     pub fn execute(&mut self, out: &mut Vec<String>, links: &mut Vec<Link>) -> Result<()> {
+        use ComptimeState::*;
         let lines = self.content.lines();
 
         for line in lines {
             println!("state: {:?}", self.state);
 
-            match &mut *self.state.borrow_mut() {
-                ComptimeState::Normal => {
-                    let should_quit = self.execute_normal(line, out)?;
-                    if should_quit {
-                        return Ok(());
-                    }
+            let new_state = match &mut *self.state.borrow_mut() {
+                Normal => self.execute_normal(line, out)?,
+                Link(ref mut link) => self.execute_link(line, out, link, links)?,
+
+                Quit => unreachable!(),
+            };
+
+            match new_state {
+                Some(Quit) => {
+                    return Ok(());
                 }
 
-                ComptimeState::Link(link) => self.execute_link(line, out, link, links)?,
-            }
+                Some(state) => {
+                    self.state.replace(state);
+                }
+
+                _ => (),
+            };
         }
 
         Ok(())
