@@ -1,7 +1,9 @@
+use std::ops::Deref;
+
 use super::ScriptError;
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct LinkKVPair(String, String);
+pub struct LinkKVPair((String, String));
 
 impl LinkKVPair {
     /// consume one line of split up words
@@ -10,23 +12,22 @@ impl LinkKVPair {
         I: Iterator<Item = &'a str>,
     {
         let property = split.next().ok_or(ScriptError::InvalidLink)?.to_owned();
-        Ok(LinkKVPair(property, split.collect::<Vec<_>>().join(" ")))
+        Ok(LinkKVPair((property, split.collect::<Vec<_>>().join(" "))))
     }
 
     pub fn from_tuple(pair: (&str, &str)) -> Self {
-        Self(pair.0.to_owned(), pair.1.to_owned())
+        Self::from_slices(pair.0, pair.1)
+    }
+
+    pub fn from_slices(property: &str, target: &str) -> Self {
+        Self((property.to_owned(), target.to_owned()))
     }
 }
 
-impl From<LinkKVPair> for (String, String) {
-    fn from(pair: LinkKVPair) -> Self {
-        (pair.0, pair.1)
-    }
-}
-
-impl From<(String, String)> for LinkKVPair {
-    fn from(pair: (String, String)) -> Self {
-        Self(pair.0, pair.1)
+impl Deref for LinkKVPair {
+    type Target = (String, String);
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 
@@ -39,7 +40,7 @@ pub struct Link {
 
 impl Link {
     pub fn new(property: &str, target: &str) -> Self {
-        let pair = LinkKVPair(property.to_owned(), target.to_owned());
+        let pair = LinkKVPair::from_slices(property, target);
         Self::from_pair(pair)
     }
 
