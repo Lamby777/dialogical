@@ -1,6 +1,6 @@
 use super::ScriptError;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct LinkKVPair(String, String);
 
 impl LinkKVPair {
@@ -12,13 +12,29 @@ impl LinkKVPair {
         let property = split.next().ok_or(ScriptError::InvalidLink)?.to_owned();
         Ok(LinkKVPair(property, split.collect::<Vec<_>>().join(" ")))
     }
+
+    pub fn from_tuple(pair: (&str, &str)) -> Self {
+        Self(pair.0.to_owned(), pair.1.to_owned())
+    }
+}
+
+impl From<LinkKVPair> for (String, String) {
+    fn from(pair: LinkKVPair) -> Self {
+        (pair.0, pair.1)
+    }
+}
+
+impl From<(String, String)> for LinkKVPair {
+    fn from(pair: (String, String)) -> Self {
+        Self(pair.0, pair.1)
+    }
 }
 
 /// One section of link commands...
 #[derive(Clone, Debug)]
 pub struct Link {
-    from: LinkKVPair,
-    linked: Vec<LinkKVPair>,
+    pub from: LinkKVPair,
+    pub linked: Vec<LinkKVPair>,
 }
 
 impl Link {

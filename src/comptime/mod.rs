@@ -9,11 +9,10 @@
 use std::cell::RefCell;
 use thiserror::Error;
 
-use crate::comptime::link::LinkKVPair;
 use crate::consts::COMMENT_PREFIX;
 
 mod link;
-pub use link::Link;
+pub use link::{Link, LinkKVPair};
 
 type Result<T> = std::result::Result<T, ScriptError>;
 

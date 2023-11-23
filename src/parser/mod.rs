@@ -6,7 +6,7 @@ type Result<T> = std::result::Result<T, ParseError>;
 
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 
-use crate::comptime::{Link, Script};
+use crate::comptime::{Link, LinkKVPair, Script};
 use crate::pages::{Interaction, Metadata, Page, ParseError, ParseState, Speaker};
 
 #[derive(Default)]
@@ -37,6 +37,17 @@ impl DgParser {
         });
 
         Ok(())
+    }
+
+    /// Takes a KV pair and returns all the links that
+    /// target that specific pair.
+    fn get_links_for(&mut self, kv: (&str, &str)) -> Vec<(&str, &str)> {
+        let kv = LinkKVPair::from_tuple(kv);
+
+        self.links
+            .iter()
+            .filter_map(|v| if v.from == kv { Some(v) } else { None })
+            .collect()
     }
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
@@ -124,9 +135,8 @@ impl DgParser {
         }
 
         // the pair + any pairs linked using the `Link` directive
-        let kvpairs = std::iter::once(kv); //.chain(
-                                           // self.get_links_for(key, val)?
-                                           // );
+        let links = self.get_links_for(kv);
+        let kvpairs = std::iter::once(kv).chain(links.iter());
 
         for (key, val) in kvpairs {
             match key {
