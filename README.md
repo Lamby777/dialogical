@@ -16,11 +16,14 @@ game can load into memory.
 
 ## Building
 
-Simple as shit.
+Want to get this up and running so you can compile P/E/T/S? Simple as shit.
 
 ```
-cargo build
+cargo install dialogical
 ```
+
+If you want to actually work on this specific tool, or you need the latest
+version for whatever reason, then just `cargo build` inside the folder.
 
 Probably gonna write a crate for loading these files into memory at some
 point... or maybe I'll just make that be a part of the game's code to avoid the
