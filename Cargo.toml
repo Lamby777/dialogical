@@ -22,4 +22,3 @@ thiserror = "1.0.50"
 
 [[bin]]
 name="dg"
-path="src/main.rs"

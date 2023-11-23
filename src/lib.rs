@@ -30,9 +30,7 @@ macro_rules! log {
     };
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // parse args
-    let args = Args::parse();
+pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     let silent = args.silent;
 
     let input_stream: Box<dyn Read> = match args.file {
@@ -67,7 +65,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[command(arg_required_else_help(true))]
 #[command(author, version, about)]
 /// P/E/T/S Dialogue Compiler
-struct Args {
+pub struct Args {
     /// The output file, or stdout if not specified
     #[arg(short, long)]
     output: Option<String>,
