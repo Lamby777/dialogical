@@ -20,7 +20,7 @@ mod consts;
 mod pages;
 mod parser;
 
-use parser::DgParser;
+pub use parser::DgParser;
 
 macro_rules! log {
     ($silent:expr, $($arg:tt)*) => {
@@ -68,12 +68,12 @@ pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 pub struct Args {
     /// The output file, or stdout if not specified
     #[arg(short, long)]
-    output: Option<String>,
+    pub output: Option<String>,
 
     /// The input file, or stdin if not specified
-    file: Option<String>,
+    pub file: Option<String>,
 
     /// Silences progress "info" stderr messages.
     #[arg(short, long)]
-    silent: bool,
+    pub silent: bool,
 }
