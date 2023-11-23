@@ -32,15 +32,22 @@ fn link_name_to_vox() {
     let parsed = parser.parse_all(data).unwrap();
 
     let expected = Interaction {
-        id: "Test1".to_string(),
+        id: "Link Test".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Siva"),
-                content: "First page".to_owned(),
+                metadata: PageMetadata {
+                    speaker: Permanent(Named("Cherry".to_owned())),
+                    vox: Permanent("Mira".to_owned()),
+                },
+                content: "Page 1".to_owned(),
             },
             Page {
-                metadata: meta_double("Terra"),
-                content: "Second page\nWith more words".to_owned(),
+                metadata: PageMetadata::nochange(),
+                content: "Page 2".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::nochange(),
+                content: "Page 3".to_owned(),
             },
         ],
     };
