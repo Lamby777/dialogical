@@ -100,11 +100,18 @@ impl Script {
             return Ok(());
         }
 
-        // TODO push to links
-
         if line.is_empty() {
             self.state.replace(ComptimeState::Normal);
+            return Ok(());
         }
+
+        // TODO abstract this "split" behavior into a function
+        let mut split = line.split_whitespace();
+        let link_key = split.next().ok_or(ScriptError::InvalidLink)?;
+        let link_target = split.collect::<Vec<_>>().join(" ");
+
+        let link = Link::new(link_key, &link_target);
+        links.push(link);
 
         Ok(())
     }
