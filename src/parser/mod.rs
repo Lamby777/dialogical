@@ -41,12 +41,17 @@ impl DgParser {
 
     /// Takes a KV pair and returns all the links that
     /// target that specific pair.
-    fn get_links_for(&mut self, kv: (&str, &str)) -> Vec<(&str, &str)> {
-        let kv = LinkKVPair::from_tuple(kv);
-
+    fn get_links_for(&mut self, kv: LinkKVPair) -> Vec<LinkKVPair> {
         self.links
             .iter()
-            .filter_map(|v| if v.from == kv { Some(v) } else { None })
+            .filter_map(|v| {
+                if v.from == kv {
+                    Some(v.linked.clone())
+                } else {
+                    None
+                }
+            })
+            .flatten()
             .collect()
     }
 
@@ -135,8 +140,10 @@ impl DgParser {
         }
 
         // the pair + any pairs linked using the `Link` directive
-        let links = self.get_links_for(kv);
-        let kvpairs = std::iter::once(kv).chain(links.iter());
+        let pair = LinkKVPair::from_tuple(kv);
+        let links = self.get_links_for(pair);
+        let mapped = links.iter().map(|v| (v.0.as_str(), v.1.as_str()));
+        let kvpairs = std::iter::once(kv).chain(mapped);
 
         for (key, val) in kvpairs {
             match key {
