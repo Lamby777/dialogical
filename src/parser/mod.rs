@@ -100,7 +100,7 @@ impl DgParser {
                 (key, val) = split_first_whitespace(val)?;
             }
 
-            (key.trim(), val.trim(), pageonly)
+            (key, val, pageonly)
         };
 
         match key {
@@ -122,7 +122,7 @@ impl DgParser {
             }
 
             // set interaction
-            "%" => self.set_ix_id(val)?,
+            "%" if !pageonly => self.set_ix_id(val)?,
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));
