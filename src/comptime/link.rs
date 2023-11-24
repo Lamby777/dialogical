@@ -40,6 +40,12 @@ pub struct Link {
     pub negative: bool,
 }
 
+/// Target = thing to track
+/// Association = thing to link to the target
+///
+/// In practice:
+/// Link NAME <Target>
+/// VOX <Association>
 impl Link {
     pub fn new(property: &str, target: &str) -> Self {
         let pair = LinkKVPair::from_slices(property, target);
@@ -54,7 +60,7 @@ impl Link {
         }
     }
 
-    pub fn add_link(&mut self, pair: LinkKVPair) {
+    pub fn add_association(&mut self, pair: LinkKVPair) {
         self.linked.push(pair);
     }
 }

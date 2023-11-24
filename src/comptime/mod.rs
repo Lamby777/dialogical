@@ -161,7 +161,7 @@ impl Script {
             // things the current link will point to
             let mut split = line.split_whitespace();
             let pair = LinkKVPair::from_words(&mut split)?;
-            link.add_link(pair);
+            link.add_association(pair);
             return Ok(None);
         }
 

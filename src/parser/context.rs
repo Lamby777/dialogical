@@ -14,7 +14,10 @@ impl ScriptContext {
     }
 
     pub fn link(&mut self, link: Link) {
+        println!("Pre Link:\n{}", self.fmt_links());
         self.0.push(ScriptOutput::Link(link));
+        println!("Post Link:\n{}", self.fmt_links());
+        println!("\n\n");
     }
 
     pub fn unlink(&mut self, link: &Link) {
