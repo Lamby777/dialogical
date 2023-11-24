@@ -11,7 +11,9 @@ use thiserror::Error;
 
 use crate::consts::COMMENT_PREFIX;
 
+mod include;
 mod link;
+
 pub use link::{Link, LinkKVPair};
 
 pub type Result<T> = std::result::Result<T, ScriptError>;
@@ -76,6 +78,19 @@ impl Script {
                 let link = Link::from_pair(pair);
 
                 return Ok(Some(ComptimeState::Link(link)));
+            }
+
+            "Unlink" => {
+                // TODO try to use ComptimeState::Link, and not a separate variant
+                todo!()
+            }
+
+            "Include" => {
+                todo!()
+            }
+
+            "Import" => {
+                todo!()
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),
