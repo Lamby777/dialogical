@@ -27,6 +27,43 @@ fn meta_double(name: &str) -> PageMetadata {
 }
 
 #[test]
+fn unlink_name_to_vox() {
+    let data = include_dummy!("unlink");
+    let parsed = parse_all(data).unwrap();
+
+    let expected = Interaction {
+        id: "Unlink Test".to_string(),
+        pages: vec![
+            Page {
+                metadata: meta_double("Mira"),
+                content: "Page 1".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::nochange(),
+                content: "Page 2".to_owned(),
+            },
+            Page {
+                metadata: meta_double("Dylan"),
+                content: "Page 3".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata {
+                    speaker: Permanent(Named("Mira".to_owned())),
+                    vox: Permanent("Dylan".to_owned()),
+                },
+                content: "Page 4".to_owned(),
+            },
+            Page {
+                metadata: meta_double("Dylan"),
+                content: "Page 5".to_owned(),
+            },
+        ],
+    };
+
+    assert_eq!(parsed, vec![expected]);
+}
+
+#[test]
 fn link_name_to_vox() {
     let data = include_dummy!("link");
     let parsed = parse_all(data).unwrap();

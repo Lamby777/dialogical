@@ -1,0 +1,43 @@
+% Unlink Test
+###
+
+Link NAME Mira
+VOX Mira
+
+Link NAME Dylan
+VOX Dylan
+
+###
+---
+NAME Mira
+
+Page 1
+
+---
+
+Page 2
+
+---
+NAME Dylan
+
+Page 3
+
+---
+###
+
+Unlink NAME Mira
+VOX Mira
+
+###
+---
+NAME Mira
+
+Page 4
+
+---
+NAME Dylan
+
+Page 5
+
+---
+
