@@ -149,8 +149,22 @@ impl Script {
             return Ok(None);
         }
 
-        // we're done, push the link to the parser's link list
-        links.push(link.clone());
+        // we're done building the link, so...
+        if !link.negative {
+            // push it to the parser's list of links
+            links.push(link.clone());
+        } else {
+            // OR if negative, go through all links that have
+            // the same `from` and remove the `linked` properties
+            // they have in common with the negative link
+            let _ = links
+                .iter_mut()
+                .filter(|other| other.from == link.from)
+                .map(|v| {
+                    v.linked.retain(|other| !link.linked.contains(other));
+                });
+        }
+
         Ok(Some(ComptimeState::Normal))
     }
 
