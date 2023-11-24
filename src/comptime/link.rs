@@ -36,6 +36,7 @@ impl Deref for LinkKVPair {
 pub struct Link {
     pub from: LinkKVPair,
     pub linked: Vec<LinkKVPair>,
+    pub negative: bool,
 }
 
 impl Link {
@@ -48,6 +49,7 @@ impl Link {
         Self {
             from,
             linked: vec![],
+            negative: false,
         }
     }
 

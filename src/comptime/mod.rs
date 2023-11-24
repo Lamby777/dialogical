@@ -99,11 +99,10 @@ impl Script {
             }
 
             "Link" | "Unlink" => {
-                let adding = command == "Link";
-
                 // TODO what happens the target part is empty?
                 let pair = LinkKVPair::from_words(&mut split)?;
-                let link = Link::from_pair(pair);
+                let mut link = Link::from_pair(pair);
+                link.negative = command == "Unlink";
 
                 return Ok(Some(ComptimeState::Link(link)));
             }
