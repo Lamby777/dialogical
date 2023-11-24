@@ -16,11 +16,12 @@ pub use context::ScriptContext;
 #[derive(Default)]
 pub struct DgParser {
     state: ParseState,
+    context: ScriptContext,
 
-    // the end result it's putting together
+    /// the end result it's putting together
     interactions: Vec<Interaction>,
 
-    // temp buffers for parsing
+    /// temp buffers for parsing
     interaction: Option<Interaction>,
     page: Page,
     pagebuf: Vec<String>,
@@ -63,10 +64,9 @@ impl DgParser {
         if line == SEPARATOR && self.script.last() == Some(&COMPTIME_BORDER.to_owned()) {
             self.script.pop();
 
-            let mut out = vec![];
             let script_content = self.script.join("\n");
             let mut script = Script::from(script_content);
-            script.execute(&mut out)?;
+            script.execute(&mut self.context)?;
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),

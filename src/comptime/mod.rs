@@ -168,11 +168,7 @@ impl Script {
             // OR if negative, go through all links that have
             // the same `from` and remove the `linked` properties
             // they have in common with the negative link
-            let _ = out.iter_mut().map(|v| {
-                if let ScriptOutput::Link(v) = v {
-                    v.linked.retain(|other| !link.linked.contains(other));
-                }
-            });
+            out.unlink(&link);
         }
 
         Ok(Some(ComptimeState::Normal))

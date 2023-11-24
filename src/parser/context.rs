@@ -5,6 +5,7 @@ use crate::{Link, LinkKVPair};
 ///
 /// Any result of comptime execution that affects
 /// how the parser does its job goes in here...
+#[derive(Default)]
 pub struct ScriptContext(Vec<ScriptOutput>);
 
 impl ScriptContext {
@@ -14,6 +15,14 @@ impl ScriptContext {
 
     pub fn link(&mut self, link: Link) {
         self.0.push(ScriptOutput::Link(link.clone()));
+    }
+
+    pub fn unlink(&mut self, link: &Link) {
+        let _ = self.0.iter_mut().map(|output| {
+            if let ScriptOutput::Link(v) = output {
+                v.linked.retain(|other| !link.linked.contains(other));
+            }
+        });
     }
 
     pub fn all_links(&self) -> Vec<&Link> {
