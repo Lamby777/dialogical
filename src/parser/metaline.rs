@@ -4,6 +4,13 @@ use crate::pages::{Metadata, ParseError, ParseState, Speaker};
 
 use super::{DgParser, Result};
 
+/// split into first "word" and the rest
+fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
+    full.split_once(char::is_whitespace)
+        .ok_or(ParseError::NotMeta(full.to_string()))
+        .map(|(k, v)| (k, v.trim_start()))
+}
+
 pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
     // enter comptime scripting block
     if line == COMPTIME_BORDER {
@@ -12,13 +19,6 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
 
         parser.state = ParseState::ComptimeScript(Box::new(parser.state.clone()));
         return Ok(());
-    }
-
-    /// split into first "word" and the rest
-    fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
-        full.split_once(char::is_whitespace)
-            .ok_or(ParseError::NotMeta(full.to_string()))
-            .map(|(k, v)| (k, v.trim_start()))
     }
 
     let (kv, pageonly) = {
