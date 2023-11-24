@@ -103,18 +103,22 @@ impl Script {
                 todo!()
             }
 
-            "Execute" => {
+            "Import" | "Execute" => {
                 let rest = split.collect::<Vec<_>>().join(" ");
                 let path = PathBuf::from(rest);
 
                 let contents = ScriptPath(path).resolve()?;
                 let mut script = Script::from(contents);
 
-                script.execute(out, links)?
-            }
-
-            "Import" => {
-                todo!()
+                if key == "Import" {
+                    // Isolates the returned links from any other
+                    // side effects the script might have.
+                    // Might need to do more than just this
+                    // later on when the language has more features.
+                    script.execute(&mut vec![], links)?;
+                } else {
+                    script.execute(out, links)?;
+                }
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),
