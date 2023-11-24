@@ -54,6 +54,13 @@ pub struct Script {
     state: RefCell<ComptimeState>,
 }
 
+// stuff passed back to the parser once the script is done
+#[derive(Clone, Debug, PartialEq)]
+pub enum ScriptOutput {
+    LogMessage(String),
+    Link(Link),
+}
+
 impl From<String> for Script {
     fn from(content: String) -> Self {
         Self {
@@ -77,8 +84,7 @@ impl Script {
     fn execute_normal(
         &self,
         line: &str,
-        out: &mut Vec<String>,
-        links: &mut Vec<Link>,
+        out: &mut Vec<ScriptOutput>,
     ) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(None);
@@ -142,9 +148,8 @@ impl Script {
     fn execute_link(
         &self,
         line: &str,
-        _out: &mut Vec<String>,
+        out: &mut Vec<ScriptOutput>,
         link: &mut Link,
-        links: &mut Vec<Link>,
     ) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(None);
@@ -162,23 +167,22 @@ impl Script {
         // we're done building the link, so...
         if !link.negative {
             // push it to the parser's list of links
-            links.push(link.clone());
+            out.push(ScriptOutput::Link(link.clone()));
         } else {
             // OR if negative, go through all links that have
             // the same `from` and remove the `linked` properties
             // they have in common with the negative link
-            let _ = links
-                .iter_mut()
-                .filter(|other| other.from == link.from)
-                .map(|v| {
+            let _ = out.iter_mut().map(|v| {
+                if let ScriptOutput::Link(v) = v {
                     v.linked.retain(|other| !link.linked.contains(other));
-                });
+                }
+            });
         }
 
         Ok(Some(ComptimeState::Normal))
     }
 
-    pub fn execute(&mut self, out: &mut Vec<String>, links: &mut Vec<Link>) -> Result<()> {
+    pub fn execute(&mut self, out: &mut Vec<ScriptOutput>) -> Result<()> {
         use ComptimeState::*;
         let lines = self.content.lines().chain(std::iter::once(""));
 
@@ -187,8 +191,8 @@ impl Script {
 
         for line in lines {
             let new_state = match *self.state.borrow_mut() {
-                Normal => self.execute_normal(line, out, links)?,
-                Link(ref mut link) => self.execute_link(line, out, link, links)?,
+                Normal => self.execute_normal(line, out)?,
+                Link(ref mut link) => self.execute_link(line, out, link)?,
 
                 Quit => unreachable!(),
             };

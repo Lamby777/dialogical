@@ -32,7 +32,7 @@ impl Deref for LinkKVPair {
 }
 
 /// One section of link commands...
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Link {
     pub from: LinkKVPair,
     pub linked: Vec<LinkKVPair>,

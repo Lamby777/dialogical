@@ -63,7 +63,7 @@ impl DgParser {
             let mut out = vec![];
             let script_content = self.script.join("\n");
             let mut script = Script::from(script_content);
-            script.execute(&mut out, &mut self.links)?;
+            script.execute(&mut out)?;
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),
