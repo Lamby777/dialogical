@@ -16,7 +16,6 @@ pub struct DgParser {
     interactions: Vec<Interaction>,
 
     // temp buffers for parsing
-    // TODO maybe use MaybeUninit and partially initialize
     interaction: Option<Interaction>,
     page: Page,
     pagebuf: Vec<String>,
@@ -75,14 +74,9 @@ impl DgParser {
         Ok(())
     }
 
+    // TODO break up this function (wtf like 4 billion lines)
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
-        // TODO consider trimming whitespace before it gets
-        // sent to any of these functions... might be a bad
-        // idea to reduce the level of control these functions
-        // have, but it would also reduce the complexity
         let line = line.trim();
-
-        // TODO break up this function (wtf like 4 billion lines)
 
         if line.is_empty() {
             self.state = ParseState::Message;

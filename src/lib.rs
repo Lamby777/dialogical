@@ -58,7 +58,6 @@ pub fn main(args: Args) -> Result<(), Error> {
     let silent = args.silent;
 
     // TODO error handling for file rw
-
     let input_stream: Box<dyn Read> = match args.file {
         Some(file) => Box::new(File::open(file).unwrap()),
         None => Box::new(io::stdin()),
@@ -72,7 +71,6 @@ pub fn main(args: Args) -> Result<(), Error> {
     log!(silent, "Reading...");
     let data = io::read_to_string(input_stream)?;
 
-    // TODO error messages
     log!(silent, "Parsing...");
     let res = parse_all(&data)?;
 
