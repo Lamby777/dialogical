@@ -48,6 +48,15 @@ pub struct Script {
     state: RefCell<ComptimeState>,
 }
 
+impl From<String> for Script {
+    fn from(content: String) -> Self {
+        Self {
+            content,
+            state: RefCell::new(ComptimeState::default()),
+        }
+    }
+}
+
 impl From<&str> for Script {
     fn from(content: &str) -> Self {
         Self {
@@ -59,7 +68,12 @@ impl From<&str> for Script {
 
 impl Script {
     /// result is the new state (`None` = no change)
-    fn execute_normal(&self, line: &str, out: &mut Vec<String>) -> Result<Option<ComptimeState>> {
+    fn execute_normal(
+        &self,
+        line: &str,
+        out: &mut Vec<String>,
+        links: &mut Vec<Link>,
+    ) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(None);
         }
@@ -89,10 +103,14 @@ impl Script {
                 todo!()
             }
 
-            "Include" => {
+            "Execute" => {
                 let rest = split.collect::<Vec<_>>().join(" ");
                 let path = PathBuf::from(rest);
-                let include = ScriptPath(path);
+
+                let contents = ScriptPath(path).resolve()?;
+                let mut script = Script::from(contents);
+
+                script.execute(out, links)?
             }
 
             "Import" => {
@@ -138,7 +156,7 @@ impl Script {
 
         for line in lines {
             let new_state = match *self.state.borrow_mut() {
-                Normal => self.execute_normal(line, out)?,
+                Normal => self.execute_normal(line, out, links)?,
                 Link(ref mut link) => self.execute_link(line, out, link, links)?,
 
                 Quit => unreachable!(),
