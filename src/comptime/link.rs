@@ -1,3 +1,4 @@
+use std::fmt;
 use std::ops::Deref;
 
 use super::ScriptError;
@@ -55,5 +56,17 @@ impl Link {
 
     pub fn add_link(&mut self, pair: LinkKVPair) {
         self.linked.push(pair);
+    }
+}
+
+impl fmt::Display for Link {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        writeln!(f, "{:?}", self.from)?;
+
+        for link in &self.linked {
+            writeln!(f, " -> {:?}", link)?;
+        }
+
+        Ok(())
     }
 }

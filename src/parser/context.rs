@@ -18,11 +18,26 @@ impl ScriptContext {
     }
 
     pub fn unlink(&mut self, link: &Link) {
-        let _ = self.0.iter_mut().map(|output| {
+        println!(
+            "Pre Unlink:\n{}",
+            self.iter_links()
+                .map(|v| format!("{}", v))
+                .collect::<String>()
+        );
+
+        self.0.iter_mut().for_each(|output| {
             if let ScriptOutput::Link(v) = output {
                 v.linked.retain(|other| !link.linked.contains(other));
             }
         });
+
+        println!(
+            "Pre Unlink:\n{}",
+            self.iter_links()
+                .map(|v| format!("{}", v))
+                .collect::<String>()
+        );
+        println!("\n\n\n\n\n");
     }
 
     /// Iterator over all the log messages
@@ -37,14 +52,15 @@ impl ScriptContext {
         self.iter_logs().collect()
     }
 
+    pub fn iter_links(&self) -> impl Iterator<Item = &Link> {
+        self.0.iter().filter_map(|v| match v {
+            ScriptOutput::Link(link) => Some(link),
+            _ => None,
+        })
+    }
+
     pub fn all_links(&self) -> Vec<&Link> {
-        self.0
-            .iter()
-            .filter_map(|v| match v {
-                ScriptOutput::Link(link) => Some(link),
-                _ => None,
-            })
-            .collect()
+        self.iter_links().collect()
     }
 
     pub fn get_links_for(&mut self, kv: LinkKVPair) -> Vec<LinkKVPair> {
