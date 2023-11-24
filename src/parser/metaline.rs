@@ -35,15 +35,14 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
     };
 
     match kv.0 {
-        "SOMEONE" => {
-            parser.page.metadata.speaker = Metadata::new(Speaker::Unknown, pageonly);
-            return Ok(());
-        }
+        "NARRATOR" | "SOMEONE" => {
+            let speaker = if kv.0 == "NARRATOR" {
+                Speaker::Narrator
+            } else {
+                Speaker::Unknown
+            };
 
-        // message spoken by narrator...
-        // how this will be interpreted is an implementation detail
-        "NARRATOR" => {
-            parser.page.metadata.speaker = Metadata::new(Speaker::Narrator, pageonly);
+            parser.page.metadata.speaker = Metadata::new(speaker, pageonly);
             return Ok(());
         }
 

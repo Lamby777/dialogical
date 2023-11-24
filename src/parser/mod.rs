@@ -76,10 +76,10 @@ impl DgParser {
         Ok(())
     }
 
-    // TODO break up this function (wtf like 4 billion lines)
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
         let line = line.trim();
 
+        // skip comments
         if line.is_empty() {
             self.state = ParseState::Message;
             return Ok(());
