@@ -35,8 +35,8 @@ impl Deref for LinkKVPair {
 /// One section of link commands...
 #[derive(Clone, Debug, PartialEq)]
 pub struct Link {
-    pub from: LinkKVPair,
-    pub linked: Vec<LinkKVPair>,
+    pub targets: LinkKVPair,
+    pub associations: Vec<LinkKVPair>,
     pub negative: bool,
 }
 
@@ -54,22 +54,22 @@ impl Link {
 
     pub fn from_pair(from: LinkKVPair) -> Self {
         Self {
-            from,
-            linked: vec![],
+            targets: from,
+            associations: vec![],
             negative: false,
         }
     }
 
     pub fn add_association(&mut self, pair: LinkKVPair) {
-        self.linked.push(pair);
+        self.associations.push(pair);
     }
 }
 
 impl fmt::Display for Link {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "{:?}", self.from)?;
+        writeln!(f, "{:?}", self.targets)?;
 
-        for link in &self.linked {
+        for link in &self.associations {
             writeln!(f, " -> {:?}", link)?;
         }
 

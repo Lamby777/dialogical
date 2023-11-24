@@ -25,12 +25,23 @@ impl ScriptContext {
 
         self.0.iter_mut().for_each(|output| {
             if let ScriptOutput::Link(v) = output {
-                v.linked.retain(|other| !link.linked.contains(other));
+                v.associations
+                    .retain(|other| !link.associations.contains(other));
             }
         });
 
+        self.clean_links();
+
         println!("Post Unlink:\n{}", self.fmt_links());
         println!("\n\n");
+    }
+
+    /// Delete any links with empty associations
+    pub fn clean_links(&mut self) {
+        self.0.retain(|output| match output {
+            ScriptOutput::Link(link) => !link.associations.is_empty(),
+            _ => true,
+        });
     }
 
     pub fn fmt_links(&self) -> String {
@@ -66,8 +77,8 @@ impl ScriptContext {
         self.all_links()
             .iter()
             .filter_map(|v| {
-                if v.from == kv {
-                    Some(v.linked.clone())
+                if v.targets == kv {
+                    Some(v.associations.clone())
                 } else {
                     None
                 }
