@@ -12,6 +12,7 @@ use std::str::SplitWhitespace;
 use thiserror::Error;
 
 use crate::pages::ParseError;
+use crate::Interaction;
 use crate::{consts::COMMENT_PREFIX, parser::ScriptContext};
 
 mod include;
@@ -59,6 +60,7 @@ pub struct Script {
 pub enum ScriptOutput {
     LogMessage(String),
     Link(Link),
+    Interaction(Interaction),
 }
 
 impl From<String> for Script {
@@ -122,8 +124,11 @@ impl Script {
                     .parse()
                     .map_err(|e| ScriptError::Import(path.0, Box::new(e)))?;
 
-                // TODO pass the interactions to the parser so
-                // it can add em to the list
+                let mapped = interactions
+                    .into_iter()
+                    .map(|v| ScriptOutput::Interaction(v));
+
+                out.0.extend(mapped);
             }
 
             "Execute" => {

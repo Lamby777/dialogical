@@ -6,7 +6,7 @@ use crate::{Link, LinkKVPair};
 /// Any result of comptime execution that affects
 /// how the parser does its job goes in here...
 #[derive(Debug, Default, PartialEq)]
-pub struct ScriptContext(Vec<ScriptOutput>);
+pub struct ScriptContext(pub Vec<ScriptOutput>);
 
 impl ScriptContext {
     pub fn log(&mut self, msg: &str) {
@@ -14,7 +14,7 @@ impl ScriptContext {
     }
 
     pub fn link(&mut self, link: Link) {
-        self.0.push(ScriptOutput::Link(link.clone()));
+        self.0.push(ScriptOutput::Link(link));
     }
 
     pub fn unlink(&mut self, link: &Link) {
