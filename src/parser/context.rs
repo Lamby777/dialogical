@@ -5,7 +5,7 @@ use crate::{Link, LinkKVPair};
 ///
 /// Any result of comptime execution that affects
 /// how the parser does its job goes in here...
-#[derive(Default)]
+#[derive(Debug, Default, PartialEq)]
 pub struct ScriptContext(Vec<ScriptOutput>);
 
 impl ScriptContext {
@@ -23,6 +23,18 @@ impl ScriptContext {
                 v.linked.retain(|other| !link.linked.contains(other));
             }
         });
+    }
+
+    /// Iterator over all the log messages
+    pub fn iter_logs(&self) -> impl Iterator<Item = &str> {
+        self.0.iter().filter_map(|v| match v {
+            ScriptOutput::LogMessage(msg) => Some(msg.as_str()),
+            _ => None,
+        })
+    }
+
+    pub fn logs(&self) -> Vec<&str> {
+        self.iter_logs().collect()
     }
 
     pub fn all_links(&self) -> Vec<&Link> {
