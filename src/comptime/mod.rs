@@ -100,6 +100,8 @@ impl Script {
             ScriptPath(path)
         }
 
+        println!("Line: {}", line);
+
         match command {
             "Echo" => {
                 out.log(&split.collect::<Vec<_>>().join(" "));

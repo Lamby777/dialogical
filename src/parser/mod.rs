@@ -50,6 +50,7 @@ impl DgParser {
             let script_content = self.script.join("\n");
             let mut script = Script::from(script_content);
             script.execute(&mut self.context)?;
+            self.script.clear();
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),
@@ -134,6 +135,8 @@ impl DgParser {
 
         for line in lines {
             use ParseState::*;
+
+            println!("{:?}: {}", self.state, line);
 
             (match self.state {
                 // besides the start, a block can either be
