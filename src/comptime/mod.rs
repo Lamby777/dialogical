@@ -6,7 +6,9 @@
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
 
-use std::{cell::RefCell, path::PathBuf, str::SplitWhitespace};
+use std::cell::RefCell;
+use std::path::PathBuf;
+use std::str::SplitWhitespace;
 use thiserror::Error;
 
 use crate::consts::COMMENT_PREFIX;

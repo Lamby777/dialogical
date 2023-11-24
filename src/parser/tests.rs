@@ -1,5 +1,6 @@
 use super::*;
-use crate::{pages::PageMetadata, parse_all};
+use crate::pages::PageMetadata;
+use crate::parse_all;
 
 use Metadata::*;
 use Speaker::*;
