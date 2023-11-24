@@ -6,7 +6,7 @@
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
 
-use std::cell::RefCell;
+use std::{cell::RefCell, path::PathBuf};
 use thiserror::Error;
 
 use crate::consts::COMMENT_PREFIX;
@@ -14,6 +14,7 @@ use crate::consts::COMMENT_PREFIX;
 mod include;
 mod link;
 
+pub use include::ScriptPath;
 pub use link::{Link, LinkKVPair};
 
 pub type Result<T> = std::result::Result<T, ScriptError>;
@@ -25,6 +26,9 @@ pub enum ScriptError {
 
     #[error("Incorrect usage of Link directive")]
     InvalidLink,
+
+    #[error("Could not open file at path {0}")]
+    FileOpenError(PathBuf),
 }
 
 #[derive(Clone, Debug, Default)]
@@ -69,7 +73,7 @@ impl Script {
         match key {
             "Echo" => {
                 let rest = split.collect::<Vec<_>>().join(" ");
-                out.push(rest.to_owned());
+                out.push(rest);
             }
 
             "Link" => {
@@ -86,7 +90,9 @@ impl Script {
             }
 
             "Include" => {
-                todo!()
+                let rest = split.collect::<Vec<_>>().join(" ");
+                let path = PathBuf::from(rest);
+                let include = ScriptPath(path);
             }
 
             "Import" => {
