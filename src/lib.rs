@@ -57,11 +57,10 @@ pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
 
     log!(silent, "Reading...");
     let data = io::read_to_string(input_stream)?;
-    let mut parser = DgParser::default();
 
     // TODO error messages
     log!(silent, "Parsing...");
-    let res = parser.parse_all(&data)?;
+    let res = parse_all(&data)?;
 
     log!(silent, "Serializing...");
     let res = serialize(&res)?;

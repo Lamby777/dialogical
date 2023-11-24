@@ -1,5 +1,5 @@
 use super::*;
-use crate::pages::PageMetadata;
+use crate::{pages::PageMetadata, parse_all};
 
 use Metadata::*;
 use Speaker::*;
@@ -28,9 +28,7 @@ fn meta_double(name: &str) -> PageMetadata {
 #[test]
 fn link_name_to_vox() {
     let data = include_dummy!("link");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "Link Test".to_string(),
@@ -59,9 +57,7 @@ fn link_name_to_vox() {
 #[test]
 fn parse_filter_empties() {
     let data = include_dummy!("empties");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = vec![Interaction {
         id: "Empties Test".to_string(),
@@ -90,9 +86,7 @@ fn parse_filter_empties() {
 
 fn parse_two_ix() {
     let data = include_dummy!("two_ix");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = vec![
         Interaction {
@@ -129,9 +123,7 @@ fn parse_two_ix() {
 #[test]
 fn parse_pageonly() {
     let data = include_dummy!("pageonly");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "PageOnly Test".to_string(),
@@ -164,9 +156,7 @@ Who's making me do this?"#
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
     let data = include_dummy!("small_ix");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "Test1".to_string(),
@@ -188,9 +178,7 @@ fn parse_small_interaction() {
 #[test]
 fn parse_one_ix_many_pages() {
     let data = include_dummy!("one_ix_many_pages");
-
-    let mut parser = DgParser::default();
-    let parsed = parser.parse_all(data).unwrap();
+    let parsed = parse_all(data).unwrap();
 
     let expected = Interaction {
         id: "Interaction".to_string(),
