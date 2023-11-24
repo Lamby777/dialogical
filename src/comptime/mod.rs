@@ -6,7 +6,7 @@
 //! nowhere near as powerful, just means "compile-time" :P)
 //!
 
-use std::{cell::RefCell, path::PathBuf};
+use std::{cell::RefCell, path::PathBuf, str::SplitWhitespace};
 use thiserror::Error;
 
 use crate::consts::COMMENT_PREFIX;
@@ -67,7 +67,7 @@ impl From<&str> for Script {
 }
 
 impl Script {
-    /// result is the new state (`None` = no change)
+    /// returns the new state (`None` = no change)
     fn execute_normal(
         &self,
         line: &str,
@@ -78,19 +78,27 @@ impl Script {
             return Ok(None);
         }
 
-        // split into key and value, but the value is optional
+        // split into command and args, but the args are optional
         let mut split = line.split_whitespace();
-        let Some(key) = split.next() else {
+        let Some(command) = split.next() else {
             return Ok(None);
         };
 
-        match key {
+        fn resolve_script(split: SplitWhitespace) -> Result<Script> {
+            let args = split.collect::<Vec<_>>().join(" ");
+            let path = PathBuf::from(args);
+            let contents = ScriptPath(path).resolve()?;
+            Ok(Script::from(contents))
+        }
+
+        match command {
             "Echo" => {
-                let rest = split.collect::<Vec<_>>().join(" ");
-                out.push(rest);
+                out.push(split.collect::<Vec<_>>().join(" "));
             }
 
-            "Link" => {
+            "Link" | "Unlink" => {
+                let adding = command == "Link";
+
                 // TODO what happens the target part is empty?
                 let pair = LinkKVPair::from_words(&mut split)?;
                 let link = Link::from_pair(pair);
@@ -98,27 +106,16 @@ impl Script {
                 return Ok(Some(ComptimeState::Link(link)));
             }
 
-            "Unlink" => {
-                // TODO try to use ComptimeState::Link, and not a separate variant
-                todo!()
+            "Import" => {
+                // Isolates the returned links from any other
+                // side effects the script might have.
+                // Might need to do more than just this
+                // later on when the language has more features.
+                resolve_script(split)?.execute(&mut vec![], links)?;
             }
 
-            "Import" | "Execute" => {
-                let rest = split.collect::<Vec<_>>().join(" ");
-                let path = PathBuf::from(rest);
-
-                let contents = ScriptPath(path).resolve()?;
-                let mut script = Script::from(contents);
-
-                if key == "Import" {
-                    // Isolates the returned links from any other
-                    // side effects the script might have.
-                    // Might need to do more than just this
-                    // later on when the language has more features.
-                    script.execute(&mut vec![], links)?;
-                } else {
-                    script.execute(out, links)?;
-                }
+            "Execute" => {
+                resolve_script(split)?.execute(out, links)?;
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),
