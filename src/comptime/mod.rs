@@ -14,7 +14,7 @@ use crate::consts::COMMENT_PREFIX;
 mod link;
 pub use link::{Link, LinkKVPair};
 
-type Result<T> = std::result::Result<T, ScriptError>;
+pub type Result<T> = std::result::Result<T, ScriptError>;
 
 #[derive(Error, Debug, PartialEq)]
 pub enum ScriptError {

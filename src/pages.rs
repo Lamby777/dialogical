@@ -59,7 +59,7 @@ impl From<ScriptError> for ParseError {
     }
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Interaction {
     // TODO use &'static str
     pub id: String,

@@ -2,7 +2,7 @@
 //! Stuff for parsing dg files
 //!
 
-type Result<T> = std::result::Result<T, ParseError>;
+pub type Result<T> = std::result::Result<T, ParseError>;
 
 use crate::comptime::{Link, LinkKVPair, Script};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};

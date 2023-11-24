@@ -20,7 +20,12 @@ mod consts;
 mod pages;
 mod parser;
 
-pub use parser::DgParser;
+use parser::DgParser;
+
+// Re-exports
+pub use comptime::{Link, LinkKVPair, Result as ScriptResult};
+pub use pages::Interaction;
+pub use parser::Result as ParseResult;
 
 macro_rules! log {
     ($silent:expr, $($arg:tt)*) => {
@@ -30,8 +35,15 @@ macro_rules! log {
     };
 }
 
+/// Parse a single string into a `Vec<>` of interactions.
+pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
+    DgParser::default().parse_all(data).map(|v| v.to_vec())
+}
+
 pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     let silent = args.silent;
+
+    // TODO error handling for file rw
 
     let input_stream: Box<dyn Read> = match args.file {
         Some(file) => Box::new(File::open(file).unwrap()),
