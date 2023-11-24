@@ -12,6 +12,7 @@ use std::str::SplitWhitespace;
 use thiserror::Error;
 
 use crate::consts::COMMENT_PREFIX;
+use crate::pages::ParseError;
 
 mod include;
 mod link;
@@ -30,7 +31,10 @@ pub enum ScriptError {
     InvalidLink,
 
     #[error("Could not open file at path {0}")]
-    FileOpenError(PathBuf),
+    FileOpen(PathBuf),
+
+    #[error("Error while importing interactions from script at path {0}")]
+    Import(PathBuf, #[source] Box<ParseError>),
 }
 
 #[derive(Clone, Debug, Default)]
@@ -86,10 +90,10 @@ impl Script {
             return Ok(None);
         };
 
-        fn script_path(split: SplitWhitespace) -> Result<ScriptPath> {
+        fn script_path(split: SplitWhitespace) -> ScriptPath {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
-            Ok(ScriptPath(path))
+            ScriptPath(path)
         }
 
         match command {
@@ -111,11 +115,17 @@ impl Script {
                 // side effects the script might have.
                 // Might need to do more than just this
                 // later on when the language has more features.
-                let interactions = script_path(split)?.parse()?;
+                let path = script_path(split);
+                let interactions = path
+                    .parse()
+                    .map_err(|e| ScriptError::Import(path.0, Box::new(e)))?;
+
+                // TODO pass the interactions to the parser so
+                // it can add em to the list
             }
 
             "Execute" => {
-                let content = script_path(split)?.resolve()?;
+                let content = script_path(split).resolve()?;
                 Script::from(content).execute(out, links)?;
             }
 

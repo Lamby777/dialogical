@@ -28,7 +28,7 @@ impl ScriptPath {
     pub fn resolve(&self) -> Result<String> {
         File::open(&self.0)
             .and_then(|file| io::read_to_string(file))
-            .map_err(|_| ScriptError::FileOpenError(self.0.clone()))
+            .map_err(|_| ScriptError::FileOpen(self.0.clone()))
     }
 
     /// Run a second parser instance on the script at the path.
