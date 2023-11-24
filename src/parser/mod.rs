@@ -79,7 +79,7 @@ impl DgParser {
     fn parse_metaline(&mut self, line: &str) -> Result<()> {
         let line = line.trim();
 
-        // skip comments
+        // empty line = end of metadata
         if line.is_empty() {
             self.state = ParseState::Message;
             return Ok(());

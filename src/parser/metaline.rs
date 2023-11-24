@@ -11,8 +11,8 @@ fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
         .map(|(k, v)| (k, v.trim_start()))
 }
 
+/// parse a comptime scripting block
 pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
-    // enter comptime scripting block
     if line == COMPTIME_BORDER {
         // comptime script inside a comptime script is 100% a parsing error
         debug_assert!(!matches!(parser.state, ParseState::ComptimeScript(_)));
