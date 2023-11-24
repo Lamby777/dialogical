@@ -140,21 +140,26 @@ impl Script {
             return Ok(None);
         }
 
-        if line.is_empty() {
-            links.push(link.clone());
-            return Ok(Some(ComptimeState::Normal));
+        if !line.is_empty() {
+            // add another property to the list of
+            // things the current link will point to
+            let mut split = line.split_whitespace();
+            let pair = LinkKVPair::from_words(&mut split)?;
+            link.add_link(pair);
+            return Ok(None);
         }
 
-        let mut split = line.split_whitespace();
-        let pair = LinkKVPair::from_words(&mut split)?;
-        link.add_link(pair);
-
-        Ok(None)
+        // we're done, push the link to the parser's link list
+        links.push(link.clone());
+        Ok(Some(ComptimeState::Normal))
     }
 
     pub fn execute(&mut self, out: &mut Vec<String>, links: &mut Vec<Link>) -> Result<()> {
         use ComptimeState::*;
         let lines = self.content.lines().chain(std::iter::once(""));
+
+        // take one line at a time...
+        // remembers which mode we're in
 
         for line in lines {
             let new_state = match *self.state.borrow_mut() {
