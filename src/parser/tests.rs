@@ -2,8 +2,8 @@ use super::*;
 use crate::pages::PageMetadata;
 use crate::parse_all;
 
-use Metadata::*;
-use Speaker::*;
+use crate::pages::Metadata::*;
+use crate::pages::Speaker::*;
 
 macro_rules! dummy_file {
     ($name:expr) => {
