@@ -8,7 +8,6 @@
 
 #![feature(if_let_guard)]
 
-use bincode::serialize;
 use clap::Parser;
 
 use std::fs::File;
@@ -26,6 +25,8 @@ pub use comptime::{Link, LinkKVPair, Result as ScriptResult};
 pub use pages::Interaction;
 pub use parser::Result as ParseResult;
 
+type Error = Box<dyn std::error::Error>;
+
 macro_rules! log {
     ($silent:expr, $($arg:tt)*) => {
         if !$silent {
@@ -39,7 +40,21 @@ pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
     DgParser::default().parse_all(data).map(|v| v.to_vec())
 }
 
-pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
+pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
+    match bincode::deserialize(data) {
+        Ok(v) => {
+            log!(false, "Deserialized successfully!");
+            Ok(v)
+        }
+
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            Err(e)
+        }
+    }
+}
+
+pub fn main(args: Args) -> Result<(), Error> {
     let silent = args.silent;
 
     // TODO error handling for file rw
@@ -62,7 +77,7 @@ pub fn main(args: Args) -> Result<(), Box<dyn std::error::Error>> {
     let res = parse_all(&data)?;
 
     log!(silent, "Serializing...");
-    let res = serialize(&res)?;
+    let res = bincode::serialize(&res)?;
 
     log!(silent, "Writing...");
     output_stream.write(&res)?;
