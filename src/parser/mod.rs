@@ -4,7 +4,7 @@
 
 pub type Result<T> = std::result::Result<T, ParseError>;
 
-use crate::comptime::{Link, LinkKVPair, Script};
+use crate::comptime::Script;
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
@@ -26,7 +26,6 @@ pub struct DgParser {
     page: Page,
     pagebuf: Vec<String>,
     script: Vec<String>,
-    links: Vec<Link>,
 }
 
 impl DgParser {
@@ -41,22 +40,6 @@ impl DgParser {
         });
 
         Ok(())
-    }
-
-    /// Takes a KV pair and returns all the links that
-    /// target that specific pair.
-    fn get_links_for(&mut self, kv: LinkKVPair) -> Vec<LinkKVPair> {
-        self.links
-            .iter()
-            .filter_map(|v| {
-                if v.from == kv {
-                    Some(v.linked.clone())
-                } else {
-                    None
-                }
-            })
-            .flatten()
-            .collect()
     }
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
