@@ -6,7 +6,6 @@
 //!  - &Cherry, 11/20/2023
 //!
 
-#![allow(dead_code)] // TODO remove this once we're done
 #![feature(if_let_guard)]
 
 use bincode::serialize;

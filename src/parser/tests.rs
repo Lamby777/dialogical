@@ -84,6 +84,7 @@ fn parse_filter_empties() {
     assert_eq!(parsed, expected);
 }
 
+#[test]
 fn parse_two_ix() {
     let data = include_dummy!("two_ix");
     let parsed = parse_all(data).unwrap();
