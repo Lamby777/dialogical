@@ -25,11 +25,9 @@ impl ScriptPath {
     /// Get the contents of the script at the path.
     /// Used by the `Include` directive.
     fn resolve(&self) -> Result<String> {
-        let file = File::open(&self.0).map_err(|_| ScriptError::FileOpenError(self.0.clone()))?;
-        let contents =
-            io::read_to_string(file).map_err(|_| ScriptError::FileOpenError(self.0.clone()))?;
-
-        Ok(contents)
+        File::open(&self.0)
+            .and_then(|file| io::read_to_string(file))
+            .map_err(|_| ScriptError::FileOpenError(self.0.clone()))
     }
 
     /// Run a second parser instance on the script at the path.
