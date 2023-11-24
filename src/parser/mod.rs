@@ -6,7 +6,9 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 
 use crate::comptime::{Link, LinkKVPair, Script};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
-use crate::pages::{Interaction, Metadata, Page, ParseError, ParseState, Speaker};
+use crate::pages::{Interaction, Page, ParseError, ParseState};
+
+mod metaline;
 
 #[derive(Default)]
 pub struct DgParser {
@@ -83,77 +85,7 @@ impl DgParser {
             return Ok(());
         }
 
-        // enter comptime scripting block
-        if line == COMPTIME_BORDER {
-            // comptime script inside a comptime script is 100% a parsing error
-            debug_assert!(!matches!(self.state, ParseState::ComptimeScript(_)));
-
-            self.state = ParseState::ComptimeScript(Box::new(self.state.clone()));
-            return Ok(());
-        }
-
-        /// split into first "word" and the rest
-        fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
-            full.split_once(char::is_whitespace)
-                .ok_or(ParseError::NotMeta(full.to_string()))
-                .map(|(k, v)| (k, v.trim_start()))
-        }
-
-        let (kv, pageonly) = {
-            // everything after the space is the value
-            let kv = split_first_whitespace(line)?;
-
-            // ...unless the key is PageOnly, in which case we
-            // repeat the process again
-            if kv.0 == "PageOnly" {
-                (split_first_whitespace(kv.1)?, true)
-            } else {
-                (kv, false)
-            }
-        };
-
-        match kv.0 {
-            "SOMEONE" => {
-                self.page.metadata.speaker = Metadata::new(Speaker::Unknown, pageonly);
-                return Ok(());
-            }
-
-            // message spoken by narrator...
-            // how this will be interpreted is an implementation detail
-            "NARRATOR" => {
-                self.page.metadata.speaker = Metadata::new(Speaker::Narrator, pageonly);
-                return Ok(());
-            }
-
-            "%" if !pageonly => {
-                return self.set_ix_id(kv.1);
-            }
-
-            _ => {}
-        }
-
-        // the pair + any pairs linked using the `Link` directive
-        let pair = LinkKVPair::from_tuple(kv);
-        let links = self.get_links_for(pair);
-        let mapped = links.iter().map(|v| (v.0.as_str(), v.1.as_str()));
-        let kvpairs = std::iter::once(kv).chain(mapped);
-
-        for (key, val) in kvpairs {
-            match key {
-                "NAME" => {
-                    let name = Speaker::Named(val.to_owned());
-                    self.page.metadata.speaker = Metadata::new(name, pageonly)
-                }
-
-                "VOX" => self.page.metadata.vox = Metadata::new(val.to_owned(), pageonly),
-
-                _ => {
-                    return Err(ParseError::InvalidMeta(line.to_string()));
-                }
-            };
-        }
-
-        Ok(())
+        metaline::parse(self, line)
     }
 
     fn parse_message(&mut self, line: &str) -> Result<()> {
