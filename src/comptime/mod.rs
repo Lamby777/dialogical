@@ -86,11 +86,10 @@ impl Script {
             return Ok(None);
         };
 
-        fn resolve_script(split: SplitWhitespace) -> Result<Script> {
+        fn script_path(split: SplitWhitespace) -> Result<ScriptPath> {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
-            let contents = ScriptPath(path).resolve()?;
-            Ok(Script::from(contents))
+            Ok(ScriptPath(path))
         }
 
         match command {
@@ -112,11 +111,12 @@ impl Script {
                 // side effects the script might have.
                 // Might need to do more than just this
                 // later on when the language has more features.
-                resolve_script(split)?.execute(&mut vec![], links)?;
+                let interactions = script_path(split)?.parse()?;
             }
 
             "Execute" => {
-                resolve_script(split)?.execute(out, links)?;
+                let content = script_path(split)?.resolve()?;
+                Script::from(content).execute(out, links)?;
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),
