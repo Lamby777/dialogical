@@ -8,7 +8,10 @@ use crate::comptime::{Link, LinkKVPair, Script};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
+mod context;
 mod metaline;
+
+pub use context::ScriptContext;
 
 #[derive(Default)]
 pub struct DgParser {

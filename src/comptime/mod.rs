@@ -11,8 +11,8 @@ use std::path::PathBuf;
 use std::str::SplitWhitespace;
 use thiserror::Error;
 
-use crate::consts::COMMENT_PREFIX;
 use crate::pages::ParseError;
+use crate::{consts::COMMENT_PREFIX, parser::ScriptContext};
 
 mod include;
 mod link;
@@ -81,11 +81,7 @@ impl From<&str> for Script {
 
 impl Script {
     /// returns the new state (`None` = no change)
-    fn execute_normal(
-        &self,
-        line: &str,
-        out: &mut Vec<ScriptOutput>,
-    ) -> Result<Option<ComptimeState>> {
+    fn execute_normal(&self, line: &str, out: &mut ScriptContext) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
             return Ok(None);
         }
@@ -104,7 +100,7 @@ impl Script {
 
         match command {
             "Echo" => {
-                out.push(split.collect::<Vec<_>>().join(" "));
+                out.log(&split.collect::<Vec<_>>().join(" "));
             }
 
             "Link" | "Unlink" => {
@@ -132,7 +128,7 @@ impl Script {
 
             "Execute" => {
                 let content = script_path(split).resolve()?;
-                Script::from(content).execute(out, links)?;
+                Script::from(content).execute(out)?;
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),
@@ -148,7 +144,7 @@ impl Script {
     fn execute_link(
         &self,
         line: &str,
-        out: &mut Vec<ScriptOutput>,
+        out: &mut ScriptContext,
         link: &mut Link,
     ) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
@@ -167,7 +163,7 @@ impl Script {
         // we're done building the link, so...
         if !link.negative {
             // push it to the parser's list of links
-            out.push(ScriptOutput::Link(link.clone()));
+            out.link(link.clone());
         } else {
             // OR if negative, go through all links that have
             // the same `from` and remove the `linked` properties
@@ -182,7 +178,7 @@ impl Script {
         Ok(Some(ComptimeState::Normal))
     }
 
-    pub fn execute(&mut self, out: &mut Vec<ScriptOutput>) -> Result<()> {
+    pub fn execute(&mut self, out: &mut ScriptContext) -> Result<()> {
         use ComptimeState::*;
         let lines = self.content.lines().chain(std::iter::once(""));
 
