@@ -18,12 +18,7 @@ impl ScriptContext {
     }
 
     pub fn unlink(&mut self, link: &Link) {
-        println!(
-            "Pre Unlink:\n{}",
-            self.iter_links()
-                .map(|v| format!("{}", v))
-                .collect::<String>()
-        );
+        println!("Pre Unlink:\n{}", self.fmt_links());
 
         self.0.iter_mut().for_each(|output| {
             if let ScriptOutput::Link(v) = output {
@@ -31,13 +26,14 @@ impl ScriptContext {
             }
         });
 
-        println!(
-            "Pre Unlink:\n{}",
-            self.iter_links()
-                .map(|v| format!("{}", v))
-                .collect::<String>()
-        );
-        println!("\n\n\n\n\n");
+        println!("Post Unlink:\n{}", self.fmt_links());
+        println!("\n\n");
+    }
+
+    pub fn fmt_links(&self) -> String {
+        self.iter_links()
+            .map(|v| format!("{}", v))
+            .collect::<String>()
     }
 
     /// Iterator over all the log messages
