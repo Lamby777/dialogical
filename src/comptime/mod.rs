@@ -97,7 +97,11 @@ impl Script {
         fn script_path(split: SplitWhitespace) -> ScriptPath {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
-            ScriptPath(path)
+            ScriptPath {
+                // TODO fix
+                from: std::env::current_dir().unwrap(),
+                to: path,
+            }
         }
 
         println!("Line: {}", line);
@@ -124,7 +128,8 @@ impl Script {
                 let path = script_path(split);
                 let interactions = path
                     .parse()
-                    .map_err(|e| ScriptError::Import(path.0, Box::new(e)))?;
+                    // TODO fix
+                    .map_err(|e| ScriptError::Import(path.to, Box::new(e)))?;
 
                 let mapped = interactions
                     .into_iter()

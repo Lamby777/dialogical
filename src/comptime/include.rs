@@ -20,15 +20,18 @@ use super::{Result, ScriptError};
 use crate::{parse_all, Interaction, ParseResult};
 
 /// Used for `Execute` and `Import` directives.
-pub struct ScriptPath(pub PathBuf);
+pub struct ScriptPath {
+    pub to: PathBuf,
+    pub from: PathBuf,
+}
 
 impl ScriptPath {
     /// Get the contents of the script at the path.
     /// Used by the `Execute` directive.
     pub fn resolve(&self) -> Result<String> {
-        File::open(&self.0)
+        File::open(&self.to)
             .and_then(|file| io::read_to_string(file))
-            .map_err(|_| ScriptError::FileOpen(self.0.clone()))
+            .map_err(|_| ScriptError::FileOpen(self.to.clone()))
     }
 
     /// Run a second parser instance on the script at the path.
