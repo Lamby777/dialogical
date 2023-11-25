@@ -25,7 +25,7 @@ pub struct ScriptPath(pub PathBuf);
 
 impl Default for ScriptPath {
     fn default() -> Self {
-        Self(crate::MAIN_FILE_PATH.unwrap_or_else(|| std::env::current_dir().unwrap()))
+        Self(crate::get_entry_path())
     }
 }
 

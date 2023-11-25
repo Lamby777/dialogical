@@ -12,6 +12,7 @@ use clap::Parser;
 
 use std::fs::File;
 use std::io::{self, Read, Write};
+use std::path::PathBuf;
 
 mod comptime;
 mod consts;
@@ -29,6 +30,13 @@ type Error = Box<dyn std::error::Error>;
 
 use once_cell::sync::OnceCell;
 static SILENT: OnceCell<bool> = OnceCell::new();
+static ENTRY_PATH: OnceCell<PathBuf> = OnceCell::new();
+
+pub(crate) fn get_entry_path() -> PathBuf {
+    ENTRY_PATH
+        .get_or_init(|| std::env::current_dir().unwrap())
+        .clone()
+}
 
 macro_rules! log {
     ($($arg:tt)*) => {
@@ -59,6 +67,12 @@ pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
 
 pub fn main(args: Args) -> Result<(), Error> {
     SILENT.set(args.silent).unwrap();
+    ENTRY_PATH
+        .set(match args.file {
+            Some(ref file) => PathBuf::from(file),
+            None => std::env::current_dir()?,
+        })
+        .unwrap();
 
     // TODO error handling for file rw
     let input_stream: Box<dyn Read> = match args.file {
