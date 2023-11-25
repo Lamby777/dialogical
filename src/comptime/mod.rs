@@ -90,11 +90,8 @@ impl Script {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
 
-            dbg!(&script.path, &path);
             script.path.make_append(path)
         }
-
-        println!("Line: {}", line);
 
         match command {
             "Echo" => {

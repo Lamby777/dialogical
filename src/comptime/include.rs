@@ -26,7 +26,6 @@ impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
     pub fn make_append(&self, path: PathBuf) -> Self {
-        dbg!(&self.0);
         Self(self.0.parent().unwrap().join(path))
     }
 
@@ -41,7 +40,6 @@ impl ScriptPath {
     /// Run a second parser instance on the script at the path.
     /// Used by the `Import` directive.
     pub fn parse(&self) -> ParseResult<Vec<Interaction>> {
-        println!("Parsing script at path {:?}", self.0);
         let contents = self.read()?;
 
         let mut parser = DgParser::new(self.0.clone());

@@ -162,8 +162,6 @@ impl DgParser {
         for line in lines {
             use ParseState::*;
 
-            println!("{:?}: {}", self.state, line);
-
             (match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section

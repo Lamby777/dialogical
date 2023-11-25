@@ -29,15 +29,10 @@ impl ScriptContext {
     }
 
     pub fn link(&mut self, link: Link) {
-        println!("Pre Link:\n{}", self.fmt_links());
         self.0.push(ScriptOutput::Link(link));
-        println!("Post Link:\n{}", self.fmt_links());
-        println!("\n\n");
     }
 
     pub fn unlink(&mut self, link: &Link) {
-        println!("Pre Unlink:\n{}", self.fmt_links());
-
         self.0.iter_mut().for_each(|output| {
             if let ScriptOutput::Link(v) = output {
                 v.associations
@@ -46,9 +41,6 @@ impl ScriptContext {
         });
 
         self.clean_links();
-
-        println!("Post Unlink:\n{}", self.fmt_links());
-        println!("\n\n");
     }
 
     /// Delete any links with empty associations
