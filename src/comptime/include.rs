@@ -35,18 +35,25 @@ impl Default for ScriptPath {
 }
 
 impl ScriptPath {
+    /// Resolve the path by combining `from` and `to`.
+    pub fn resolve(&self) -> PathBuf {
+        self.from.join(&self.to)
+    }
+
     /// Get the contents of the script at the path.
     /// Used by the `Execute` directive.
-    pub fn resolve(&self) -> Result<String> {
-        File::open(&self.to)
+    pub fn read(&self) -> Result<String> {
+        let path = self.resolve();
+
+        File::open(path.clone())
             .and_then(|file| io::read_to_string(file))
-            .map_err(|_| ScriptError::FileOpen(self.to.clone()))
+            .map_err(|_| ScriptError::FileOpen(path))
     }
 
     /// Run a second parser instance on the script at the path.
     /// Used by the `Import` directive.
     pub fn parse(&self) -> ParseResult<Vec<Interaction>> {
-        let contents = self.resolve()?;
+        let contents = self.read()?;
         let interactions = parse_all(&contents)?;
         Ok(interactions)
     }

@@ -138,7 +138,7 @@ impl Script {
             }
 
             "Execute" => {
-                let content = script_path(split).resolve()?;
+                let content = script_path(split).read()?;
                 Script::from(content).execute(out)?;
             }
 
