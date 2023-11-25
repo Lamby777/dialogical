@@ -40,6 +40,7 @@ macro_rules! log {
 
 /// Parse a single string into a `Vec<>` of interactions.
 /// Uses the current directory as the parser path.
+#[deprecated = "Use `DgParser::parse_all` instead."]
 pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
     // TODO no unwrap
     DgParser::new(std::env::current_dir().unwrap())
