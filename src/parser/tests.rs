@@ -6,16 +6,17 @@ use crate::pages::Speaker::*;
 
 macro_rules! dummy_file {
     ($name:expr) => {
-        concat!("../../dummy_data/", $name, ".dg")
+        concat!(env!("CARGO_MANIFEST_DIR"), "/dummy_data/", $name, ".dg")
     };
 }
 
 macro_rules! parse_dummy {
     ($name:expr) => {{
         let data = include_str!(dummy_file!($name));
-        let path = dummy_file!($name);
+        let path = PathBuf::from(dummy_file!($name));
+        let path = path.canonicalize().unwrap();
 
-        let mut parser = DgParser::new(path.into());
+        let mut parser = DgParser::new(path);
         parser.parse_all(data).unwrap().to_vec()
     }};
 }
