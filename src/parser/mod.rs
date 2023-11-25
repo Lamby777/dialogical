@@ -73,7 +73,6 @@ impl DgParser {
             // TODO no `self.script`, make the enum variant
             // store the script built up so far
             self.script.clear();
-            self.interactions.extend(self.context.drain_interactions());
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),
@@ -147,6 +146,10 @@ impl DgParser {
     fn push_ix(&mut self) -> Result<()> {
         self.interactions
             .push(self.interaction.take().ok_or(ParseError::PushEmptyIX)?);
+
+        // push any interactions imported from comptime scripts
+        self.interactions.extend(self.context.drain_interactions());
+
         Ok(())
     }
 
