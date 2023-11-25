@@ -25,7 +25,7 @@ pub struct ScriptPath(pub PathBuf);
 
 impl Default for ScriptPath {
     fn default() -> Self {
-        Self(std::env::current_dir().unwrap())
+        Self(crate::MAIN_FILE_PATH.unwrap_or_else(|| std::env::current_dir().unwrap()))
     }
 }
 
@@ -47,6 +47,7 @@ impl ScriptPath {
     /// Run a second parser instance on the script at the path.
     /// Used by the `Import` directive.
     pub fn parse(&self) -> ParseResult<Vec<Interaction>> {
+        println!("Parsing script at path {:?}", self.0);
         let contents = self.read()?;
         let interactions = parse_all(&contents)?;
         Ok(interactions)

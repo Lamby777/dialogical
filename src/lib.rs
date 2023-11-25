@@ -27,9 +27,12 @@ pub use parser::Result as ParseResult;
 
 type Error = Box<dyn std::error::Error>;
 
+use once_cell::sync::OnceCell;
+static SILENT: OnceCell<bool> = OnceCell::new();
+
 macro_rules! log {
-    ($silent:expr, $($arg:tt)*) => {
-        if !$silent {
+    ($($arg:tt)*) => {
+        if !SILENT.get().unwrap_or(&false) {
             eprintln!($($arg)*);
         }
     };
@@ -43,7 +46,7 @@ pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
 pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
     match bincode::deserialize(data) {
         Ok(v) => {
-            log!(false, "Deserialized successfully!");
+            log!("Deserialized successfully!");
             Ok(v)
         }
 
@@ -55,7 +58,7 @@ pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
 }
 
 pub fn main(args: Args) -> Result<(), Error> {
-    let silent = args.silent;
+    SILENT.set(args.silent).unwrap();
 
     // TODO error handling for file rw
     let input_stream: Box<dyn Read> = match args.file {
@@ -68,19 +71,19 @@ pub fn main(args: Args) -> Result<(), Error> {
         None => Box::new(io::stdout()),
     };
 
-    log!(silent, "Reading...");
+    log!("Reading...");
     let data = io::read_to_string(input_stream)?;
 
-    log!(silent, "Parsing...");
+    log!("Parsing...");
     let res = parse_all(&data)?;
 
-    log!(silent, "Serializing...");
+    log!("Serializing...");
     let res = bincode::serialize(&res)?;
 
-    log!(silent, "Writing...");
+    log!("Writing...");
     output_stream.write(&res)?;
 
-    log!(silent, "Done!");
+    log!("Done!");
     Ok(())
 }
 

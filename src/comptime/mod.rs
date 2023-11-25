@@ -124,7 +124,6 @@ impl Script {
                 let path = script_path(self, split);
                 let interactions = path
                     .parse()
-                    // TODO fix
                     .map_err(|e| ScriptError::Import(path.0, Box::new(e)))?;
 
                 let mapped = interactions

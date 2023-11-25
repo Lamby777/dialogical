@@ -17,6 +17,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 bincode = "1.3.3"
 clap = { version = "4.4.8", features = ["derive"] }
+once_cell = "1.18.0"
 serde = { version = "1.0.193", features = ["derive"] }
 thiserror = "1.0.50"
 
