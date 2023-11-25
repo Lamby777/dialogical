@@ -21,17 +21,11 @@ use crate::{parse_all, Interaction, ParseResult};
 
 /// Used for `Execute` and `Import` directives.
 #[derive(Clone)]
-pub struct ScriptPath {
-    pub to: PathBuf,
-    pub from: PathBuf,
-}
+pub struct ScriptPath(pub PathBuf);
 
 impl Default for ScriptPath {
     fn default() -> Self {
-        Self {
-            from: std::env::current_dir().unwrap(),
-            to: PathBuf::default(),
-        }
+        Self(std::env::current_dir().unwrap())
     }
 }
 
@@ -39,26 +33,15 @@ impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
     pub fn make_append(&self, path: &str) -> Self {
-        let new_from = self.resolve();
-        Self {
-            from: new_from,
-            to: PathBuf::from(path),
-        }
-    }
-
-    /// Resolve the path by combining `from` and `to`.
-    pub fn resolve(&self) -> PathBuf {
-        self.from.join(&self.to)
+        Self(self.0.join(path))
     }
 
     /// Get the contents of the script at the path.
     /// Used by the `Execute` directive.
     pub fn read(&self) -> Result<String> {
-        let path = self.resolve();
-
-        File::open(path.clone())
+        File::open(&self.0)
             .and_then(|file| io::read_to_string(file))
-            .map_err(|_| ScriptError::FileOpen(path))
+            .map_err(|_| ScriptError::FileOpen(self.0.clone()))
     }
 
     /// Run a second parser instance on the script at the path.
