@@ -25,7 +25,7 @@ pub struct ScriptPath(pub PathBuf);
 
 impl Default for ScriptPath {
     fn default() -> Self {
-        Self(crate::get_entry_path())
+        Self(crate::entry_path())
     }
 }
 
@@ -33,7 +33,7 @@ impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
     pub fn make_append(&self, path: PathBuf) -> Self {
-        Self(self.0.join(path))
+        Self(self.0.parent().unwrap().join(path))
     }
 
     /// Get the contents of the script at the path.

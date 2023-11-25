@@ -32,7 +32,9 @@ use once_cell::sync::OnceCell;
 static SILENT: OnceCell<bool> = OnceCell::new();
 static ENTRY_PATH: OnceCell<PathBuf> = OnceCell::new();
 
-pub(crate) fn get_entry_path() -> PathBuf {
+/// Return the path of the file that was passed in as input.
+/// Returns the current working directory if stdin
+pub(crate) fn entry_path() -> PathBuf {
     ENTRY_PATH
         .get_or_init(|| std::env::current_dir().unwrap())
         .clone()
