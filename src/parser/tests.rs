@@ -222,36 +222,7 @@ fn parse_filter_empties() {
 #[test]
 fn parse_two_ix() {
     let parsed = parse_dummy!("two_ix");
-    let expected = vec![
-        Interaction {
-            id: "First".to_string(),
-            pages: vec![
-                Page {
-                    metadata: meta_double!("Porky"),
-                    content: "First page".to_owned(),
-                },
-                Page {
-                    metadata: meta_double!("Ethan"),
-                    content: "Second page".to_owned(),
-                },
-            ],
-        },
-        Interaction {
-            id: "Second".to_string(),
-            pages: vec![
-                Page {
-                    metadata: meta_double!("Terra"),
-                    content: "Third page".to_owned(),
-                },
-                Page {
-                    metadata: meta_double!("Siva"),
-                    content: "Fourth page".to_owned(),
-                },
-            ],
-        },
-    ];
-
-    assert_eq!(parsed, expected);
+    assert_eq!(parsed, expected!(two_ix));
 }
 
 #[test]
@@ -294,30 +265,5 @@ fn parse_small_interaction() {
 #[test]
 fn parse_one_ix_many_pages() {
     let parsed = parse_dummy!("one_ix_many_pages");
-    let expected = Interaction {
-        id: "Interaction".to_string(),
-        pages: vec![
-            Page {
-                metadata: meta_double!("Deez"),
-                content: "When the words are sus".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata {
-                    speaker: Permanent(Named("Gamer".to_owned())),
-                    vox: NoChange,
-                },
-                content: "Words go brrr".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata::nochange(),
-                content: "When the imposter is sus".to_owned(),
-            },
-            Page {
-                metadata: meta_double!("Siva"),
-                content: "Testing".to_owned(),
-            },
-        ],
-    };
-
-    assert_eq!(parsed, vec![expected]);
+    assert_eq!(parsed, vec![expected!(one_ix_many_pages)]);
 }
