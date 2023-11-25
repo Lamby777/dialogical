@@ -69,12 +69,12 @@ impl ScriptContext {
         })
     }
 
-    pub fn all_links(&self) -> Vec<&Link> {
+    pub fn links(&self) -> Vec<&Link> {
         self.iter_links().collect()
     }
 
-    pub fn get_links_for(&mut self, kv: LinkKVPair) -> Vec<LinkKVPair> {
-        self.all_links()
+    pub fn find_links_for(&mut self, kv: LinkKVPair) -> Vec<LinkKVPair> {
+        self.links()
             .iter()
             .filter_map(|v| {
                 if v.targets == kv {

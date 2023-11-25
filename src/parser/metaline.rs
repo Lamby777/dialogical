@@ -55,7 +55,7 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
 
     // the pair + any pairs linked using the `Link` directive
     let pair = LinkKVPair::from_tuple(kv);
-    let links = parser.context.get_links_for(pair);
+    let links = parser.context.find_links_for(pair);
     let mapped = links.iter().map(|v| (v.0.as_str(), v.1.as_str()));
     let kvpairs = std::iter::once(kv).chain(mapped);
 
