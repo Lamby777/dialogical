@@ -1,5 +1,5 @@
 use crate::comptime::ScriptOutput;
-use crate::{Link, LinkKVPair};
+use crate::{Interaction, Link, LinkKVPair};
 
 /// Wrapper type around `Vec<ScriptOutput>`.
 ///
@@ -11,6 +11,21 @@ pub struct ScriptContext(pub Vec<ScriptOutput>);
 impl ScriptContext {
     pub fn log(&mut self, msg: &str) {
         self.0.push(ScriptOutput::LogMessage(msg.to_owned()));
+    }
+
+    pub fn drain_interactions(&mut self) -> Vec<Interaction> {
+        let mut interactions = vec![];
+
+        // TODO probably a better way to do this
+        self.0.retain(|output| match output {
+            ScriptOutput::Interaction(interaction) => {
+                interactions.push(interaction.clone());
+                false
+            }
+            _ => true,
+        });
+
+        interactions
     }
 
     pub fn link(&mut self, link: Link) {
