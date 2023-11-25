@@ -32,7 +32,7 @@ impl Default for ScriptPath {
 impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
-    pub fn make_append(&self, path: &str) -> Self {
+    pub fn make_append(&self, path: PathBuf) -> Self {
         Self(self.0.join(path))
     }
 

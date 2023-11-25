@@ -93,13 +93,11 @@ impl Script {
             return Ok(None);
         };
 
-        fn script_path(split: SplitWhitespace) -> ScriptPath {
+        // join the iterator into a script path
+        fn script_path(script: &Script, split: SplitWhitespace) -> ScriptPath {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
-            ScriptPath(
-                // TODO fix
-                std::env::current_dir().unwrap(),
-            )
+            script.path.make_append(path)
         }
 
         println!("Line: {}", line);
@@ -123,7 +121,7 @@ impl Script {
                 // side effects the script might have.
                 // Might need to do more than just this
                 // later on when the language has more features.
-                let path = script_path(split);
+                let path = script_path(self, split);
                 let interactions = path
                     .parse()
                     // TODO fix
@@ -137,7 +135,7 @@ impl Script {
             }
 
             "Execute" => {
-                let content = script_path(split).read()?;
+                let content = script_path(self, split).read()?;
                 Script::from(content).execute(out)?;
             }
 
