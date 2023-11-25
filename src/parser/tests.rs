@@ -17,6 +17,13 @@ macro_rules! include_dummy {
     };
 }
 
+macro_rules! parse_dummy {
+    ($name:expr) => {{
+        let data = include_dummy!($name);
+        parse_all(data).unwrap()
+    }};
+}
+
 /// shorthand for permanent change of speaker and vox with same string
 /// good for writing quick unit tests
 fn meta_double(name: &str) -> PageMetadata {
@@ -26,11 +33,62 @@ fn meta_double(name: &str) -> PageMetadata {
     }
 }
 
+macro_rules! SMALL_IX_EXPECTED {
+    () => {
+        Interaction {
+            id: "Test1".to_string(),
+            pages: vec![
+                Page {
+                    metadata: meta_double("Siva"),
+                    content: "First page".to_owned(),
+                },
+                Page {
+                    metadata: meta_double("Terra"),
+                    content: "Second page\nWith more words".to_owned(),
+                },
+            ],
+        }
+    };
+}
+
+#[test]
+fn import() {
+    let parsed = parse_dummy!("import");
+    let expected = Interaction {
+        id: "Unlink Test".to_string(),
+        pages: vec![
+            Page {
+                metadata: meta_double("Mira"),
+                content: "Page 1".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::nochange(),
+                content: "Page 2".to_owned(),
+            },
+            Page {
+                metadata: meta_double("Dylan"),
+                content: "Page 3".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata {
+                    speaker: Permanent(Named("Mira".to_owned())),
+                    vox: NoChange,
+                },
+                content: "Page 4".to_owned(),
+            },
+            Page {
+                metadata: meta_double("Dylan"),
+                content: "Page 5".to_owned(),
+            },
+        ],
+    };
+
+    assert_eq!(parsed, vec![expected]);
+}
+
 #[test]
 fn unlink_name_to_vox() {
-    let data = include_dummy!("unlink");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("unlink");
     let expected = Interaction {
         id: "Unlink Test".to_string(),
         pages: vec![
@@ -65,9 +123,7 @@ fn unlink_name_to_vox() {
 
 #[test]
 fn link_name_to_vox() {
-    let data = include_dummy!("link");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("link");
     let expected = Interaction {
         id: "Link Test".to_string(),
         pages: vec![
@@ -94,9 +150,7 @@ fn link_name_to_vox() {
 
 #[test]
 fn parse_filter_empties() {
-    let data = include_dummy!("empties");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("empties");
     let expected = vec![Interaction {
         id: "Empties Test".to_string(),
         pages: vec![
@@ -124,9 +178,7 @@ fn parse_filter_empties() {
 
 #[test]
 fn parse_two_ix() {
-    let data = include_dummy!("two_ix");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("two_ix");
     let expected = vec![
         Interaction {
             id: "First".to_string(),
@@ -161,9 +213,7 @@ fn parse_two_ix() {
 
 #[test]
 fn parse_pageonly() {
-    let data = include_dummy!("pageonly");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("pageonly");
     let expected = Interaction {
         id: "PageOnly Test".to_string(),
         pages: vec![
@@ -194,31 +244,13 @@ Who's making me do this?"#
 #[test]
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
-    let data = include_dummy!("small_ix");
-    let parsed = parse_all(data).unwrap();
-
-    let expected = Interaction {
-        id: "Test1".to_string(),
-        pages: vec![
-            Page {
-                metadata: meta_double("Siva"),
-                content: "First page".to_owned(),
-            },
-            Page {
-                metadata: meta_double("Terra"),
-                content: "Second page\nWith more words".to_owned(),
-            },
-        ],
-    };
-
-    assert_eq!(parsed, vec![expected]);
+    let parsed = parse_dummy!("small_ix");
+    assert_eq!(parsed, vec![SMALL_IX_EXPECTED!()]);
 }
 
 #[test]
 fn parse_one_ix_many_pages() {
-    let data = include_dummy!("one_ix_many_pages");
-    let parsed = parse_all(data).unwrap();
-
+    let parsed = parse_dummy!("one_ix_many_pages");
     let expected = Interaction {
         id: "Interaction".to_string(),
         pages: vec![
