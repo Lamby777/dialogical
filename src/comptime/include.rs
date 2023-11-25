@@ -25,6 +25,15 @@ pub struct ScriptPath {
     pub from: PathBuf,
 }
 
+impl Default for ScriptPath {
+    fn default() -> Self {
+        Self {
+            from: std::env::current_dir().unwrap(),
+            to: PathBuf::default(),
+        }
+    }
+}
+
 impl ScriptPath {
     /// Get the contents of the script at the path.
     /// Used by the `Execute` directive.

@@ -53,6 +53,7 @@ enum ComptimeState {
 pub struct Script {
     content: String,
     state: RefCell<ComptimeState>,
+    path: ScriptPath,
 }
 
 // stuff passed back to the parser once the script is done
@@ -68,16 +69,14 @@ impl From<String> for Script {
         Self {
             content,
             state: RefCell::new(ComptimeState::default()),
+            path: ScriptPath::default(),
         }
     }
 }
 
 impl From<&str> for Script {
     fn from(content: &str) -> Self {
-        Self {
-            content: content.to_owned(),
-            state: RefCell::new(ComptimeState::default()),
-        }
+        Self::from(content.to_owned())
     }
 }
 
