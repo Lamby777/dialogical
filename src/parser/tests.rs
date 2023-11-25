@@ -145,21 +145,13 @@ macro_rules! expected {
     };
 
     (import_sub) => {
-        vec![
-            Interaction {
-                id: "Import Sub-imports".to_string(),
-                pages: vec![],
-            },
-            Interaction {
-                id: "Import Test".to_string(),
-                pages: vec![],
-            },
-            expected!(small_ix),
-            expected!(link),
-            expected!(two_ix)[0].clone(),
-            expected!(two_ix)[1].clone(),
-            expected!(one_ix_many_pages),
-        ]
+        vec![Interaction {
+            id: "Import Sub-imports".to_string(),
+            pages: vec![],
+        }]
+        .into_iter()
+        .chain(expected!(import_others))
+        .collect::<Vec<_>>()
     };
 }
 
