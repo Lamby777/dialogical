@@ -137,6 +137,10 @@ fn import() {
 
     let two_ix = expected!(two_ix);
     let expected = vec![
+        Interaction {
+            id: "Import Test".to_string(),
+            pages: vec![],
+        },
         expected!(small_ix),
         expected!(link),
         two_ix[0].clone(),
