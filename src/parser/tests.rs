@@ -35,8 +35,8 @@ macro_rules! meta_double {
     };
 }
 
-macro_rules! SMALL_IX_EXPECTED {
-    () => {
+macro_rules! expected {
+    (small_ix) => {
         Interaction {
             id: "Test1".to_string(),
             pages: vec![
@@ -47,6 +47,29 @@ macro_rules! SMALL_IX_EXPECTED {
                 Page {
                     metadata: meta_double!("Terra"),
                     content: "Second page\nWith more words".to_owned(),
+                },
+            ],
+        }
+    };
+
+    (link) => {
+        Interaction {
+            id: "Link Test".to_string(),
+            pages: vec![
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Permanent(Named("Cherry".to_owned())),
+                        vox: Permanent("Mira".to_owned()),
+                    },
+                    content: "Page 1".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata::nochange(),
+                    content: "Page 2".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata::nochange(),
+                    content: "Page 3".to_owned(),
                 },
             ],
         }
@@ -126,28 +149,7 @@ fn unlink_name_to_vox() {
 #[test]
 fn link_name_to_vox() {
     let parsed = parse_dummy!("link");
-    let expected = Interaction {
-        id: "Link Test".to_string(),
-        pages: vec![
-            Page {
-                metadata: PageMetadata {
-                    speaker: Permanent(Named("Cherry".to_owned())),
-                    vox: Permanent("Mira".to_owned()),
-                },
-                content: "Page 1".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata::nochange(),
-                content: "Page 2".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata::nochange(),
-                content: "Page 3".to_owned(),
-            },
-        ],
-    };
-
-    assert_eq!(parsed, vec![expected]);
+    assert_eq!(parsed, vec![expected!(link)]);
 }
 
 #[test]
@@ -247,7 +249,7 @@ Who's making me do this?"#
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
     let parsed = parse_dummy!("small_ix");
-    assert_eq!(parsed, vec![SMALL_IX_EXPECTED!()]);
+    assert_eq!(parsed, vec![expected!(small_ix)]);
 }
 
 #[test]
