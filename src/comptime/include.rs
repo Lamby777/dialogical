@@ -20,6 +20,7 @@ use super::{Result, ScriptError};
 use crate::{parse_all, Interaction, ParseResult};
 
 /// Used for `Execute` and `Import` directives.
+#[derive(Clone)]
 pub struct ScriptPath {
     pub to: PathBuf,
     pub from: PathBuf,
@@ -35,6 +36,16 @@ impl Default for ScriptPath {
 }
 
 impl ScriptPath {
+    /// Create new ScriptPath by resolving one and appending
+    /// a new path onto it
+    pub fn make_append(&self, path: &str) -> Self {
+        let new_from = self.resolve();
+        Self {
+            from: new_from,
+            to: PathBuf::from(path),
+        }
+    }
+
     /// Resolve the path by combining `from` and `to`.
     pub fn resolve(&self) -> PathBuf {
         self.from.join(&self.to)
