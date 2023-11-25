@@ -50,6 +50,9 @@ impl DgParser {
             let script_content = self.script.join("\n");
             let mut script = Script::from(script_content);
             script.execute(&mut self.context)?;
+
+            // TODO no `self.script`, make the enum variant
+            // store the script built up so far
             self.script.clear();
 
             self.state = match &self.state {

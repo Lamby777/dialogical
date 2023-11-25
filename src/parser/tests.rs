@@ -49,7 +49,7 @@ fn unlink_name_to_vox() {
             Page {
                 metadata: PageMetadata {
                     speaker: Permanent(Named("Mira".to_owned())),
-                    vox: Permanent("Dylan".to_owned()),
+                    vox: NoChange,
                 },
                 content: "Page 4".to_owned(),
             },
