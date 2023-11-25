@@ -1,6 +1,5 @@
 use super::*;
 use crate::pages::PageMetadata;
-use crate::parse_all;
 
 use crate::pages::Metadata::*;
 use crate::pages::Speaker::*;
@@ -11,16 +10,13 @@ macro_rules! dummy_file {
     };
 }
 
-macro_rules! include_dummy {
-    ($name:expr) => {
-        include_str!(dummy_file!($name))
-    };
-}
-
 macro_rules! parse_dummy {
     ($name:expr) => {{
-        let data = include_dummy!($name);
-        parse_all(data).unwrap()
+        let data = include_str!(dummy_file!($name));
+        let path = dummy_file!($name);
+
+        let mut parser = DgParser::new(path.into());
+        parser.parse_all(data).unwrap().to_vec()
     }};
 }
 

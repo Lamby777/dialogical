@@ -18,6 +18,8 @@ pub use context::ScriptContext;
 pub struct DgParser {
     state: ParseState,
     context: ScriptContext,
+
+    /// Entry file path for resolving imports
     path: PathBuf,
 
     /// the end result it's putting together
