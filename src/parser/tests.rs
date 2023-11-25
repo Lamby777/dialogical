@@ -74,41 +74,80 @@ macro_rules! expected {
             ],
         }
     };
+
+    (two_ix) => {
+        vec![
+            Interaction {
+                id: "First".to_string(),
+                pages: vec![
+                    Page {
+                        metadata: meta_double!("Porky"),
+                        content: "First page".to_owned(),
+                    },
+                    Page {
+                        metadata: meta_double!("Ethan"),
+                        content: "Second page".to_owned(),
+                    },
+                ],
+            },
+            Interaction {
+                id: "Second".to_string(),
+                pages: vec![
+                    Page {
+                        metadata: meta_double!("Terra"),
+                        content: "Third page".to_owned(),
+                    },
+                    Page {
+                        metadata: meta_double!("Siva"),
+                        content: "Fourth page".to_owned(),
+                    },
+                ],
+            },
+        ]
+    };
+
+    (one_ix_many_pages) => {
+        Interaction {
+            id: "Interaction".to_string(),
+            pages: vec![
+                Page {
+                    metadata: meta_double!("Deez"),
+                    content: "When the words are sus".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata {
+                        speaker: Permanent(Named("Gamer".to_owned())),
+                        vox: NoChange,
+                    },
+                    content: "Words go brrr".to_owned(),
+                },
+                Page {
+                    metadata: PageMetadata::nochange(),
+                    content: "When the imposter is sus".to_owned(),
+                },
+                Page {
+                    metadata: meta_double!("Siva"),
+                    content: "Testing".to_owned(),
+                },
+            ],
+        }
+    };
 }
 
 #[test]
 fn import() {
     let parsed = parse_dummy!("import");
-    let expected = Interaction {
-        id: "Unlink Test".to_string(),
-        pages: vec![
-            Page {
-                metadata: meta_double!("Mira"),
-                content: "Page 1".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata::nochange(),
-                content: "Page 2".to_owned(),
-            },
-            Page {
-                metadata: meta_double!("Dylan"),
-                content: "Page 3".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata {
-                    speaker: Permanent(Named("Mira".to_owned())),
-                    vox: NoChange,
-                },
-                content: "Page 4".to_owned(),
-            },
-            Page {
-                metadata: meta_double!("Dylan"),
-                content: "Page 5".to_owned(),
-            },
-        ],
-    };
 
-    assert_eq!(parsed, vec![expected]);
+    let two_ix = expected!(two_ix);
+    let expected = vec![
+        expected!(small_ix),
+        expected!(link),
+        two_ix[0].clone(),
+        two_ix[1].clone(),
+        expected!(one_ix_many_pages),
+    ];
+
+    assert_eq!(parsed, expected);
 }
 
 #[test]
