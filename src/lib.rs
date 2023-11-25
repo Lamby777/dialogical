@@ -12,7 +12,6 @@ use clap::Parser;
 
 use std::fs::File;
 use std::io::{self, Read, Write};
-use std::path::PathBuf;
 
 mod comptime;
 mod consts;
@@ -29,16 +28,7 @@ pub use parser::Result as ParseResult;
 type Error = Box<dyn std::error::Error>;
 
 use once_cell::sync::OnceCell;
-static SILENT: OnceCell<bool> = OnceCell::new();
-static ENTRY_PATH: OnceCell<PathBuf> = OnceCell::new();
-
-/// Return the path of the file that was passed in as input.
-/// Returns the current working directory if stdin
-pub(crate) fn entry_path() -> PathBuf {
-    ENTRY_PATH
-        .get_or_init(|| std::env::current_dir().unwrap())
-        .clone()
-}
+pub(crate) static SILENT: OnceCell<bool> = OnceCell::new();
 
 macro_rules! log {
     ($($arg:tt)*) => {
@@ -69,12 +59,6 @@ pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
 
 pub fn main(args: Args) -> Result<(), Error> {
     SILENT.set(args.silent).unwrap();
-    ENTRY_PATH
-        .set(match args.file {
-            Some(ref file) => PathBuf::from(file),
-            None => std::env::current_dir()?,
-        })
-        .unwrap();
 
     // TODO error handling for file rw
     let input_stream: Box<dyn Read> = match args.file {
@@ -91,7 +75,8 @@ pub fn main(args: Args) -> Result<(), Error> {
     let data = io::read_to_string(input_stream)?;
 
     log!("Parsing...");
-    let res = parse_all(&data)?;
+    let mut parser = DgParser::default();
+    let res = parser.parse_all(&data)?;
 
     log!("Serializing...");
     let res = bincode::serialize(&res)?;

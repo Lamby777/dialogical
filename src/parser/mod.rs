@@ -4,6 +4,8 @@
 
 pub type Result<T> = std::result::Result<T, ParseError>;
 
+use std::path::PathBuf;
+
 use crate::comptime::Script;
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
@@ -17,6 +19,7 @@ pub use context::ScriptContext;
 pub struct DgParser {
     state: ParseState,
     context: ScriptContext,
+    path: PathBuf,
 
     /// the end result it's putting together
     interactions: Vec<Interaction>,
