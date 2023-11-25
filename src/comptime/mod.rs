@@ -89,6 +89,8 @@ impl Script {
         fn script_path(script: &Script, split: SplitWhitespace) -> ScriptPath {
             let args = split.collect::<Vec<_>>().join(" ");
             let path = PathBuf::from(args);
+
+            dbg!(&script.path, &path);
             script.path.make_append(path)
         }
 
@@ -126,6 +128,7 @@ impl Script {
             }
 
             "Execute" => {
+                // TODO this probably isn't doing what it should
                 let path = script_path(self, split);
                 let content = path.read()?;
                 let mut script = Self::new(content, path);

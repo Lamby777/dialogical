@@ -7,9 +7,7 @@
 //! interactions from another file, PLEASE use the `Import`
 //! directive instead.
 //!
-//! `Inlude` is only good for including stuff like common `Link`
-//! commands that you don't want to have to keep typing out at the
-//! top of every single dialogue file you write.
+//! TODO unit test if that claim is actually true ^^^ lol
 //!
 
 use std::fs::File;
@@ -20,13 +18,14 @@ use super::{Result, ScriptError};
 use crate::{parse_all, Interaction, ParseResult};
 
 /// Used for `Execute` and `Import` directives.
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct ScriptPath(pub PathBuf);
 
 impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
     pub fn make_append(&self, path: PathBuf) -> Self {
+        dbg!(&self.0);
         Self(self.0.parent().unwrap().join(path))
     }
 

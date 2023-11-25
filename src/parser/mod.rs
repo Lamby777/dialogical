@@ -15,7 +15,6 @@ mod metaline;
 
 pub use context::ScriptContext;
 
-#[derive(Default)]
 pub struct DgParser {
     state: ParseState,
     context: ScriptContext,
@@ -32,6 +31,20 @@ pub struct DgParser {
 }
 
 impl DgParser {
+    pub fn new(path: PathBuf) -> Self {
+        Self {
+            state: ParseState::default(),
+            context: ScriptContext::default(),
+            path,
+
+            interactions: vec![],
+            interaction: None,
+            page: Page::default(),
+            pagebuf: vec![],
+            script: vec![],
+        }
+    }
+
     fn set_ix_id(&mut self, id: &str) -> Result<()> {
         if self.interaction.is_some() {
             self.push_ix()?;

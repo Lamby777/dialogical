@@ -39,8 +39,12 @@ macro_rules! log {
 }
 
 /// Parse a single string into a `Vec<>` of interactions.
+/// Uses the current directory as the parser path.
 pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
-    DgParser::default().parse_all(data).map(|v| v.to_vec())
+    // TODO no unwrap
+    DgParser::new(std::env::current_dir().unwrap())
+        .parse_all(data)
+        .map(|v| v.to_vec())
 }
 
 pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
@@ -62,7 +66,7 @@ pub fn main(args: Args) -> Result<(), Error> {
 
     // TODO error handling for file rw
     let input_stream: Box<dyn Read> = match args.file {
-        Some(file) => Box::new(File::open(file).unwrap()),
+        Some(ref file) => Box::new(File::open(file).unwrap()),
         None => Box::new(io::stdin()),
     };
 
@@ -75,7 +79,14 @@ pub fn main(args: Args) -> Result<(), Error> {
     let data = io::read_to_string(input_stream)?;
 
     log!("Parsing...");
-    let mut parser = DgParser::default();
+    // if stdin, the path is the cwd
+    let path = if let Some(ref path) = args.file {
+        std::path::PathBuf::from(path)
+    } else {
+        std::env::current_dir()?
+    };
+
+    let mut parser = DgParser::new(path);
     let res = parser.parse_all(&data)?;
 
     log!("Serializing...");
