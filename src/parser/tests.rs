@@ -129,26 +129,50 @@ macro_rules! expected {
             ],
         }
     };
+
+    (import_others) => {
+        vec![
+            Interaction {
+                id: "Import Test".to_string(),
+                pages: vec![],
+            },
+            expected!(small_ix),
+            expected!(link),
+            expected!(two_ix)[0].clone(),
+            expected!(two_ix)[1].clone(),
+            expected!(one_ix_many_pages),
+        ]
+    };
+
+    (import_sub) => {
+        vec![
+            Interaction {
+                id: "Import Sub-imports".to_string(),
+                pages: vec![],
+            },
+            Interaction {
+                id: "Import Test".to_string(),
+                pages: vec![],
+            },
+            expected!(small_ix),
+            expected!(link),
+            expected!(two_ix)[0].clone(),
+            expected!(two_ix)[1].clone(),
+            expected!(one_ix_many_pages),
+        ]
+    };
 }
 
 #[test]
-fn import() {
+fn import_sub() {
+    let parsed = parse_dummy!("import_sub");
+    assert_eq!(parsed, expected!(import_sub));
+}
+
+#[test]
+fn import_others() {
     let parsed = parse_dummy!("import");
-
-    let two_ix = expected!(two_ix);
-    let expected = vec![
-        Interaction {
-            id: "Import Test".to_string(),
-            pages: vec![],
-        },
-        expected!(small_ix),
-        expected!(link),
-        two_ix[0].clone(),
-        two_ix[1].clone(),
-        expected!(one_ix_many_pages),
-    ];
-
-    assert_eq!(parsed, expected);
+    assert_eq!(parsed, expected!(import_others));
 }
 
 #[test]
