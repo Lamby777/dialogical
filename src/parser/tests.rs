@@ -136,9 +136,6 @@ macro_rules! expected {
 
 #[test]
 fn import() {
-    println!("{:?}", crate::ENTRY_PATH.get());
-
-    crate::ENTRY_PATH.set("dummy_data/import".into()).unwrap();
     let parsed = parse_dummy!("import");
 
     let two_ix = expected!(two_ix);

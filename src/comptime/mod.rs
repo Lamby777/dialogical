@@ -64,23 +64,15 @@ pub enum ScriptOutput {
     Interaction(Interaction),
 }
 
-impl From<String> for Script {
-    fn from(content: String) -> Self {
+impl Script {
+    pub fn new(content: String, path: ScriptPath) -> Self {
         Self {
             content,
             state: RefCell::new(ComptimeState::default()),
-            path: ScriptPath::default(),
+            path,
         }
     }
-}
 
-impl From<&str> for Script {
-    fn from(content: &str) -> Self {
-        Self::from(content.to_owned())
-    }
-}
-
-impl Script {
     /// returns the new state (`None` = no change)
     fn execute_normal(&self, line: &str, out: &mut ScriptContext) -> Result<Option<ComptimeState>> {
         if line.starts_with(COMMENT_PREFIX) {
@@ -134,8 +126,10 @@ impl Script {
             }
 
             "Execute" => {
-                let content = script_path(self, split).read()?;
-                Script::from(content).execute(out)?;
+                let path = script_path(self, split);
+                let content = path.read()?;
+                let mut script = Self::new(content, path);
+                script.execute(out)?;
             }
 
             "Quit" => return Ok(Some(ComptimeState::Quit)),

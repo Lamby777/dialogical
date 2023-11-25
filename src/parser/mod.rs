@@ -6,7 +6,7 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 
 use std::path::PathBuf;
 
-use crate::comptime::Script;
+use crate::comptime::{Script, ScriptPath};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
@@ -50,8 +50,9 @@ impl DgParser {
         if line == SEPARATOR && self.script.last() == Some(&COMPTIME_BORDER.to_owned()) {
             self.script.pop();
 
-            let script_content = self.script.join("\n");
-            let mut script = Script::from(script_content);
+            let content = self.script.join("\n");
+            let path = ScriptPath(self.path.clone());
+            let mut script = Script::new(content, path);
             script.execute(&mut self.context)?;
 
             // TODO no `self.script`, make the enum variant

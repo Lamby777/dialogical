@@ -3,7 +3,8 @@ use super::*;
 macro_rules! comptime {
     ($code:expr) => {{
         let mut out = ScriptContext::default();
-        let res = Script::from($code).execute(&mut out);
+        let path = ScriptPath("irrelevant".into());
+        let res = Script::new($code.into(), path).execute(&mut out);
         (res, out)
     }};
 }

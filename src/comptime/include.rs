@@ -23,12 +23,6 @@ use crate::{parse_all, Interaction, ParseResult};
 #[derive(Clone)]
 pub struct ScriptPath(pub PathBuf);
 
-impl Default for ScriptPath {
-    fn default() -> Self {
-        Self(crate::entry_path())
-    }
-}
-
 impl ScriptPath {
     /// Create new ScriptPath by resolving one and appending
     /// a new path onto it
