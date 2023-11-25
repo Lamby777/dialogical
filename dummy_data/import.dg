@@ -1,0 +1,11 @@
+% Import Test
+###
+
+Import ./small_ix.dg
+Import ./link.dg
+Import ./two_ix.dg
+Import ./one_ix_many_pages.dg
+
+###
+---
+

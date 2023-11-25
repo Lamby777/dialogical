@@ -26,11 +26,13 @@ macro_rules! parse_dummy {
 
 /// shorthand for permanent change of speaker and vox with same string
 /// good for writing quick unit tests
-fn meta_double(name: &str) -> PageMetadata {
-    PageMetadata {
-        speaker: Permanent(Named(name.to_owned())),
-        vox: Permanent(name.to_owned()),
-    }
+macro_rules! meta_double {
+    ($name:expr) => {
+        PageMetadata {
+            speaker: Permanent(Named($name.to_owned())),
+            vox: Permanent($name.to_owned()),
+        }
+    };
 }
 
 macro_rules! SMALL_IX_EXPECTED {
@@ -39,11 +41,11 @@ macro_rules! SMALL_IX_EXPECTED {
             id: "Test1".to_string(),
             pages: vec![
                 Page {
-                    metadata: meta_double("Siva"),
+                    metadata: meta_double!("Siva"),
                     content: "First page".to_owned(),
                 },
                 Page {
-                    metadata: meta_double("Terra"),
+                    metadata: meta_double!("Terra"),
                     content: "Second page\nWith more words".to_owned(),
                 },
             ],
@@ -58,7 +60,7 @@ fn import() {
         id: "Unlink Test".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Mira"),
+                metadata: meta_double!("Mira"),
                 content: "Page 1".to_owned(),
             },
             Page {
@@ -66,7 +68,7 @@ fn import() {
                 content: "Page 2".to_owned(),
             },
             Page {
-                metadata: meta_double("Dylan"),
+                metadata: meta_double!("Dylan"),
                 content: "Page 3".to_owned(),
             },
             Page {
@@ -77,7 +79,7 @@ fn import() {
                 content: "Page 4".to_owned(),
             },
             Page {
-                metadata: meta_double("Dylan"),
+                metadata: meta_double!("Dylan"),
                 content: "Page 5".to_owned(),
             },
         ],
@@ -93,7 +95,7 @@ fn unlink_name_to_vox() {
         id: "Unlink Test".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Mira"),
+                metadata: meta_double!("Mira"),
                 content: "Page 1".to_owned(),
             },
             Page {
@@ -101,7 +103,7 @@ fn unlink_name_to_vox() {
                 content: "Page 2".to_owned(),
             },
             Page {
-                metadata: meta_double("Dylan"),
+                metadata: meta_double!("Dylan"),
                 content: "Page 3".to_owned(),
             },
             Page {
@@ -112,7 +114,7 @@ fn unlink_name_to_vox() {
                 content: "Page 4".to_owned(),
             },
             Page {
-                metadata: meta_double("Dylan"),
+                metadata: meta_double!("Dylan"),
                 content: "Page 5".to_owned(),
             },
         ],
@@ -155,11 +157,11 @@ fn parse_filter_empties() {
         id: "Empties Test".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Siva"),
+                metadata: meta_double!("Siva"),
                 content: "So uhh... what's your name?".to_owned(),
             },
             Page {
-                metadata: meta_double("L'yembo"),
+                metadata: meta_double!("L'yembo"),
                 content: "...".to_owned(),
             },
             Page {
@@ -184,11 +186,11 @@ fn parse_two_ix() {
             id: "First".to_string(),
             pages: vec![
                 Page {
-                    metadata: meta_double("Porky"),
+                    metadata: meta_double!("Porky"),
                     content: "First page".to_owned(),
                 },
                 Page {
-                    metadata: meta_double("Ethan"),
+                    metadata: meta_double!("Ethan"),
                     content: "Second page".to_owned(),
                 },
             ],
@@ -197,11 +199,11 @@ fn parse_two_ix() {
             id: "Second".to_string(),
             pages: vec![
                 Page {
-                    metadata: meta_double("Terra"),
+                    metadata: meta_double!("Terra"),
                     content: "Third page".to_owned(),
                 },
                 Page {
-                    metadata: meta_double("Siva"),
+                    metadata: meta_double!("Siva"),
                     content: "Fourth page".to_owned(),
                 },
             ],
@@ -218,7 +220,7 @@ fn parse_pageonly() {
         id: "PageOnly Test".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Mira"),
+                metadata: meta_double!("Mira"),
                 content: "What's up?".to_owned(),
             },
             Page {
@@ -255,7 +257,7 @@ fn parse_one_ix_many_pages() {
         id: "Interaction".to_string(),
         pages: vec![
             Page {
-                metadata: meta_double("Deez"),
+                metadata: meta_double!("Deez"),
                 content: "When the words are sus".to_owned(),
             },
             Page {
@@ -270,7 +272,7 @@ fn parse_one_ix_many_pages() {
                 content: "When the imposter is sus".to_owned(),
             },
             Page {
-                metadata: meta_double("Siva"),
+                metadata: meta_double!("Siva"),
                 content: "Testing".to_owned(),
             },
         ],
