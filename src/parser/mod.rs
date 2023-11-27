@@ -114,16 +114,14 @@ impl DgParser {
         Ok(())
     }
 
-    // TODO allow empty lines in message, and remove the last
-    // empty line retroactively when it encounters a separator
     fn parse_options(&mut self, line: &str) -> Result<()> {
-        if line != SEPARATOR {
-            return Err(ParseError::BadOption(line.to_string()));
+        if self.option.is_none() && line == SEPARATOR {
+            // return Err(ParseError::BadOption(line.to_string()));
+            self.push_page()?;
+
+            self.state = ParseState::Metadata;
         }
 
-        self.push_page()?;
-
-        self.state = ParseState::Metadata;
         Ok(())
     }
 
