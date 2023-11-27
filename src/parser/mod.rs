@@ -114,8 +114,17 @@ impl DgParser {
     }
 
     fn parse_options(&mut self, line: &str) -> Result<()> {
-        if let Some(option) = self.option.take() {
-            // TODO
+        if let Some(ref mut option) = self.option.take() {
+            if line.is_empty() {
+                // push line if empty and previous line(s) weren't
+                self.interaction
+                    .as_mut()
+                    .unwrap()
+                    .options
+                    .push(option.to_owned());
+            } else {
+                *option += line;
+            }
         } else if line == SEPARATOR {
             // return Err(ParseError::BadOption(line.to_string()));
             self.push_page()?;

@@ -325,7 +325,7 @@ fn parse_pageonly() {
             Page {
                 metadata: PageMetadata::default(),
                 content: r#"Alright, why am I talking to myself?
-        Who's making me do this?"#
+Who's making me do this?"#
                     .to_owned(),
             },
         ],
