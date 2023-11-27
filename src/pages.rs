@@ -6,6 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
+use crate::parser::DialogueEnding;
 
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
@@ -62,7 +63,7 @@ impl From<ScriptError> for ParseError {
 pub struct Interaction {
     pub id: String,
     pub pages: Vec<Page>,
-    pub options: Vec<String>,
+    pub ending: DialogueEnding,
 }
 
 impl Interaction {
@@ -70,7 +71,7 @@ impl Interaction {
         Self {
             id: id.to_owned(),
             pages: vec![],
-            options: vec![],
+            ending: DialogueEnding::default(),
         }
     }
 }

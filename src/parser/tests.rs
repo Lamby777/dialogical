@@ -46,7 +46,7 @@ macro_rules! expected {
                     content: "Second page\nWith more words".to_owned(),
                 },
             ],
-            options: vec![],
+            ending: DialogueEnding::End,
         }
     };
 
@@ -70,7 +70,7 @@ macro_rules! expected {
                     content: "Page 3".to_owned(),
                 },
             ],
-            options: vec![],
+            ending: DialogueEnding::End,
         }
     };
 
@@ -88,7 +88,7 @@ macro_rules! expected {
                         content: "Second page".to_owned(),
                     },
                 ],
-                options: vec![],
+                ending: DialogueEnding::End,
             },
             Interaction {
                 id: "Second".to_string(),
@@ -102,7 +102,7 @@ macro_rules! expected {
                         content: "Fourth page".to_owned(),
                     },
                 ],
-                options: vec![],
+                ending: DialogueEnding::End,
             },
         ]
     };
@@ -131,7 +131,7 @@ macro_rules! expected {
                     content: "Testing".to_owned(),
                 },
             ],
-            options: vec![],
+            ending: DialogueEnding::End,
         }
     };
 
@@ -174,10 +174,12 @@ macro_rules! expected {
                     Page {
                         metadata: PageMetadata::nochange(),
                         content: "Are you smart?".to_owned(),
-                        // TODO add options here
                     },
                 ],
-                options: vec![],
+                ending: DialogueEnding::Options(vec![DialogueOption {
+                    text: "Nope".to_string(),
+                    goto_label: "RodrickSign_Nope".to_string(),
+                }]),
             },
             Interaction {
                 id: "RodrickSign_Nope".to_string(),
@@ -186,7 +188,7 @@ macro_rules! expected {
                     content: "Yeah, I didn't think so.".to_owned(),
                     // TODO add "redirect" here
                 }],
-                options: vec![],
+                ending: DialogueEnding::End,
             },
             Interaction {
                 id: "RodrickSign_DefNot".to_string(),
@@ -195,7 +197,7 @@ macro_rules! expected {
                     content: "Yeah, I definitely didn't think so.".to_owned(),
                     // TODO add "redirect" here
                 }],
-                options: vec![],
+                ending: DialogueEnding::End,
             },
             Interaction {
                 id: "RodrickSign_Exit".to_string(),
@@ -203,7 +205,7 @@ macro_rules! expected {
                     metadata: first_meta.clone(),
                     content: "Come back when you're smart.".to_owned(),
                 }],
-                options: vec![],
+                ending: DialogueEnding::End,
             },
         ]
     }};
@@ -257,7 +259,7 @@ fn unlink_name_to_vox() {
                 content: "Page 5".to_owned(),
             },
         ],
-        options: vec![],
+        ending: DialogueEnding::End,
     };
 
     assert_eq!(parsed, vec![expected]);
@@ -292,7 +294,7 @@ fn parse_filter_empties() {
                 content: "*runs away*".to_owned(),
             },
         ],
-        options: vec![],
+        ending: DialogueEnding::End,
     }];
 
     assert_eq!(parsed, expected);
@@ -329,7 +331,7 @@ Who's making me do this?"#
                     .to_owned(),
             },
         ],
-        options: vec![],
+        ending: DialogueEnding::End,
     };
 
     assert_eq!(parsed, vec![expected]);

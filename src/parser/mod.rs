@@ -11,9 +11,11 @@ use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
+mod doption;
 mod metaline;
 
 pub use context::ScriptContext;
+pub use doption::{DialogueEnding, DialogueOption};
 
 pub struct DgParser {
     state: ParseState,
@@ -31,7 +33,7 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
-    option: Option<String>,
+    ending: Option<DialogueEnding>,
 }
 
 impl DgParser {
@@ -45,7 +47,7 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
-            option: None,
+            ending: None,
             script: vec![],
         }
     }
@@ -55,11 +57,7 @@ impl DgParser {
             self.push_ix()?;
         }
 
-        self.interaction = Some(Interaction {
-            id: id.to_owned(),
-            pages: vec![],
-            options: vec![],
-        });
+        self.interaction = Some(Interaction::new_with_id(id));
 
         Ok(())
     }
@@ -114,22 +112,29 @@ impl DgParser {
     }
 
     fn parse_options(&mut self, line: &str) -> Result<()> {
-        if let Some(ref mut option) = self.option.take() {
-            if line.is_empty() {
-                // push line if empty and previous line(s) weren't
-                self.interaction
-                    .as_mut()
-                    .unwrap()
-                    .options
-                    .push(option.to_owned());
-            } else {
-                *option += line;
-            }
+        use DialogueEnding::*;
+
+        if let Some(ref mut ending) = self.ending.take() {
+            match ending {
+                Options(ending) if line.is_empty() => {
+                    // push line if empty and previous line(s) weren't
+                    self.interaction.as_mut().unwrap().ending.push(ending);
+                    if let DialogueEnding::Options(ref mut options) = ending {
+                        options.last_mut().unwrap().text.push_str(line);
+                    }
+                }
+
+                Options(_) => todo!(),
+                Goto(_) => todo!(),
+                End => todo!(),
+            };
         } else if line == SEPARATOR {
             // return Err(ParseError::BadOption(line.to_string()));
             self.push_page()?;
 
             self.state = ParseState::Metadata;
+        } else {
+            // TODO ???
         }
 
         Ok(())
