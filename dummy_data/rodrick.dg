@@ -1,0 +1,47 @@
+% RodrickSign
+NAME Rodrick Sign Co.
+VOX Default
+
+So... you're reading a sign, eh?
+
+---
+
+Well...
+
+---
+
+Are you smart?
+
+> No
+@ RodrickSign_No
+
+> Definitely not
+@ RodrickSign_DefNot
+
+---
+% RodrickSign_No
+NAME Rodrick Sign Co.
+VOX Default
+
+Yeah, I thought so.
+
+@ RodrickSign_Exit
+
+---
+% RodrickSign_DefNot
+NAME Rodrick Sign Co.
+VOX Default
+
+Yeah, I definitely thought so.
+
+@ RodrickSign_Exit
+
+---
+% RodrickSign_Exit
+NAME Rodrick Sign Co.
+VOX Default
+
+Come back when you're smart.
+
+---
+
