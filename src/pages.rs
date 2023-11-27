@@ -25,14 +25,13 @@ pub enum ParseState {
     Message,
 
     /// Empty line after message, before the separator
-    /// TODO change this to options and parse 'em into a vec
-    Options(Option<String>),
+    Options,
 }
 
 #[derive(Debug, Error, PartialEq)]
 pub enum ParseError {
-    #[error("Encountered {0} instead of a separator while in PostLine state")]
-    AfterPostline(String),
+    #[error("Encountered {0} while trying to parse options...")]
+    BadOption(String),
 
     #[error("{0} is not a valid interaction ID")]
     InvalidID(String),

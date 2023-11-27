@@ -101,7 +101,7 @@ impl DgParser {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
-            self.state = ParseState::Options(None);
+            self.state = ParseState::Options;
         } else {
             self.pagebuf.push(line.to_string());
         }
@@ -111,9 +111,9 @@ impl DgParser {
 
     // TODO allow empty lines in message, and remove the last
     // empty line retroactively when it encounters a separator
-    fn parse_postline(&mut self, line: &str) -> Result<()> {
+    fn parse_options(&mut self, line: &str) -> Result<()> {
         if line != SEPARATOR {
-            return Err(ParseError::AfterPostline(line.to_string()));
+            return Err(ParseError::BadOption(line.to_string()));
         }
 
         self.push_page()?;
@@ -169,7 +169,7 @@ impl DgParser {
 
                 Metadata => self.parse_metaline(line)?,
                 Message => self.parse_message(line)?,
-                Options(ref mut current) => self.parse_postline(line)?,
+                Options => self.parse_options(line)?,
             };
         }
 
