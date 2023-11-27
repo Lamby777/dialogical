@@ -2,8 +2,8 @@
 
 use libfuzzer_sys::fuzz_target;
 
-use dialogical::parse_all;
+use dialogical::DgParser;
 
 fuzz_target!(|data: &str| {
-    let _ = parse_all(&data);
+    let _ = DgParser::new(std::env::current_dir().unwrap()).parse_all(&data);
 });

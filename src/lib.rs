@@ -18,7 +18,7 @@ mod consts;
 mod pages;
 mod parser;
 
-use parser::DgParser;
+pub use parser::DgParser;
 
 // Re-exports
 pub use comptime::{Link, LinkKVPair, Result as ScriptResult};
@@ -36,16 +36,6 @@ macro_rules! log {
             eprintln!($($arg)*);
         }
     };
-}
-
-/// Parse a single string into a `Vec<>` of interactions.
-/// Uses the current directory as the parser path.
-#[deprecated = "Use `DgParser::parse_all` instead."]
-pub fn parse_all(data: &str) -> ParseResult<Vec<Interaction>> {
-    // TODO no unwrap
-    DgParser::new(std::env::current_dir().unwrap())
-        .parse_all(data)
-        .map(|v| v.to_vec())
 }
 
 pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
