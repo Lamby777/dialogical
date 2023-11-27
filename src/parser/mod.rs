@@ -101,7 +101,7 @@ impl DgParser {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
-            self.state = ParseState::PostLine;
+            self.state = ParseState::Options(None);
         } else {
             self.pagebuf.push(line.to_string());
         }
@@ -162,15 +162,15 @@ impl DgParser {
         for line in lines {
             use ParseState::*;
 
-            (match self.state {
+            match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section
-                ComptimeScript(_) => Self::parse_comptime,
+                ComptimeScript(_) => self.parse_comptime(line)?,
 
-                Metadata => Self::parse_metaline,
-                Message => Self::parse_message,
-                PostLine => Self::parse_postline,
-            })(self, line)?;
+                Metadata => self.parse_metaline(line)?,
+                Message => self.parse_message(line)?,
+                Options(ref mut current) => self.parse_postline(line)?,
+            };
         }
 
         self.push_ix()?;

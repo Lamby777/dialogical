@@ -26,7 +26,7 @@ pub enum ParseState {
 
     /// Empty line after message, before the separator
     /// TODO change this to options and parse 'em into a vec
-    PostLine,
+    Options(Option<String>),
 }
 
 #[derive(Debug, Error, PartialEq)]
