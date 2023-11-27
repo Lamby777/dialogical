@@ -153,6 +153,63 @@ macro_rules! expected {
         .chain(expected!(import_others))
         .collect::<Vec<_>>()
     };
+
+    (rodrick) => {{
+        let first_meta = PageMetadata {
+            speaker: Permanent(Named("Rodrick Sign Co.".to_owned())),
+            vox: Permanent("Default".to_owned()),
+        };
+
+        vec![
+            Interaction {
+                id: "RodrickSign".to_string(),
+                pages: vec![
+                    Page {
+                        metadata: first_meta.clone(),
+                        content: "So... you're reading a sign, eh?".to_owned(),
+                    },
+                    Page {
+                        metadata: PageMetadata::nochange(),
+                        content: "Well...".to_owned(),
+                    },
+                    Page {
+                        metadata: PageMetadata::nochange(),
+                        content: "Are you smart?".to_owned(),
+                        // TODO add options here
+                    },
+                ],
+            },
+            Interaction {
+                id: "RodrickSign_Nope".to_string(),
+                pages: vec![Page {
+                    metadata: first_meta.clone(),
+                    content: "Yeah, I didn't think so.".to_owned(),
+                    // TODO add "redirect" here
+                }],
+            },
+            Interaction {
+                id: "RodrickSign_DefNot".to_string(),
+                pages: vec![Page {
+                    metadata: first_meta.clone(),
+                    content: "Yeah, I definitely didn't think so.".to_owned(),
+                    // TODO add "redirect" here
+                }],
+            },
+            Interaction {
+                id: "RodrickSign_Exit".to_string(),
+                pages: vec![Page {
+                    metadata: first_meta.clone(),
+                    content: "Come back when you're smart.".to_owned(),
+                }],
+            },
+        ]
+    }};
+}
+
+#[test]
+fn parse_rodrick_sign() {
+    let parsed = parse_dummy!("rodrick");
+    assert_eq!(parsed, expected!(rodrick));
 }
 
 #[test]

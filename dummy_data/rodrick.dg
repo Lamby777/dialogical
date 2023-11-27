@@ -13,17 +13,17 @@ Well...
 Are you smart?
 
 > No
-@ RodrickSign_No
+@ RodrickSign_Nope
 
 > Definitely not
 @ RodrickSign_DefNot
 
 ---
-% RodrickSign_No
+% RodrickSign_Nope
 NAME Rodrick Sign Co.
 VOX Default
 
-Yeah, I thought so.
+Yeah, I didn't think so.
 
 @ RodrickSign_Exit
 
@@ -32,7 +32,7 @@ Yeah, I thought so.
 NAME Rodrick Sign Co.
 VOX Default
 
-Yeah, I definitely thought so.
+Yeah, I definitely didn't think so.
 
 @ RodrickSign_Exit
 
