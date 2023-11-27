@@ -46,6 +46,7 @@ macro_rules! expected {
                     content: "Second page\nWith more words".to_owned(),
                 },
             ],
+            options: vec![],
         }
     };
 
@@ -69,6 +70,7 @@ macro_rules! expected {
                     content: "Page 3".to_owned(),
                 },
             ],
+            options: vec![],
         }
     };
 
@@ -86,6 +88,7 @@ macro_rules! expected {
                         content: "Second page".to_owned(),
                     },
                 ],
+                options: vec![],
             },
             Interaction {
                 id: "Second".to_string(),
@@ -99,6 +102,7 @@ macro_rules! expected {
                         content: "Fourth page".to_owned(),
                     },
                 ],
+                options: vec![],
             },
         ]
     };
@@ -127,15 +131,13 @@ macro_rules! expected {
                     content: "Testing".to_owned(),
                 },
             ],
+            options: vec![],
         }
     };
 
     (import_others) => {
         vec![
-            Interaction {
-                id: "Import Test".to_string(),
-                pages: vec![],
-            },
+            Interaction::new_with_id("Import Test"),
             expected!(small_ix),
             expected!(link),
             expected!(two_ix)[0].clone(),
@@ -145,13 +147,10 @@ macro_rules! expected {
     };
 
     (import_sub) => {
-        vec![Interaction {
-            id: "Import Sub-imports".to_string(),
-            pages: vec![],
-        }]
-        .into_iter()
-        .chain(expected!(import_others))
-        .collect::<Vec<_>>()
+        vec![Interaction::new_with_id("Import Sub-imports")]
+            .into_iter()
+            .chain(expected!(import_others))
+            .collect::<Vec<_>>()
     };
 
     (rodrick) => {{
@@ -178,6 +177,7 @@ macro_rules! expected {
                         // TODO add options here
                     },
                 ],
+                options: vec![],
             },
             Interaction {
                 id: "RodrickSign_Nope".to_string(),
@@ -186,6 +186,7 @@ macro_rules! expected {
                     content: "Yeah, I didn't think so.".to_owned(),
                     // TODO add "redirect" here
                 }],
+                options: vec![],
             },
             Interaction {
                 id: "RodrickSign_DefNot".to_string(),
@@ -194,6 +195,7 @@ macro_rules! expected {
                     content: "Yeah, I definitely didn't think so.".to_owned(),
                     // TODO add "redirect" here
                 }],
+                options: vec![],
             },
             Interaction {
                 id: "RodrickSign_Exit".to_string(),
@@ -201,6 +203,7 @@ macro_rules! expected {
                     metadata: first_meta.clone(),
                     content: "Come back when you're smart.".to_owned(),
                 }],
+                options: vec![],
             },
         ]
     }};
@@ -254,6 +257,7 @@ fn unlink_name_to_vox() {
                 content: "Page 5".to_owned(),
             },
         ],
+        options: vec![],
     };
 
     assert_eq!(parsed, vec![expected]);
@@ -288,6 +292,7 @@ fn parse_filter_empties() {
                 content: "*runs away*".to_owned(),
             },
         ],
+        options: vec![],
     }];
 
     assert_eq!(parsed, expected);
@@ -320,10 +325,11 @@ fn parse_pageonly() {
             Page {
                 metadata: PageMetadata::default(),
                 content: r#"Alright, why am I talking to myself?
-Who's making me do this?"#
+        Who's making me do this?"#
                     .to_owned(),
             },
         ],
+        options: vec![],
     };
 
     assert_eq!(parsed, vec![expected]);

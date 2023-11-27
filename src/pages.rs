@@ -62,6 +62,17 @@ impl From<ScriptError> for ParseError {
 pub struct Interaction {
     pub id: String,
     pub pages: Vec<Page>,
+    pub options: Vec<String>,
+}
+
+impl Interaction {
+    pub fn new_with_id(id: &str) -> Self {
+        Self {
+            id: id.to_owned(),
+            pages: vec![],
+            options: vec![],
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]

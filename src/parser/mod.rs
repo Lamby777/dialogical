@@ -32,7 +32,6 @@ pub struct DgParser {
     page: Page,
     pagebuf: Vec<String>,
     option: Option<String>,
-    optionbuf: Vec<String>,
 }
 
 impl DgParser {
@@ -47,7 +46,6 @@ impl DgParser {
             page: Page::default(),
             pagebuf: vec![],
             option: None,
-            optionbuf: vec![],
             script: vec![],
         }
     }
@@ -60,6 +58,7 @@ impl DgParser {
         self.interaction = Some(Interaction {
             id: id.to_owned(),
             pages: vec![],
+            options: vec![],
         });
 
         Ok(())
@@ -115,7 +114,9 @@ impl DgParser {
     }
 
     fn parse_options(&mut self, line: &str) -> Result<()> {
-        if self.option.is_none() && line == SEPARATOR {
+        if let Some(option) = self.option.take() {
+            // TODO
+        } else if line == SEPARATOR {
             // return Err(ParseError::BadOption(line.to_string()));
             self.push_page()?;
 
