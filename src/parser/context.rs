@@ -8,6 +8,7 @@ use crate::{Interaction, Link, LinkKVPair};
 #[derive(Debug, Default, PartialEq)]
 pub struct ScriptContext(pub Vec<ScriptOutput>);
 
+#[allow(unused)] // STFU!!!!
 impl ScriptContext {
     pub fn log(&mut self, msg: &str) {
         self.0.push(ScriptOutput::LogMessage(msg.to_owned()));
