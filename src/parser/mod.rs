@@ -25,11 +25,14 @@ pub struct DgParser {
     /// the end result it's putting together
     interactions: Vec<Interaction>,
 
-    /// temp buffers for parsing
+    // temp buffers for parsing
+    // TODO store these inside `ParseState`
     interaction: Option<Interaction>,
+    script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
-    script: Vec<String>,
+    option: Option<String>,
+    optionbuf: Vec<String>,
 }
 
 impl DgParser {
@@ -43,6 +46,8 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
+            option: None,
+            optionbuf: vec![],
             script: vec![],
         }
     }
