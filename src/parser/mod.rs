@@ -11,11 +11,11 @@ use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
-mod dendings;
+mod endings;
 mod metaline;
 
 pub use context::ScriptContext;
-pub use dendings::{DialogueChoice, DialogueEnding, Label};
+pub use endings::{DialogueChoice, DialogueEnding, Label};
 
 pub struct DgParser {
     state: ParseState,
@@ -34,7 +34,7 @@ pub struct DgParser {
     page: Page,
     pagebuf: Vec<String>,
     ending: DialogueEnding,
-    choices: Option<DialogueChoice>,
+    choice: Option<DialogueChoice>,
 }
 
 impl DgParser {
@@ -49,7 +49,7 @@ impl DgParser {
             page: Page::default(),
             pagebuf: vec![],
             ending: DialogueEnding::default(),
-            choices: None,
+            choice: None,
             script: vec![],
         }
     }
@@ -115,18 +115,20 @@ impl DgParser {
 
     fn parse_choices(&mut self, line: &str) -> Result<()> {
         let is_separator = line == SEPARATOR;
-        let choices = self.choices.take();
+        let mut choice = self.choice.take();
 
         // if the line is a separator and we're not in the
         // middle of parsing an ending, then we're done.
         //
         // push the page and move on.
-        if is_separator && choices.is_none() {
+        if is_separator && choice.is_none() {
             self.push_page()?;
             self.state = ParseState::Metadata;
+
             return Ok(());
         }
 
+        let choice = choice.as_mut().unwrap();
         todo!()
     }
 
@@ -141,7 +143,7 @@ impl DgParser {
             .push(self.page.clone());
 
         self.pagebuf.clear();
-        self.choices.take(); // TODO is this line necessary?
+        self.choice.take(); // TODO is this line necessary?
         self.ending = DialogueEnding::default();
         self.page = Page::default();
 
