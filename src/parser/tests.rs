@@ -178,7 +178,7 @@ macro_rules! expected {
                 ],
                 ending: DialogueEnding::Options(vec![DialogueOption {
                     text: "Nope".to_string(),
-                    goto_label: "RodrickSign_Nope".to_string(),
+                    label: Some(Label::new_goto("RodrickSign_Nope")),
                 }]),
             },
             Interaction {

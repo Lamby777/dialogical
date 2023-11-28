@@ -11,9 +11,10 @@ use std::path::PathBuf;
 use std::str::SplitWhitespace;
 use thiserror::Error;
 
+use crate::consts::PREFIX_COMMENT;
 use crate::pages::ParseError;
+use crate::parser::ScriptContext;
 use crate::Interaction;
-use crate::{consts::COMMENT_PREFIX, parser::ScriptContext};
 
 mod include;
 mod link;
@@ -75,7 +76,7 @@ impl Script {
 
     /// returns the new state (`None` = no change)
     fn execute_normal(&self, line: &str, out: &mut ScriptContext) -> Result<Option<ComptimeState>> {
-        if line.starts_with(COMMENT_PREFIX) {
+        if line.starts_with(PREFIX_COMMENT) {
             return Ok(None);
         }
 
@@ -148,7 +149,7 @@ impl Script {
         out: &mut ScriptContext,
         link: &mut Link,
     ) -> Result<Option<ComptimeState>> {
-        if line.starts_with(COMMENT_PREFIX) {
+        if line.starts_with(PREFIX_COMMENT) {
             return Ok(None);
         }
 

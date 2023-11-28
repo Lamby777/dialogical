@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
-use crate::parser::DialogueEnding;
+use crate::parser::{DialogueEnding, DialogueOption};
 
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]

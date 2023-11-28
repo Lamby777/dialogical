@@ -12,14 +12,36 @@ pub struct DialogueOption {
     /// Not necessarily unique...
     pub text: String,
 
-    /// Interaction ID to jump to if this option is selected
-    pub goto_label: String,
+    /// Function/Interaction to run when this option is picked
+    pub label: Option<Label>,
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub enum Label {
+    /// Function label - name of a function to run
+    Function(String),
+
+    /// Interaction label - ID of an interaction to go to
+    Goto(String),
+}
+
+impl Label {
+    pub fn new_goto(id: &str) -> Self {
+        Self::Goto(id.to_owned())
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub enum DialogueEnding {
+    /// Show a list of options for the user to pick from
     Options(Vec<DialogueOption>),
-    Goto(String),
+
+    /// Run a function or go to a different interaction
+    ///
+    /// How this is implemented in your game is up to you to decide...
+    /// For Godot, this would be a GDScript function name...
+    /// ...or maybe a signal? This tool won't make that decision for you.
+    Label(Label),
 
     #[default]
     End,

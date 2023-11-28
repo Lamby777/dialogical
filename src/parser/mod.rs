@@ -15,7 +15,7 @@ mod doption;
 mod metaline;
 
 pub use context::ScriptContext;
-pub use doption::{DialogueEnding, DialogueOption};
+pub use doption::{DialogueEnding, DialogueOption, Label};
 
 pub struct DgParser {
     state: ParseState,
@@ -33,7 +33,7 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
-    ending: Option<DialogueEnding>,
+    option: Option<DialogueOption>,
 }
 
 impl DgParser {
@@ -47,7 +47,7 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
-            ending: None,
+            option: None,
             script: vec![],
         }
     }
@@ -112,32 +112,29 @@ impl DgParser {
     }
 
     fn parse_options(&mut self, line: &str) -> Result<()> {
-        use DialogueEnding::*;
+        match self.option.take() {
+            // if the line is an option, parse it
+            Some(ending) => {
+                let inter = self.interaction.as_mut().unwrap();
 
-        if let Some(ref mut ending) = self.ending.take() {
-            match ending {
-                Options(ending) if line.is_empty() => {
-                    // push line if empty and previous line(s) weren't
-                    self.interaction.as_mut().unwrap().ending.push(ending);
-                    if let DialogueEnding::Options(ref mut options) = ending {
-                        options.last_mut().unwrap().text.push_str(line);
-                    }
-                }
+                Ok(())
+            }
 
-                Options(_) => todo!(),
-                Goto(_) => todo!(),
-                End => todo!(),
-            };
-        } else if line == SEPARATOR {
-            // return Err(ParseError::BadOption(line.to_string()));
-            self.push_page()?;
+            // if the line is a separator and we're not in the
+            // middle of parsing an ending, then we're done.
+            //
+            // push the page and move on.
+            None if line == SEPARATOR => {
+                self.push_page()?;
+                self.state = ParseState::Metadata;
+                Ok(())
+            }
 
-            self.state = ParseState::Metadata;
-        } else {
-            // TODO ???
+            _ => {
+                // TODO ???
+                todo!()
+            }
         }
-
-        Ok(())
     }
 
     /// push page buffer to the pages vec, then clear the buffer
@@ -151,6 +148,7 @@ impl DgParser {
             .push(self.page.clone());
 
         self.pagebuf.clear();
+        self.option.take(); // TODO is this line necessary?
         self.page = Page::default();
 
         Ok(())
