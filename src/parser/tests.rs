@@ -176,7 +176,7 @@ macro_rules! expected {
                         content: "Are you smart?".to_owned(),
                     },
                 ],
-                ending: DialogueEnding::Options(vec![DialogueOption {
+                ending: DialogueEnding::Choices(vec![DialogueChoice {
                     text: "Nope".to_string(),
                     label: Some(Label::new_goto("RodrickSign_Nope")),
                 }]),

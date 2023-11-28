@@ -11,11 +11,11 @@ use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
-mod doption;
+mod dendings;
 mod metaline;
 
 pub use context::ScriptContext;
-pub use doption::{DialogueEnding, DialogueOption, Label};
+pub use dendings::{DialogueChoice, DialogueEnding, Label};
 
 pub struct DgParser {
     state: ParseState,
@@ -33,7 +33,7 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
-    option: Option<DialogueOption>,
+    choices: Option<DialogueChoice>,
 }
 
 impl DgParser {
@@ -47,7 +47,7 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
-            option: None,
+            choices: None,
             script: vec![],
         }
     }
@@ -103,7 +103,7 @@ impl DgParser {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
-            self.state = ParseState::Options;
+            self.state = ParseState::Choices;
         } else {
             self.pagebuf.push(line.to_string());
         }
@@ -111,8 +111,8 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_options(&mut self, line: &str) -> Result<()> {
-        match self.option.take() {
+    fn parse_choices(&mut self, line: &str) -> Result<()> {
+        match self.choices.take() {
             // if the line is an option, parse it
             Some(ending) => {
                 let inter = self.interaction.as_mut().unwrap();
@@ -148,7 +148,7 @@ impl DgParser {
             .push(self.page.clone());
 
         self.pagebuf.clear();
-        self.option.take(); // TODO is this line necessary?
+        self.choices.take(); // TODO is this line necessary?
         self.page = Page::default();
 
         Ok(())
@@ -185,7 +185,7 @@ impl DgParser {
 
                 Metadata => self.parse_metaline(line)?,
                 Message => self.parse_message(line)?,
-                Options => self.parse_options(line)?,
+                Choices => self.parse_choices(line)?,
             };
         }
 

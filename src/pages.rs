@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
-use crate::parser::{DialogueEnding, DialogueOption};
+use crate::parser::{DialogueChoice, DialogueEnding};
 
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
@@ -26,13 +26,13 @@ pub enum ParseState {
     Message,
 
     /// Empty line after message, before the separator
-    Options,
+    Choices,
 }
 
 #[derive(Debug, Error, PartialEq)]
 pub enum ParseError {
-    #[error("Encountered {0} while trying to parse options...")]
-    BadOption(String),
+    #[error("Encountered {0} while trying to parse interaction endings...")]
+    MalformedEnding(String),
 
     #[error("{0} is not a valid interaction ID")]
     InvalidID(String),

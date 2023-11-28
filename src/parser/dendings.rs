@@ -1,18 +1,18 @@
 //!
-//! Module for type definitions related to dialogue options
+//! Module for type definitions related to dialogue choices
 //! and anything else that happens at the end of an interaction
 //!
 
 use serde::{Deserialize, Serialize};
 
-/// One option in a list of dialogue options
+/// One choice in a list of dialogue choices
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct DialogueOption {
+pub struct DialogueChoice {
     /// Text displayed for the choice
     /// Not necessarily unique...
     pub text: String,
 
-    /// Function/Interaction to run when this option is picked
+    /// Function/Interaction to run when this choice is picked
     pub label: Option<Label>,
 }
 
@@ -33,8 +33,8 @@ impl Label {
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]
 pub enum DialogueEnding {
-    /// Show a list of options for the user to pick from
-    Options(Vec<DialogueOption>),
+    /// Show a list of choices for the user to pick from
+    Choices(Vec<DialogueChoice>),
 
     /// Run a function or go to a different interaction
     ///
@@ -48,13 +48,13 @@ pub enum DialogueEnding {
 }
 
 impl DialogueEnding {
-    pub fn append_option(&mut self, option: DialogueOption) {
+    pub fn append_choice(&mut self, choice: DialogueChoice) {
         match self {
-            DialogueEnding::Options(ref mut options) => {
-                options.push(option);
+            DialogueEnding::Choices(ref mut choices) => {
+                choices.push(choice);
             }
 
-            _ => panic!("Tried to append option to non-options ending"),
+            _ => panic!("Tried to append choice to non-choices ending"),
         }
     }
 }
