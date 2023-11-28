@@ -33,6 +33,7 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
+    ending: DialogueEnding,
     choices: Option<DialogueChoice>,
 }
 
@@ -47,6 +48,7 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
+            ending: DialogueEnding::default(),
             choices: None,
             script: vec![],
         }
@@ -112,29 +114,20 @@ impl DgParser {
     }
 
     fn parse_choices(&mut self, line: &str) -> Result<()> {
-        match self.choices.take() {
-            // if the line is an option, parse it
-            Some(ending) => {
-                let inter = self.interaction.as_mut().unwrap();
+        let is_separator = line == SEPARATOR;
+        let choices = self.choices.take();
 
-                Ok(())
-            }
-
-            // if the line is a separator and we're not in the
-            // middle of parsing an ending, then we're done.
-            //
-            // push the page and move on.
-            None if line == SEPARATOR => {
-                self.push_page()?;
-                self.state = ParseState::Metadata;
-                Ok(())
-            }
-
-            _ => {
-                // TODO ???
-                todo!()
-            }
+        // if the line is a separator and we're not in the
+        // middle of parsing an ending, then we're done.
+        //
+        // push the page and move on.
+        if is_separator && choices.is_none() {
+            self.push_page()?;
+            self.state = ParseState::Metadata;
+            return Ok(());
         }
+
+        todo!()
     }
 
     /// push page buffer to the pages vec, then clear the buffer
@@ -149,6 +142,7 @@ impl DgParser {
 
         self.pagebuf.clear();
         self.choices.take(); // TODO is this line necessary?
+        self.ending = DialogueEnding::default();
         self.page = Page::default();
 
         Ok(())
