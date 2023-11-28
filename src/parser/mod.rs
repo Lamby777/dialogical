@@ -7,7 +7,7 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
-use crate::consts::{COMPTIME_BORDER, SEPARATOR};
+use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
@@ -33,8 +33,6 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
-    ending: DialogueEnding,
-    choice: Option<DialogueChoice>,
 }
 
 impl DgParser {
@@ -48,8 +46,6 @@ impl DgParser {
             interaction: None,
             page: Page::default(),
             pagebuf: vec![],
-            ending: DialogueEnding::default(),
-            choice: None,
             script: vec![],
         }
     }
@@ -114,22 +110,49 @@ impl DgParser {
     }
 
     fn parse_choices(&mut self, line: &str) -> Result<()> {
-        let is_separator = line == SEPARATOR;
-        let mut choice = self.choice.take();
+        let line = line.trim();
+
+        // skip empty lines
+        if line.is_empty() {
+            return Ok(());
+        }
 
         // if the line is a separator and we're not in the
         // middle of parsing an ending, then we're done.
         //
         // push the page and move on.
-        if is_separator && choice.is_none() {
+        if line == SEPARATOR {
             self.push_page()?;
             self.state = ParseState::Metadata;
-
             return Ok(());
         }
 
-        let choice = choice.as_mut().unwrap();
-        todo!()
+        // split the line into "type" (>, @, $) and the rest
+        let (first_ch, rest) = {
+            let mut it = line.chars();
+
+            let first_ch = it
+                .next()
+                .ok_or(ParseError::MalformedEnding(line.to_owned()))?;
+            it.next(); // skip the space
+            let rest = it.as_str();
+
+            (first_ch, rest)
+        };
+
+        match first_ch {
+            PREFIX_CHOICE => {
+                // parse a choice
+            }
+
+            _ => {
+                return Err(ParseError::MalformedEnding(line.to_owned()));
+            }
+        }
+
+        // let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
+
+        Ok(())
     }
 
     /// push page buffer to the pages vec, then clear the buffer
@@ -143,8 +166,6 @@ impl DgParser {
             .push(self.page.clone());
 
         self.pagebuf.clear();
-        self.choice.take(); // TODO is this line necessary?
-        self.ending = DialogueEnding::default();
         self.page = Page::default();
 
         Ok(())

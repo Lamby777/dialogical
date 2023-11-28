@@ -1,8 +1,8 @@
 use super::*;
-use crate::pages::PageMetadata;
-
 use crate::pages::Metadata::*;
+use crate::pages::PageMetadata;
 use crate::pages::Speaker::*;
+use crate::parser::endings::Label;
 
 macro_rules! dummy_file {
     ($name:expr) => {

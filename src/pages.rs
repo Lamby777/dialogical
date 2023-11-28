@@ -6,7 +6,8 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
-use crate::parser::{DialogueChoice, DialogueEnding};
+use crate::parser::{DialogueChoice, DialogueEnding, Label};
+use crate::ParseResult;
 
 /// possible states the parser can be in
 #[derive(Clone, Debug, Default)]
@@ -34,6 +35,9 @@ pub enum ParseError {
     #[error("Encountered {0} while trying to parse interaction endings...")]
     MalformedEnding(String),
 
+    #[error("Tried to push a mix of endings at: {0}")]
+    MixedEndings(String),
+
     #[error("{0} is not a valid interaction ID")]
     InvalidID(String),
 
@@ -42,6 +46,9 @@ pub enum ParseError {
 
     #[error("{0} is not a valid metadata directive")]
     InvalidMeta(String),
+
+    #[error("No interaction to set the ending for!")]
+    EndingNoIX,
 
     #[error("No interaction to push the page into!")]
     PushPageNoIX,
@@ -72,6 +79,33 @@ impl Interaction {
             id: id.to_owned(),
             pages: vec![],
             ending: DialogueEnding::default(),
+        }
+    }
+
+    /// Will try to push a goto, but error if there's anything
+    /// besides an `End` currently set as the ending.
+    pub fn push_goto(&mut self, goto: Label) -> ParseResult<()> {
+        Ok(())
+    }
+
+    /// Will try to either push onto the list or start a list.
+    /// It will error if there's currently a goto label.
+    pub fn push_choice(&mut self, to_push: DialogueChoice) -> ParseResult<()> {
+        use DialogueEnding::*;
+
+        match &mut self.ending {
+            // end, label, choices
+            end @ End => {
+                *end = Choices(vec![to_push]);
+                Ok(())
+            }
+
+            Choices(ref mut list) => {
+                list.push(to_push);
+                Ok(())
+            }
+
+            Label(_) => Err(ParseError::MixedEndings(self.id.clone())),
         }
     }
 }
