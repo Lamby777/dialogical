@@ -7,7 +7,7 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
-use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, SEPARATOR};
+use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, PREFIX_GOTO_LABEL, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
@@ -127,30 +127,64 @@ impl DgParser {
             return Ok(());
         }
 
-        // split the line into "type" (>, @, $) and the rest
+        // split the line into prefix (>, @, $) and the rest
         let (first_ch, rest) = {
             let mut it = line.chars();
 
             let first_ch = it
                 .next()
                 .ok_or(ParseError::MalformedEnding(line.to_owned()))?;
-            it.next(); // skip the space
-            let rest = it.as_str();
 
-            (first_ch, rest)
+            it.next(); // skip the space
+            (first_ch, it.as_str())
         };
 
+        let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
         match first_ch {
             PREFIX_CHOICE => {
                 // parse a choice
+                let choice = DialogueChoice {
+                    text: rest.to_owned(),
+                    label: None,
+                };
+
+                println!("before: {:?}", ix.ending);
+                ix.ending.append_choice(choice);
+                println!("after: {:?}", ix.ending);
+            }
+
+            // if label, then add a label to the previous choice
+            // OR set the label of the entire interaction if there is none
+            // if one exists, error out.
+            PREFIX_GOTO_LABEL => {
+                let label = Label::new_goto(rest);
+                match ix.ending {
+                    DialogueEnding::Choices(ref mut choices) => {
+                        let choice = choices
+                            .last_mut()
+                            .ok_or_else(|| ParseError::MalformedEnding(line.to_owned()))?;
+
+                        if choice.label.is_some() {
+                            return Err(ParseError::MixedEndings(line.to_owned()));
+                        }
+
+                        choice.label = Some(label);
+                    }
+
+                    DialogueEnding::Label(_) => {
+                        return Err(ParseError::MixedEndings(line.to_owned()));
+                    }
+
+                    DialogueEnding::End => {
+                        ix.ending = DialogueEnding::Label(label);
+                    }
+                }
             }
 
             _ => {
                 return Err(ParseError::MalformedEnding(line.to_owned()));
             }
         }
-
-        // let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
 
         Ok(())
     }

@@ -54,6 +54,10 @@ impl DialogueEnding {
                 choices.push(choice);
             }
 
+            DialogueEnding::End => {
+                *self = DialogueEnding::Choices(vec![choice]);
+            }
+
             _ => panic!("Tried to append choice to non-choices ending"),
         }
     }

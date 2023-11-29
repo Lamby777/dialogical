@@ -6,5 +6,5 @@ pub const PREFIX_COMMENT: &str = "//";
 
 // interaction ending stuff
 pub const PREFIX_CHOICE: char = '>';
-pub const PREFIX_GOTO: char = '@';
-pub const PREFIX_FUNCTION: char = '$';
+pub const PREFIX_GOTO_LABEL: char = '@';
+pub const PREFIX_GOTO_FN: char = '$';
