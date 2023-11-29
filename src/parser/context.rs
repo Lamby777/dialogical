@@ -1,4 +1,4 @@
-use crate::comptime::ScriptOutput;
+use crate::comptime::{ScriptOutput, Unlink};
 use crate::{Interaction, Link, LinkKVPair};
 
 /// Wrapper type around `Vec<ScriptOutput>`.
@@ -33,11 +33,12 @@ impl ScriptContext {
         self.0.push(ScriptOutput::Link(link));
     }
 
-    pub fn unlink(&mut self, link: &Link) {
+    pub fn unlink(&mut self, unlink: &Unlink) {
         self.0.iter_mut().for_each(|output| {
+            // TODO probably a bug in here
             if let ScriptOutput::Link(v) = output {
                 v.associations
-                    .retain(|other| !link.associations.contains(other));
+                    .retain(|other| !unlink.associations.contains(&other.0));
             }
         });
 

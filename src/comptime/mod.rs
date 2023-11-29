@@ -55,6 +55,7 @@ enum ComptimeState {
 
     /// the result is stored in the tuple
     Link(Link),
+    Unlink(Unlink),
 }
 
 pub struct Script {
@@ -115,10 +116,9 @@ impl Script {
 
             "Unlink" => {
                 let pair = LinkKVPair::from_words(&mut split)?;
-                let link = Link::from_pair(pair);
-                // link.negative = command == "Unlink";
+                let unlink = Unlink::from_pair(pair);
 
-                return Ok(Some(ComptimeState::Link(link)));
+                return Ok(Some(ComptimeState::Unlink(unlink)));
             }
 
             "Import" => {
@@ -174,6 +174,12 @@ impl Script {
             return Ok(None);
         }
 
+        // we're done building the link, so go through all
+        // links that have the same `from` and remove the
+        // `linked` properties they have in common with
+        // the unlink we've just built
+        out.unlink(&unlink);
+
         Ok(Some(ComptimeState::Normal))
     }
 
@@ -204,16 +210,7 @@ impl Script {
         }
 
         // we're done building the link, so...
-        // if !link.negative { TODO
-        if true {
-            // push it to the parser's list of links
-            out.link(link.clone());
-        } else {
-            // OR if negative, go through all links that have
-            // the same `from` and remove the `linked` properties
-            // they have in common with the negative link
-            out.unlink(&link);
-        }
+        out.link(link.clone());
 
         Ok(Some(ComptimeState::Normal))
     }
@@ -229,6 +226,7 @@ impl Script {
             let new_state = match *self.state.borrow_mut() {
                 Normal => self.execute_normal(line, out)?,
                 Link(ref mut link) => self.execute_link(line, out, link)?,
+                Unlink(ref mut unlink) => self.execute_unlink(line, out, unlink)?,
 
                 Quit => unreachable!(),
             };
