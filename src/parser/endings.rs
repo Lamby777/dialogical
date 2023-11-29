@@ -6,6 +6,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::consts::*;
+use crate::pages::{ParseError, ParseState};
 use crate::{DgParser, ParseResult};
 
 /// One choice in a list of dialogue choices
@@ -55,7 +56,7 @@ pub enum DialogueEnding {
 }
 
 impl DialogueEnding {
-    pub fn append_choice(&mut self, choice: DialogueChoice) {
+    pub fn append_choice(&mut self, choice: DialogueChoice) -> ParseResult<()> {
         match self {
             DialogueEnding::Choices(ref mut choices) => {
                 choices.push(choice);
@@ -65,14 +66,13 @@ impl DialogueEnding {
                 *self = DialogueEnding::Choices(vec![choice]);
             }
 
-            _ => panic!("Tried to append choice to non-choices ending"),
+            _ => return Err(ParseError::MixedEndings(choice.text.clone())),
         }
+        Ok(())
     }
 }
 
 pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
-    use crate::pages::{ParseError, ParseState};
-
     let line = line.trim();
 
     // skip empty lines
@@ -114,7 +114,7 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
                 label: None,
             };
 
-            ix.ending.append_choice(choice);
+            ix.ending.append_choice(choice)?;
         }
 
         // if label, then add a label to the previous choice
