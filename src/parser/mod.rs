@@ -151,9 +151,7 @@ impl DgParser {
                     label: None,
                 };
 
-                println!("before: {:?}", ix.ending);
                 ix.ending.append_choice(choice);
-                println!("after: {:?}", ix.ending);
             }
 
             // if label, then add a label to the previous choice
