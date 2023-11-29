@@ -3,6 +3,7 @@ use crate::pages::Metadata::*;
 use crate::pages::PageMetadata;
 use crate::pages::Speaker::*;
 use crate::parser::endings::Label;
+use crate::parser::ParseError;
 use pretty_assertions::assert_eq;
 
 macro_rules! dummy_file {
@@ -274,35 +275,10 @@ fn parse_one_ix_many_pages() {
 #[test]
 fn page_after_end() {
     let parsed = parse_dummy_err!("vsauce");
-    let expected = Interaction {
-        id: "Unlink Test".to_string(),
-        pages: vec![
-            Page {
-                metadata: meta_double!("Mira"),
-                content: "Page 1".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata::nochange(),
-                content: "Page 2".to_owned(),
-            },
-            Page {
-                metadata: meta_double!("Dylan"),
-                content: "Page 3".to_owned(),
-            },
-            Page {
-                metadata: PageMetadata {
-                    speaker: Permanent(Named("Mira".to_owned())),
-                    vox: NoChange,
-                },
-                content: "Page 4".to_owned(),
-            },
-            Page {
-                metadata: meta_double!("Dylan"),
-                content: "Page 5".to_owned(),
-            },
-        ],
-        ending: DialogueEnding::End,
-    };
+    assert_eq!(
+        parsed,
+        ParseError::PageAfterEnding("ItNeverEnds".to_owned())
+    );
 }
 
 #[test]
