@@ -204,7 +204,6 @@ impl DgParser {
         // for more info, see <https://github.com/Lamby777/dialogical/issues/3>
         let ix_has_ending_yet = ix.ending != DialogueEnding::End;
         if ix_has_ending_yet {
-            // TODO probably a bug in here somewhere
             if self.page_had_ending {
                 return Err(ParseError::PageAfterEnding(ix.id.clone()));
             }
@@ -215,7 +214,6 @@ impl DgParser {
         }
 
         ix.pages.push(self.page.clone());
-        self.page_had_ending = false;
         self.pagebuf.clear();
         self.page = Page::default();
 
@@ -233,6 +231,7 @@ impl DgParser {
 
         // push any interactions imported from comptime scripts
         self.interactions.extend(self.context.drain_interactions());
+        self.page_had_ending = false;
 
         Ok(())
     }
