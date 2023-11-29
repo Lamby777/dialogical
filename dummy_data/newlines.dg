@@ -1,0 +1,26 @@
+% Newline Tricks
+NAME Kevin
+VOX TameImpala
+
+Buffer ended, you were not streamin',
+Try concat to it, try to parse through it.
+You wuh nah thinkin' that uh I would log to it,
+They be loggin' somewhat and uh I would log stupid.
+Take the next ticket, take the next string.
+Why would I do it, anyone thinkin' that uh--
+
+---
+
+Buffer ended, you were not streamin',\n
+Try concat to it, try to parse through it.\n
+You wuh nah thinkin' that uh I would log to it,\n
+They be loggin' somewhat and uh I would log stupid.\n
+Take the next ticket, take the next string.\n
+Why would I do it, anyone thinkin' that uh--
+
+---
+
+Buffer ended, you were not streamin',\nTry concat to it, try to parse through it.\nYou wuh nah thinkin' that uh I would log to it,\nThey be loggin' somewhat and uh I would log stupid.\nTake the next ticket, take the next string.\nWhy would I do it, anyone thinkin' that uh--
+
+---
+
