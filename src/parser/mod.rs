@@ -150,6 +150,8 @@ impl DgParser {
         for line in lines {
             use ParseState::*;
 
+            let line = line.trim();
+
             match self.state {
                 // besides the start, a block can either be
                 // a comptime script or a message section

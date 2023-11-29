@@ -73,8 +73,6 @@ impl DialogueEnding {
 }
 
 pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
-    let line = line.trim();
-
     // skip empty lines
     if line.is_empty() {
         return Ok(());

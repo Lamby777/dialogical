@@ -13,8 +13,6 @@ fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
 
 /// parse a comptime scripting block
 pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
-    let line = line.trim();
-
     // empty line = end of metadata
     if line.is_empty() {
         parser.state = ParseState::Message;
