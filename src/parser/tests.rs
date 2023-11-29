@@ -11,14 +11,26 @@ macro_rules! dummy_file {
     };
 }
 
-macro_rules! parse_dummy {
+macro_rules! dummy_parser {
     ($name:expr) => {{
-        let data = include_str!(dummy_file!($name));
         let path = PathBuf::from(dummy_file!($name));
         let path = path.canonicalize().unwrap();
 
-        let mut parser = DgParser::new(path);
-        parser.parse_all(data).unwrap().to_vec()
+        DgParser::new(path)
+    }};
+}
+
+macro_rules! parse_dummy_err {
+    ($name:expr) => {{
+        let data = include_str!(dummy_file!($name));
+        dummy_parser!($name).parse_all(data).unwrap_err()
+    }};
+}
+
+macro_rules! parse_dummy {
+    ($name:expr) => {{
+        let data = include_str!(dummy_file!($name));
+        dummy_parser!($name).parse_all(data).unwrap().to_vec()
     }};
 }
 
@@ -257,6 +269,40 @@ fn parse_small_interaction() {
 fn parse_one_ix_many_pages() {
     let parsed = parse_dummy!("one_ix_many_pages");
     assert_eq!(parsed, vec![expected!(one_ix_many_pages)]);
+}
+
+#[test]
+fn page_after_end() {
+    let parsed = parse_dummy_err!("vsauce");
+    let expected = Interaction {
+        id: "Unlink Test".to_string(),
+        pages: vec![
+            Page {
+                metadata: meta_double!("Mira"),
+                content: "Page 1".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata::nochange(),
+                content: "Page 2".to_owned(),
+            },
+            Page {
+                metadata: meta_double!("Dylan"),
+                content: "Page 3".to_owned(),
+            },
+            Page {
+                metadata: PageMetadata {
+                    speaker: Permanent(Named("Mira".to_owned())),
+                    vox: NoChange,
+                },
+                content: "Page 4".to_owned(),
+            },
+            Page {
+                metadata: meta_double!("Dylan"),
+                content: "Page 5".to_owned(),
+            },
+        ],
+        ending: DialogueEnding::End,
+    };
 }
 
 #[test]
