@@ -30,10 +30,19 @@ impl ScriptContext {
     }
 
     pub fn link(&mut self, link: Link) {
+        // TODO consider it an error to have an empty (un)link?
+        if link.associations.is_empty() {
+            return;
+        }
+
         self.0.push(ScriptOutput::Link(link));
     }
 
     pub fn unlink(&mut self, unlink: &Unlink) {
+        if unlink.associations.is_empty() {
+            return;
+        }
+
         for link in self.iter_links_mut() {
             if link.target == unlink.target {
                 link.associations.retain(|v| v.0 != unlink.associations[0]);
