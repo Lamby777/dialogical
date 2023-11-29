@@ -289,6 +289,29 @@ fn double_link() {
 }
 
 #[test]
+fn newline_tricks() {
+    let parsed = parse_dummy!("newlines");
+    let pages = parsed.get(0).unwrap().pages.as_slice();
+
+    let verse = vec![
+        "Buffer ended, you were not streamin',",
+        "Try concat to it, try to parse through it.",
+        "You wuh nah thinkin' that uh I would log to it,",
+        "They be loggin' somewhat and uh I would log stupid.",
+        "Take the next ticket, take the next string.",
+        "Why would I do it, anyone thinkin' that uh--",
+    ];
+
+    let [spaces, newlines, _rest @ ..] = pages else {
+        panic!("Parsed incorrect number of pages");
+    };
+
+    // newlines are spaces, unless the line ends in \n
+    assert_eq!(spaces.content, verse.join(" "));
+    assert_eq!(newlines.content, verse.join("\n"));
+}
+
+#[test]
 fn unlink_name_to_vox() {
     let parsed = parse_dummy!("unlink");
     let expected = Interaction {
