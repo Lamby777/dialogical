@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
 use crate::comptime::ScriptError;
-use crate::parser::{DialogueChoice, DialogueEnding, Label};
+use crate::parser::{DialogueChoice, DialogueEnding};
 use crate::ParseResult;
 
 /// possible states the parser can be in
@@ -80,12 +80,6 @@ impl Interaction {
             pages: vec![],
             ending: DialogueEnding::default(),
         }
-    }
-
-    /// Will try to push a goto, but error if there's anything
-    /// besides an `End` currently set as the ending.
-    pub fn push_goto(&mut self, goto: Label) -> ParseResult<()> {
-        Ok(())
     }
 
     /// Will try to either push onto the list or start a list.
