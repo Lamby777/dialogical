@@ -177,28 +177,32 @@ macro_rules! expected {
                         content: "Are you smart?".to_owned(),
                     },
                 ],
-                ending: DialogueEnding::Choices(vec![DialogueChoice {
-                    text: "Nope".to_string(),
-                    label: Some(Label::new_goto("RodrickSign_Nope")),
-                }]),
+                ending: DialogueEnding::Choices(vec![
+                    DialogueChoice {
+                        text: "Nope".to_string(),
+                        label: Some(Label::new_goto("RodrickSign_Nope")),
+                    },
+                    DialogueChoice {
+                        text: "Definitely not".to_string(),
+                        label: Some(Label::new_goto("RodrickSign_DefNot")),
+                    },
+                ]),
             },
             Interaction {
                 id: "RodrickSign_Nope".to_string(),
                 pages: vec![Page {
                     metadata: first_meta.clone(),
                     content: "Yeah, I didn't think so.".to_owned(),
-                    // TODO add "redirect" here
                 }],
-                ending: DialogueEnding::End,
+                ending: DialogueEnding::Label(Label::new_goto("RodrickSign_Exit")),
             },
             Interaction {
                 id: "RodrickSign_DefNot".to_string(),
                 pages: vec![Page {
                     metadata: first_meta.clone(),
                     content: "Yeah, I definitely didn't think so.".to_owned(),
-                    // TODO add "redirect" here
                 }],
-                ending: DialogueEnding::End,
+                ending: DialogueEnding::Label(Label::new_goto("RodrickSign_Exit")),
             },
             Interaction {
                 id: "RodrickSign_Exit".to_string(),
