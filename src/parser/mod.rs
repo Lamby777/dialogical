@@ -195,11 +195,15 @@ impl DgParser {
     fn push_page(&mut self) -> Result<()> {
         self.page.content = self.pagebuf.join("\n");
 
-        self.interaction
-            .as_mut()
-            .ok_or(ParseError::PushPageNoIX)?
-            .pages
-            .push(self.page.clone());
+        let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
+
+        // you may not add another page after an ending
+        // for more info, see <https://github.com/Lamby777/dialogical/issues/3>
+        if ix.ending != DialogueEnding::End {
+            return Err(ParseError::PageAfterEnding(ix.id.clone()));
+        }
+
+        ix.pages.push(self.page.clone());
 
         self.pagebuf.clear();
         self.page = Page::default();

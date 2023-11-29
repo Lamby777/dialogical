@@ -235,6 +235,31 @@ fn import_others() {
 }
 
 #[test]
+fn link_name_to_vox() {
+    let parsed = parse_dummy!("link");
+    assert_eq!(parsed, vec![expected!(link)]);
+}
+
+#[test]
+fn parse_two_ix() {
+    let parsed = parse_dummy!("two_ix");
+    assert_eq!(parsed, expected!(two_ix));
+}
+
+#[test]
+fn parse_small_interaction() {
+    // you're giving me some real small ix energy right now
+    let parsed = parse_dummy!("small_ix");
+    assert_eq!(parsed, vec![expected!(small_ix)]);
+}
+
+#[test]
+fn parse_one_ix_many_pages() {
+    let parsed = parse_dummy!("one_ix_many_pages");
+    assert_eq!(parsed, vec![expected!(one_ix_many_pages)]);
+}
+
+#[test]
 fn unlink_name_to_vox() {
     let parsed = parse_dummy!("unlink");
     let expected = Interaction {
@@ -271,12 +296,6 @@ fn unlink_name_to_vox() {
 }
 
 #[test]
-fn link_name_to_vox() {
-    let parsed = parse_dummy!("link");
-    assert_eq!(parsed, vec![expected!(link)]);
-}
-
-#[test]
 fn parse_filter_empties() {
     let parsed = parse_dummy!("empties");
     let expected = vec![Interaction {
@@ -303,12 +322,6 @@ fn parse_filter_empties() {
     }];
 
     assert_eq!(parsed, expected);
-}
-
-#[test]
-fn parse_two_ix() {
-    let parsed = parse_dummy!("two_ix");
-    assert_eq!(parsed, expected!(two_ix));
 }
 
 #[test]
@@ -340,17 +353,4 @@ Who's making me do this?"#
     };
 
     assert_eq!(parsed, vec![expected]);
-}
-
-#[test]
-fn parse_small_interaction() {
-    // you're giving me some real small ix energy right now
-    let parsed = parse_dummy!("small_ix");
-    assert_eq!(parsed, vec![expected!(small_ix)]);
-}
-
-#[test]
-fn parse_one_ix_many_pages() {
-    let parsed = parse_dummy!("one_ix_many_pages");
-    assert_eq!(parsed, vec![expected!(one_ix_many_pages)]);
 }
