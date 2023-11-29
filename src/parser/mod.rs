@@ -7,7 +7,7 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
-use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, PREFIX_GOTO_LABEL, SEPARATOR};
+use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, PREFIX_GOTO_FN, PREFIX_GOTO_LABEL, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
@@ -156,8 +156,14 @@ impl DgParser {
             // if label, then add a label to the previous choice
             // OR set the label of the entire interaction if there is none
             // if one exists, error out.
-            PREFIX_GOTO_LABEL => {
-                let label = Label::new_goto(rest);
+            _ => {
+                let variant = match first_ch {
+                    PREFIX_GOTO_LABEL => Label::new_goto,
+                    PREFIX_GOTO_FN => Label::new_fn,
+                    _ => return Err(ParseError::MalformedEnding(line.to_owned())),
+                };
+
+                let label = variant(rest);
                 match ix.ending {
                     DialogueEnding::Choices(ref mut choices) => {
                         let choice = choices
@@ -179,10 +185,6 @@ impl DgParser {
                         ix.ending = DialogueEnding::Label(label);
                     }
                 }
-            }
-
-            _ => {
-                return Err(ParseError::MalformedEnding(line.to_owned()));
             }
         }
 

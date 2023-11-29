@@ -29,6 +29,10 @@ impl Label {
     pub fn new_goto(id: &str) -> Self {
         Self::Goto(id.to_owned())
     }
+
+    pub fn new_fn(name: &str) -> Self {
+        Self::Function(name.to_owned())
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Deserialize, Serialize)]

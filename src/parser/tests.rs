@@ -210,7 +210,7 @@ macro_rules! expected {
                     metadata: first_meta.clone(),
                     content: "Come back when you're smart.".to_owned(),
                 }],
-                ending: DialogueEnding::End,
+                ending: DialogueEnding::Label(Label::new_fn("Exit")),
             },
         ]
     }};
