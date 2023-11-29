@@ -46,10 +46,8 @@ pub type Unlink = LinkLike<String>;
 /// Association = thing to link to the target
 ///
 /// In practice:
-/// ```
 /// Link <Target Key> <Target Value>
 /// <Association Key> <Association Value>
-/// ```
 impl<A> LinkLike<A> {
     pub fn new(target_key: &str, target_value: &str) -> Self {
         let pair = LinkKVPair::from_slices(target_key, target_value);

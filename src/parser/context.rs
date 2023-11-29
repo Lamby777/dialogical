@@ -34,13 +34,11 @@ impl ScriptContext {
     }
 
     pub fn unlink(&mut self, unlink: &Unlink) {
-        self.0.iter_mut().for_each(|output| {
-            // TODO probably a bug in here
-            if let ScriptOutput::Link(v) = output {
-                v.associations
-                    .retain(|other| !unlink.associations.contains(&other.0));
+        for link in self.iter_links_mut() {
+            if link.target == unlink.target {
+                link.associations.retain(|v| v.0 != unlink.associations[0]);
             }
-        });
+        }
 
         self.clean_links();
     }
@@ -73,6 +71,13 @@ impl ScriptContext {
 
     pub fn iter_links(&self) -> impl Iterator<Item = &Link> {
         self.0.iter().filter_map(|v| match v {
+            ScriptOutput::Link(link) => Some(link),
+            _ => None,
+        })
+    }
+
+    pub fn iter_links_mut(&mut self) -> impl Iterator<Item = &mut Link> {
+        self.0.iter_mut().filter_map(|v| match v {
             ScriptOutput::Link(link) => Some(link),
             _ => None,
         })
