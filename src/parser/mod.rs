@@ -7,7 +7,7 @@ pub type Result<T> = std::result::Result<T, ParseError>;
 use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
-use crate::consts::{COMPTIME_BORDER, PREFIX_CHOICE, PREFIX_GOTO_FN, PREFIX_GOTO_LABEL, SEPARATOR};
+use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
 
 mod context;
@@ -15,7 +15,7 @@ mod endings;
 mod metaline;
 
 pub use context::ScriptContext;
-pub use endings::{DialogueChoice, DialogueEnding, Label};
+pub use endings::{DialogueChoice, DialogueEnding};
 
 pub struct DgParser {
     state: ParseState,
