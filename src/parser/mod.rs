@@ -87,22 +87,6 @@ impl DgParser {
         Ok(())
     }
 
-    fn parse_metaline(&mut self, line: &str) -> Result<()> {
-        let line = line.trim();
-
-        // empty line = end of metadata
-        if line.is_empty() {
-            self.state = ParseState::Message;
-            return Ok(());
-        }
-
-        metaline::parse(self, line)
-    }
-
-    fn parse_endings(&mut self, line: &str) -> Result<()> {
-        endings::parse(self, line)
-    }
-
     fn parse_message(&mut self, line: &str) -> Result<()> {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
@@ -171,9 +155,9 @@ impl DgParser {
                 // a comptime script or a message section
                 ComptimeScript(_) => self.parse_comptime(line)?,
 
-                Metadata => self.parse_metaline(line)?,
+                Metadata => metaline::parse(self, line)?,
                 Message => self.parse_message(line)?,
-                Choices => self.parse_endings(line)?,
+                Choices => endings::parse(self, line)?,
             };
         }
 

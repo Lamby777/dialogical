@@ -13,6 +13,14 @@ fn split_first_whitespace(full: &str) -> Result<(&str, &str)> {
 
 /// parse a comptime scripting block
 pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
+    let line = line.trim();
+
+    // empty line = end of metadata
+    if line.is_empty() {
+        parser.state = ParseState::Message;
+        return Ok(());
+    }
+
     if line == COMPTIME_BORDER {
         // comptime script inside a comptime script is 100% a parsing error
         debug_assert!(!matches!(parser.state, ParseState::ComptimeScript(_)));
