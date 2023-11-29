@@ -3,6 +3,7 @@ use crate::pages::Metadata::*;
 use crate::pages::PageMetadata;
 use crate::pages::Speaker::*;
 use crate::parser::endings::Label;
+use pretty_assertions::assert_eq;
 
 macro_rules! dummy_file {
     ($name:expr) => {
