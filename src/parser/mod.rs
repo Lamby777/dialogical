@@ -99,6 +99,10 @@ impl DgParser {
         metaline::parse(self, line)
     }
 
+    fn parse_endings(&mut self, line: &str) -> Result<()> {
+        endings::parse(self, line)
+    }
+
     fn parse_message(&mut self, line: &str) -> Result<()> {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
@@ -106,87 +110,6 @@ impl DgParser {
             self.state = ParseState::Choices;
         } else {
             self.pagebuf.push(line.to_string());
-        }
-
-        Ok(())
-    }
-
-    fn parse_choices(&mut self, line: &str) -> Result<()> {
-        // TODO move to another file like metaline
-        let line = line.trim();
-
-        // skip empty lines
-        if line.is_empty() {
-            return Ok(());
-        }
-
-        // if the line is a separator and we're not in the
-        // middle of parsing an ending, then we're done.
-        //
-        // push the page and move on.
-        if line == SEPARATOR {
-            self.push_page()?;
-            self.state = ParseState::Metadata;
-            return Ok(());
-        }
-
-        // split the line into prefix (>, @, $) and the rest
-        let (first_ch, rest) = {
-            let mut it = line.chars();
-
-            let first_ch = it
-                .next()
-                .ok_or(ParseError::MalformedEnding(line.to_owned()))?;
-
-            it.next(); // skip the space
-            (first_ch, it.as_str())
-        };
-
-        let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
-        match first_ch {
-            PREFIX_CHOICE => {
-                // parse a choice
-                let choice = DialogueChoice {
-                    text: rest.to_owned(),
-                    label: None,
-                };
-
-                ix.ending.append_choice(choice);
-            }
-
-            // if label, then add a label to the previous choice
-            // OR set the label of the entire interaction if there is none
-            // if one exists, error out.
-            _ => {
-                let variant = match first_ch {
-                    PREFIX_GOTO_LABEL => Label::new_goto,
-                    PREFIX_GOTO_FN => Label::new_fn,
-                    _ => return Err(ParseError::MalformedEnding(line.to_owned())),
-                };
-
-                let label = variant(rest);
-                match ix.ending {
-                    DialogueEnding::Choices(ref mut choices) => {
-                        let choice = choices
-                            .last_mut()
-                            .ok_or_else(|| ParseError::MalformedEnding(line.to_owned()))?;
-
-                        if choice.label.is_some() {
-                            return Err(ParseError::MixedEndings(line.to_owned()));
-                        }
-
-                        choice.label = Some(label);
-                    }
-
-                    DialogueEnding::Label(_) => {
-                        return Err(ParseError::MixedEndings(line.to_owned()));
-                    }
-
-                    DialogueEnding::End => {
-                        ix.ending = DialogueEnding::Label(label);
-                    }
-                }
-            }
         }
 
         Ok(())
@@ -250,7 +173,7 @@ impl DgParser {
 
                 Metadata => self.parse_metaline(line)?,
                 Message => self.parse_message(line)?,
-                Choices => self.parse_choices(line)?,
+                Choices => self.parse_endings(line)?,
             };
         }
 

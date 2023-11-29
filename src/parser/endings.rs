@@ -5,6 +5,9 @@
 
 use serde::{Deserialize, Serialize};
 
+use crate::consts::*;
+use crate::{DgParser, ParseResult};
+
 /// One choice in a list of dialogue choices
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct DialogueChoice {
@@ -65,4 +68,89 @@ impl DialogueEnding {
             _ => panic!("Tried to append choice to non-choices ending"),
         }
     }
+}
+
+pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
+    use crate::pages::{ParseError, ParseState};
+
+    let line = line.trim();
+
+    // skip empty lines
+    if line.is_empty() {
+        return Ok(());
+    }
+
+    // if the line is a separator and we're not in the
+    // middle of parsing an ending, then we're done.
+    //
+    // push the page and move on.
+    if line == SEPARATOR {
+        parser.push_page()?;
+        parser.state = ParseState::Metadata;
+        return Ok(());
+    }
+
+    // split the line into prefix (>, @, $) and the rest
+    let (first_ch, rest) = {
+        let mut it = line.chars();
+
+        let first_ch = it
+            .next()
+            .ok_or(ParseError::MalformedEnding(line.to_owned()))?;
+
+        it.next(); // skip the space
+        (first_ch, it.as_str())
+    };
+
+    let ix = parser
+        .interaction
+        .as_mut()
+        .ok_or(ParseError::PushPageNoIX)?;
+    match first_ch {
+        PREFIX_CHOICE => {
+            // parse a choice
+            let choice = DialogueChoice {
+                text: rest.to_owned(),
+                label: None,
+            };
+
+            ix.ending.append_choice(choice);
+        }
+
+        // if label, then add a label to the previous choice
+        // OR set the label of the entire interaction if there is none
+        // if one exists, error out.
+        _ => {
+            let variant = match first_ch {
+                PREFIX_GOTO_LABEL => Label::new_goto,
+                PREFIX_GOTO_FN => Label::new_fn,
+                _ => return Err(ParseError::MalformedEnding(line.to_owned())),
+            };
+
+            let label = variant(rest);
+            match ix.ending {
+                DialogueEnding::Choices(ref mut choices) => {
+                    let choice = choices
+                        .last_mut()
+                        .ok_or_else(|| ParseError::MalformedEnding(line.to_owned()))?;
+
+                    if choice.label.is_some() {
+                        return Err(ParseError::MixedEndings(line.to_owned()));
+                    }
+
+                    choice.label = Some(label);
+                }
+
+                DialogueEnding::Label(_) => {
+                    return Err(ParseError::MixedEndings(line.to_owned()));
+                }
+
+                DialogueEnding::End => {
+                    ix.ending = DialogueEnding::Label(label);
+                }
+            }
+        }
+    }
+
+    Ok(())
 }
