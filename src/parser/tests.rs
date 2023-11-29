@@ -363,7 +363,7 @@ fn parse_filter_empties() {
             },
             Page {
                 metadata: PageMetadata::nochange(),
-                content: "---\n---".to_owned(),
+                content: "--- ---".to_owned(),
             },
             Page {
                 metadata: PageMetadata::nochange(),

@@ -101,7 +101,20 @@ impl DgParser {
 
     /// push page buffer to the pages vec, then clear the buffer
     fn push_page(&mut self) -> Result<()> {
-        self.page.content = self.pagebuf.join("\n");
+        // join each line with spaces unless they end in the
+        // literal 2 characters "\n", in which case we replace
+        // the \n with an actual newline
+        self.page.content = self
+            .pagebuf
+            .iter()
+            .map(|line| {
+                if line.ends_with("\\n") {
+                    line.replace("\\n", "\n")
+                } else {
+                    line.to_string()
+                }
+            })
+            .collect();
 
         let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
 
