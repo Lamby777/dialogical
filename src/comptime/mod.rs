@@ -105,11 +105,18 @@ impl Script {
                 out.log(&split.collect::<Vec<_>>().join(" "));
             }
 
-            "Link" | "Unlink" => {
+            "Link" => {
                 // TODO what happens the target part is empty?
                 let pair = LinkKVPair::from_words(&mut split)?;
-                let mut link = Link::from_pair(pair);
-                link.negative = command == "Unlink";
+                let link = Link::from_pair(pair);
+
+                return Ok(Some(ComptimeState::Link(link)));
+            }
+
+            "Unlink" => {
+                let pair = LinkKVPair::from_words(&mut split)?;
+                let link = Link::from_pair(pair);
+                // link.negative = command == "Unlink";
 
                 return Ok(Some(ComptimeState::Link(link)));
             }
@@ -176,7 +183,8 @@ impl Script {
         }
 
         // we're done building the link, so...
-        if !link.negative {
+        // if !link.negative { TODO
+        if true {
             // push it to the parser's list of links
             out.link(link.clone());
         } else {

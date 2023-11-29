@@ -37,15 +37,16 @@ impl Deref for LinkKVPair {
 pub struct Link {
     pub target: LinkKVPair,
     pub associations: Vec<LinkKVPair>,
-    pub negative: bool,
 }
 
 /// Target = thing to track
 /// Association = thing to link to the target
 ///
 /// In practice:
-/// Link NAME <Target>
-/// VOX <Association>
+/// ```
+/// Link <Target Key> <Target Value>
+/// <Association Key> <Association Value>
+/// ```
 impl Link {
     pub fn new(property: &str, target: &str) -> Self {
         let pair = LinkKVPair::from_slices(property, target);
@@ -56,7 +57,6 @@ impl Link {
         Self {
             target: from,
             associations: vec![],
-            negative: false,
         }
     }
 
