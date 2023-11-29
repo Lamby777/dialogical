@@ -85,7 +85,7 @@ impl ScriptContext {
         self.links()
             .iter()
             .filter_map(|v| {
-                if v.targets == kv {
+                if v.target == kv {
                     Some(v.associations.clone())
                 } else {
                     None

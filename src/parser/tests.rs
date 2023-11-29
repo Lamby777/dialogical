@@ -285,10 +285,7 @@ fn page_after_end() {
 #[test]
 fn double_link() {
     let parsed = parse_dummy_err!("agent_link");
-    assert_eq!(
-        parsed,
-        ParseError::Panic(ScriptError::DoubleLink("NAME Agent Cascade".to_owned()))
-    );
+    assert_eq!(parsed, ParseError::Panic(ScriptError::DoubleLink));
 }
 
 #[test]

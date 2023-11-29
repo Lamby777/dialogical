@@ -32,8 +32,11 @@ pub enum ScriptError {
     #[error("Incorrect usage of Link directive")]
     InvalidLink,
 
-    #[error("Attempt to link one to many/itself at line: {0}")]
-    DoubleLink(String),
+    #[error("Attempt to link 2 of the same property in associations")]
+    DoubleLink,
+
+    #[error("Attempt to link a target to be associated with itself")]
+    TargetToSelf,
 
     #[error("Could not open file at path {0}")]
     FileOpen(PathBuf),
@@ -163,6 +166,13 @@ impl Script {
             let pair = LinkKVPair::from_words(&mut split)?;
             link.add_association(pair);
             return Ok(None);
+        }
+
+        // Some checks to make sure you aren't being a dumbass
+        // <https://github.com/Lamby777/dialogical/issues/2>
+        let is_dupe = out.iter_links().any(|v| v.target == link.target);
+        if is_dupe {
+            return Err(ScriptError::DoubleLink);
         }
 
         // we're done building the link, so...
