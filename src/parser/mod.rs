@@ -104,17 +104,24 @@ impl DgParser {
         // join each line with spaces unless they end in the
         // literal 2 characters "\n", in which case we replace
         // the \n with an actual newline
-        self.page.content = self
-            .pagebuf
-            .iter()
-            .map(|line| {
-                if line.ends_with("\\n") {
+        self.page.content = {
+            let mut it = self.pagebuf.iter().peekable();
+
+            let mut res = String::new();
+            while let Some(line) = it.next() {
+                let to_push = if line.ends_with("\\n") {
                     line.replace("\\n", "\n")
+                } else if it.peek().is_some() {
+                    format!("{} ", line)
                 } else {
-                    line.to_string()
-                }
-            })
-            .collect();
+                    line.clone()
+                };
+
+                res.push_str(&to_push);
+            }
+
+            res
+        };
 
         let ix = self.interaction.as_mut().ok_or(ParseError::PushPageNoIX)?;
 
