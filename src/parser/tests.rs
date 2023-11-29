@@ -1,4 +1,5 @@
 use super::*;
+use crate::comptime::ScriptError;
 use crate::pages::Metadata::*;
 use crate::pages::PageMetadata;
 use crate::pages::Speaker::*;
@@ -278,6 +279,15 @@ fn page_after_end() {
     assert_eq!(
         parsed,
         ParseError::PageAfterEnding("ItNeverEnds".to_owned())
+    );
+}
+
+#[test]
+fn double_link() {
+    let parsed = parse_dummy_err!("agent_link");
+    assert_eq!(
+        parsed,
+        ParseError::Panic(ScriptError::DoubleLink("NAME Agent Cascade".to_owned()))
     );
 }
 

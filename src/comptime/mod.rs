@@ -32,6 +32,9 @@ pub enum ScriptError {
     #[error("Incorrect usage of Link directive")]
     InvalidLink,
 
+    #[error("Attempt to link one to many/itself at line: {0}")]
+    DoubleLink(String),
+
     #[error("Could not open file at path {0}")]
     FileOpen(PathBuf),
 
