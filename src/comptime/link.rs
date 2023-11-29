@@ -32,12 +32,15 @@ impl Deref for LinkKVPair {
     }
 }
 
-/// One section of link commands...
+/// One section of (un)link commands...
 #[derive(Clone, Debug, PartialEq)]
-pub struct Link {
+pub struct LinkLike<A> {
     pub target: LinkKVPair,
-    pub associations: Vec<LinkKVPair>,
+    pub associations: Vec<A>,
 }
+
+pub type Link = LinkLike<LinkKVPair>;
+pub type Unlink = LinkLike<String>;
 
 /// Target = thing to track
 /// Association = thing to link to the target
@@ -47,20 +50,20 @@ pub struct Link {
 /// Link <Target Key> <Target Value>
 /// <Association Key> <Association Value>
 /// ```
-impl Link {
-    pub fn new(property: &str, target: &str) -> Self {
-        let pair = LinkKVPair::from_slices(property, target);
+impl<A> LinkLike<A> {
+    pub fn new(target_key: &str, target_value: &str) -> Self {
+        let pair = LinkKVPair::from_slices(target_key, target_value);
         Self::from_pair(pair)
     }
 
-    pub fn from_pair(from: LinkKVPair) -> Self {
+    pub fn from_pair(target: LinkKVPair) -> Self {
         Self {
-            target: from,
+            target,
             associations: vec![],
         }
     }
 
-    pub fn add_association(&mut self, pair: LinkKVPair) {
+    pub fn add_association(&mut self, pair: A) {
         self.associations.push(pair);
     }
 }

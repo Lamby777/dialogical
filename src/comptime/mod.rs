@@ -20,7 +20,7 @@ mod include;
 mod link;
 
 pub use include::ScriptPath;
-pub use link::{Link, LinkKVPair};
+pub use link::{Link, LinkKVPair, Unlink};
 
 pub type Result<T> = std::result::Result<T, ScriptError>;
 
@@ -154,6 +154,27 @@ impl Script {
         };
 
         Ok(None)
+    }
+
+    fn execute_unlink(
+        &self,
+        line: &str,
+        out: &mut ScriptContext,
+        unlink: &mut Unlink,
+    ) -> Result<Option<ComptimeState>> {
+        let line = line.trim();
+        if line.starts_with(PREFIX_COMMENT) {
+            return Ok(None);
+        }
+
+        if !line.is_empty() {
+            // add another property to the list of
+            // things the current link will point to
+            unlink.add_association(line.to_owned());
+            return Ok(None);
+        }
+
+        Ok(Some(ComptimeState::Normal))
     }
 
     fn execute_link(
