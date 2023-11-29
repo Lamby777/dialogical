@@ -33,6 +33,7 @@ pub struct DgParser {
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
+    page_had_ending: bool,
 }
 
 impl DgParser {
@@ -47,6 +48,7 @@ impl DgParser {
             page: Page::default(),
             pagebuf: vec![],
             script: vec![],
+            page_had_ending: false,
         }
     }
 
@@ -110,6 +112,7 @@ impl DgParser {
     }
 
     fn parse_choices(&mut self, line: &str) -> Result<()> {
+        // TODO move to another file like metaline
         let line = line.trim();
 
         // skip empty lines
@@ -199,12 +202,20 @@ impl DgParser {
 
         // you may not add another page after an ending
         // for more info, see <https://github.com/Lamby777/dialogical/issues/3>
-        if ix.ending != DialogueEnding::End {
-            return Err(ParseError::PageAfterEnding(ix.id.clone()));
+        let ix_has_ending_yet = ix.ending != DialogueEnding::End;
+        if ix_has_ending_yet {
+            // TODO probably a bug in here somewhere
+            if self.page_had_ending {
+                return Err(ParseError::PageAfterEnding(ix.id.clone()));
+            }
+
+            // "poisons" the current interaction so it remembers
+            // that it had an ending until it's pushed
+            self.page_had_ending = true;
         }
 
         ix.pages.push(self.page.clone());
-
+        self.page_had_ending = false;
         self.pagebuf.clear();
         self.page = Page::default();
 
