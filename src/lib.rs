@@ -23,13 +23,12 @@ use comptime::{Link, LinkKVPair};
 use parser::{DgParser, Result as ParseResult};
 
 // Re-exports
-pub use pages::{Interaction, Metaline, Page, PageMeta, Speaker};
+pub use pages::{Interaction, InteractionMap, Metaline, Page, PageMeta, Speaker};
 pub use parser::{DialogueChoice, DialogueEnding, Label};
 
 pub mod prelude {
-    pub use crate::deserialize as deserialize_interactions;
     pub use crate::{DialogueChoice, DialogueEnding, Label};
-    pub use crate::{Interaction, Metaline, Page, PageMeta, Speaker};
+    pub use crate::{Interaction, InteractionMap, Metaline, Page, PageMeta, Speaker};
 }
 
 type Error = Box<dyn std::error::Error>;
@@ -44,18 +43,14 @@ macro_rules! log {
     };
 }
 
-pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
-    match bincode::deserialize(data) {
-        Ok(v) => {
-            log!("Deserialized successfully!");
-            Ok(v)
-        }
+pub fn as_hashmap(data: &[u8]) -> Result<InteractionMap, Error> {
+    let v = as_vec(data)?;
+    let map = InteractionMap::from(v.as_slice());
+    Ok(map)
+}
 
-        Err(e) => {
-            eprintln!("Error: {}", e);
-            Err(e)
-        }
-    }
+pub fn as_vec(data: &[u8]) -> Result<Vec<Interaction>, Error> {
+    bincode::deserialize(data).map_err(Into::into)
 }
 
 pub fn cli_main(args: Args) -> Result<(), Error> {

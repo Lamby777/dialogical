@@ -2,6 +2,8 @@
 //! Data structures used by the parser
 //!
 
+use std::collections::HashMap;
+
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
@@ -66,6 +68,29 @@ pub enum ParseError {
 impl From<ScriptError> for ParseError {
     fn from(value: ScriptError) -> Self {
         Self::Panic(value)
+    }
+}
+
+/// Represents a list of interactions, but with a HashMap
+/// so you don't have to constantly filter through the list
+#[derive(Clone, Debug, PartialEq)]
+pub struct InteractionMap<'a>(InteractionMapInner<'a>);
+type InteractionMapInner<'a> = HashMap<&'a str, &'a Interaction>;
+
+impl<'a> InteractionMap<'a> {
+    pub fn inner(&self) -> &InteractionMapInner {
+        &self.0
+    }
+}
+
+impl<'a> From<&'a [Interaction]> for InteractionMap<'a> {
+    fn from(ix_list: &'a [Interaction]) -> Self {
+        let hash = ix_list
+            .iter()
+            .map(|ix| (ix.id.as_str(), ix))
+            .collect::<HashMap<_, _>>();
+
+        Self(hash)
     }
 }
 
