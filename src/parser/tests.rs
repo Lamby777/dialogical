@@ -59,41 +59,45 @@ macro_rules! expected {
     };
 
     (small_ix) => {
-        Interaction {
-            pages: vec![
-                Page {
-                    metadata: meta_double!("Siva"),
-                    content: "First page".to_owned(),
-                },
-                Page {
-                    metadata: meta_double!("Terra"),
-                    content: "Second page\nWith more words".to_owned(),
-                },
-            ],
-            ending: DialogueEnding::End,
+        hash_map! {
+            "Test1".to_string() => Interaction {
+                pages: vec![
+                    Page {
+                        metadata: meta_double!("Siva"),
+                        content: "First page".to_owned(),
+                    },
+                    Page {
+                        metadata: meta_double!("Terra"),
+                        content: "Second page\nWith more words".to_owned(),
+                    },
+                ],
+                ending: DialogueEnding::End,
+            }
         }
     };
 
     (link) => {
-        Interaction {
-            pages: vec![
-                Page {
-                    metadata: PageMeta {
-                        speaker: Permanent(Named("Cherry".to_owned())),
-                        vox: Permanent("Mira".to_owned()),
+        hash_map! {
+            "Link Test".to_string() => Interaction {
+                pages: vec![
+                    Page {
+                        metadata: PageMeta {
+                            speaker: Permanent(Named("Cherry".to_owned())),
+                            vox: Permanent("Mira".to_owned()),
+                        },
+                        content: "Page 1".to_owned(),
                     },
-                    content: "Page 1".to_owned(),
-                },
-                Page {
-                    metadata: PageMeta::nochange(),
-                    content: "Page 2".to_owned(),
-                },
-                Page {
-                    metadata: PageMeta::nochange(),
-                    content: "Page 3".to_owned(),
-                },
-            ],
-            ending: DialogueEnding::End,
+                    Page {
+                        metadata: PageMeta::nochange(),
+                        content: "Page 2".to_owned(),
+                    },
+                    Page {
+                        metadata: PageMeta::nochange(),
+                        content: "Page 3".to_owned(),
+                    },
+                ],
+                ending: DialogueEnding::End,
+            }
         }
     };
 
@@ -129,50 +133,46 @@ macro_rules! expected {
     };
 
     (one_ix_many_pages) => {
-        Interaction {
-            pages: vec![
-                Page {
-                    metadata: meta_double!("Deez"),
-                    content: "When the words are sus".to_owned(),
-                },
-                Page {
-                    metadata: PageMeta {
-                        speaker: Permanent(Named("Gamer".to_owned())),
-                        vox: NoChange,
+        hash_map! {
+            "Interaction".to_string() => Interaction {
+                pages: vec![
+                    Page {
+                        metadata: meta_double!("Deez"),
+                        content: "When the words are sus".to_owned(),
                     },
-                    content: "Words go brrr".to_owned(),
-                },
-                Page {
-                    metadata: PageMeta::nochange(),
-                    content: "When the imposter is sus".to_owned(),
-                },
-                Page {
-                    metadata: meta_double!("Siva"),
-                    content: "Testing".to_owned(),
-                },
-            ],
-            ending: DialogueEnding::End,
+                    Page {
+                        metadata: PageMeta {
+                            speaker: Permanent(Named("Gamer".to_owned())),
+                            vox: NoChange,
+                        },
+                        content: "Words go brrr".to_owned(),
+                    },
+                    Page {
+                        metadata: PageMeta::nochange(),
+                        content: "When the imposter is sus".to_owned(),
+                    },
+                    Page {
+                        metadata: meta_double!("Siva"),
+                        content: "Testing".to_owned(),
+                    },
+                ],
+                ending: DialogueEnding::End,
+            }
         }
     };
 
-    (import_others) => {
-        todo!()
-        // vec![
-        //     Interaction::default(),
-        //     expected!(small_ix),
-        //     expected!(link),
-        //     expected!(two_ix)[0].clone(),
-        //     expected!(two_ix)[1].clone(),
-        //     expected!(one_ix_many_pages),
-        // ]
-    };
+    (import_others) => {{
+        let mut map = expected!(small_ix);
+        map.extend(expected!(link));
+        map.extend(expected!(two_ix));
+        map.extend(expected!(one_ix_many_pages));
+
+        map
+    }};
 
     (import_sub) => {
-        todo!()
-        // vec![Interaction::default()]
-        //     .into_iter()
-        //     .chain(expected!(import_others))
-        //     .collect::<Vec<_>>()
+        // TODO import another thing before these
+        expected!(import_others)
     };
 
     (rodrick) => {{
@@ -241,6 +241,13 @@ fn parse_rodrick_sign() {
 
 #[test]
 #[ignore = "see gh #8"]
+fn import_subimports() {
+    let parsed = parse_dummy!("import_sub");
+    assert_eq!(parsed, expected!(import_sub));
+}
+
+#[test]
+#[ignore = "see gh #8"]
 fn import_others() {
     let parsed = parse_dummy!("import");
     assert_eq!(parsed, expected!(import_others));
@@ -249,7 +256,7 @@ fn import_others() {
 #[test]
 fn link_name_to_vox() {
     let parsed = parse_dummy!("link");
-    assert_eq!(parsed, expected!("Link Test", link));
+    assert_eq!(parsed, expected!(link));
 }
 
 #[test]
@@ -262,19 +269,13 @@ fn parse_two_ix() {
 fn parse_small_interaction() {
     // you're giving me some real small ix energy right now
     let parsed = parse_dummy!("small_ix");
-    assert_eq!(
-        parsed,
-        hash_map![ "Test1".to_string() => expected!(small_ix)]
-    );
+    assert_eq!(parsed, expected!(small_ix));
 }
 
 #[test]
 fn parse_one_ix_many_pages() {
     let parsed = parse_dummy!("one_ix_many_pages");
-    assert_eq!(
-        parsed,
-        hash_map![ "Interaction".to_string() => expected!(one_ix_many_pages)]
-    );
+    assert_eq!(parsed, expected!(one_ix_many_pages));
 }
 
 #[test]
