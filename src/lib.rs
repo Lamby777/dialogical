@@ -24,7 +24,7 @@ use parser::{DgParser, Result as ParseResult};
 
 // Re-exports
 pub use pages::{Interaction, Metaline, Page, PageMeta, Speaker};
-pub use parser::{DialogueChoice, DialogueEnding};
+pub use parser::{DialogueChoice, DialogueEnding, Label};
 
 type Error = Box<dyn std::error::Error>;
 

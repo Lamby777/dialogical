@@ -15,7 +15,7 @@ mod endings;
 mod metaline;
 
 pub use context::ScriptContext;
-pub use endings::{DialogueChoice, DialogueEnding};
+pub use endings::{DialogueChoice, DialogueEnding, Label};
 
 pub struct DgParser {
     state: ParseState,
