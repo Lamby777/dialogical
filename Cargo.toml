@@ -1,6 +1,6 @@
 [package]
 name = "dialogical"
-version = "0.8.1"
+version = "0.8.2"
 edition = "2021"
 
 authors = ["Cherry <dieselguitar@sparklet.org>"]
