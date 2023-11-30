@@ -156,13 +156,23 @@ impl DgParser {
     /// `Err` if the parser is in a state where it's not
     /// prepared to finish just yet.
     fn push_ix(&mut self) -> Result<()> {
-        let ix_id = self.ix_id.take().ok_or(ParseError::PushEmptyIX)?;
-        let ix = self.interaction.take().ok_or(ParseError::PushEmptyIX)?;
+        let ix_id = self.ix_id.take();
+        let ix = self.interaction.take();
 
-        self.interactions.insert(ix_id, ix);
+        if let (Some(ix_id), Some(ix)) = (ix_id, ix) {
+            self.interactions.insert(ix_id, ix);
+        } else {
+            // allow empty ix if there are comptime imports
+            let comptime_imports = self.context.drain_interactions();
 
-        // push any interactions imported from comptime scripts
-        self.interactions.extend(self.context.drain_interactions());
+            if comptime_imports.is_empty() {
+                return Err(ParseError::PushEmptyIX);
+            }
+
+            // push any interactions imported from comptime scripts
+            self.interactions.extend(comptime_imports);
+        }
+
         self.page_had_ending = false;
 
         Ok(())

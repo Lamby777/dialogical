@@ -247,7 +247,7 @@ fn import_subimports() {
 }
 
 #[test]
-#[ignore = "see gh #8"]
+// #[ignore = "see gh #8"]
 fn import_others() {
     let parsed = parse_dummy!("import");
     assert_eq!(parsed, expected!(import_others));
