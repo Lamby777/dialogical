@@ -297,6 +297,22 @@ fn dupe_ix_ids() {
 }
 
 #[test]
+fn empty_ix_before_import() {
+    let parsed = parse_dummy!("pets/main");
+    [
+        "This interaction ID should not prevent the import",
+        "Rodrick Sign #1",
+        "Rodrick Sign #1 >> Nope",
+        "Rodrick Sign #1 >> DefNot",
+        "Rodrick Sign #1 >> Exit",
+    ]
+    .iter()
+    .for_each(|v| {
+        assert!(parsed.contains_key(*v), "Missing interaction {}", v);
+    })
+}
+
+#[test]
 fn newline_tricks() {
     let parsed = parse_dummy!("newlines");
     let pages = parsed.get("Newline Tricks").unwrap().pages.as_slice();
