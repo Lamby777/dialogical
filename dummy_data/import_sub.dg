@@ -1,7 +1,7 @@
-% Import Sub-imports
 ###
 
-Import ./import.dg
+Import import.dg
+Import rodrick.dg
 
 ###
 ---

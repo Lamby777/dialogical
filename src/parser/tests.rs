@@ -170,10 +170,12 @@ macro_rules! expected {
         map
     }};
 
-    (import_sub) => {
-        // TODO import another thing before these
-        expected!(import_others)
-    };
+    (import_sub) => {{
+        let mut map = expected!(import_others);
+        map.extend(expected!(rodrick));
+
+        map
+    }};
 
     (rodrick) => {{
         let first_meta = PageMeta {
@@ -240,14 +242,12 @@ fn parse_rodrick_sign() {
 }
 
 #[test]
-#[ignore = "see gh #8"]
 fn import_subimports() {
     let parsed = parse_dummy!("import_sub");
     assert_eq!(parsed, expected!(import_sub));
 }
 
 #[test]
-// #[ignore = "see gh #8"]
 fn import_others() {
     let parsed = parse_dummy!("import");
     assert_eq!(parsed, expected!(import_others));
