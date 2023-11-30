@@ -58,6 +58,9 @@ pub enum ParseError {
     #[error("No interaction to push onto the parser's list!")]
     PushEmptyIX,
 
+    #[error("Attempt to push a duplicate interaction")]
+    PushDuplicateIX,
+
     #[error("Attempt to push a page after an ending in interaction")]
     PageAfterEnding,
 

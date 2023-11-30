@@ -291,6 +291,12 @@ fn double_link() {
 }
 
 #[test]
+fn dupe_ix_ids() {
+    let parsed = parse_dummy_err!("dupe_ix");
+    assert_eq!(parsed, ParseError::PushDuplicateIX);
+}
+
+#[test]
 fn newline_tricks() {
     let parsed = parse_dummy!("newlines");
     let pages = parsed.get("Newline Tricks").unwrap().pages.as_slice();

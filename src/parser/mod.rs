@@ -160,6 +160,10 @@ impl DgParser {
         let ix = self.interaction.take();
 
         if let (Some(ix_id), Some(ix)) = (ix_id, ix) {
+            if self.interactions.contains_key(&ix_id) {
+                return Err(ParseError::PushDuplicateIX);
+            }
+
             self.interactions.insert(ix_id, ix);
         } else {
             // allow empty ix if there are comptime imports
