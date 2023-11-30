@@ -45,7 +45,7 @@ macro_rules! log {
 
 pub fn as_hashmap(data: &[u8]) -> Result<InteractionMap, Error> {
     let v = as_vec(data)?;
-    let map = InteractionMap::from(v.as_slice());
+    let map = InteractionMap::from(v);
     Ok(map)
 }
 

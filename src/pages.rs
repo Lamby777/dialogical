@@ -75,7 +75,7 @@ impl From<ScriptError> for ParseError {
 /// so you don't have to constantly filter through the list
 #[derive(Clone, Debug, PartialEq)]
 pub struct InteractionMap<'a>(InteractionMapInner<'a>);
-type InteractionMapInner<'a> = HashMap<&'a str, &'a Interaction>;
+type InteractionMapInner<'a> = HashMap<&'a str, Interaction>;
 
 impl<'a> InteractionMap<'a> {
     pub fn inner(&self) -> &InteractionMapInner {
@@ -83,11 +83,14 @@ impl<'a> InteractionMap<'a> {
     }
 }
 
-impl<'a> From<&'a [Interaction]> for InteractionMap<'a> {
-    fn from(ix_list: &'a [Interaction]) -> Self {
+impl From<Vec<Interaction>> for InteractionMap<'_> {
+    fn from(ix_list: Vec<Interaction>) -> Self {
         let hash = ix_list
-            .iter()
-            .map(|ix| (ix.id.as_str(), ix))
+            .into_iter()
+            .map(|ix| {
+                let Interaction { id, pages, ending } = ix;
+                (id.as_str(), ix)
+            })
             .collect::<HashMap<_, _>>();
 
         Self(hash)
