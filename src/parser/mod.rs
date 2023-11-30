@@ -30,6 +30,7 @@ pub struct DgParser {
     // temp buffers for parsing
     // TODO store these inside `ParseState`
     interaction: Option<Interaction>,
+    ix_id: Option<String>,
     script: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
@@ -45,6 +46,7 @@ impl DgParser {
 
             interactions: vec![],
             interaction: None,
+            ix_id: None,
             page: Page::default(),
             pagebuf: vec![],
             script: vec![],
@@ -57,6 +59,7 @@ impl DgParser {
             self.push_ix()?;
         }
 
+        self.ix_id = Some(id.to_owned());
         self.interaction = Some(Interaction::default());
 
         Ok(())
@@ -151,8 +154,10 @@ impl DgParser {
     /// `Err` if the parser is in a state where it's not
     /// prepared to finish just yet.
     fn push_ix(&mut self) -> Result<()> {
-        self.interactions
-            .push(self.interaction.take().ok_or(ParseError::PushEmptyIX)?);
+        let ix_id = self.ix_id.take().ok_or(ParseError::PushEmptyIX)?;
+        let ix = self.interaction.take().ok_or(ParseError::PushEmptyIX)?;
+
+        self.interactions.push(ix);
 
         // push any interactions imported from comptime scripts
         self.interactions.extend(self.context.drain_interactions());
