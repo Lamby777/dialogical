@@ -57,7 +57,7 @@ impl DgParser {
             self.push_ix()?;
         }
 
-        self.interaction = Some(Interaction::new_with_id(id));
+        self.interaction = Some(Interaction::default());
 
         Ok(())
     }
@@ -130,7 +130,7 @@ impl DgParser {
         let ix_has_ending_yet = ix.ending != DialogueEnding::End;
         if ix_has_ending_yet {
             if self.page_had_ending {
-                return Err(ParseError::PageAfterEnding(ix.id.clone()));
+                return Err(ParseError::PageAfterEnding);
             }
 
             // "poisons" the current interaction so it remembers

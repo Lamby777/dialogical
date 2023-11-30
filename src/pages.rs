@@ -58,8 +58,8 @@ pub enum ParseError {
     #[error("No interaction to push onto the parser's list!")]
     PushEmptyIX,
 
-    #[error("Attempt to push a page after an ending in interaction: {0}")]
-    PageAfterEnding(String),
+    #[error("Attempt to push a page after an ending in interaction")]
+    PageAfterEnding,
 
     #[error("Failed while running comptime script")]
     Panic(ScriptError),
@@ -73,46 +73,15 @@ impl From<ScriptError> for ParseError {
 
 /// Represents a list of interactions, but with a HashMap
 /// so you don't have to constantly filter through the list
-#[derive(Clone, Debug, PartialEq)]
-pub struct InteractionMap<'a>(InteractionMapInner<'a>);
-type InteractionMapInner<'a> = HashMap<&'a str, Interaction>;
+pub type InteractionMap = HashMap<String, Interaction>;
 
-impl<'a> InteractionMap<'a> {
-    pub fn inner(&self) -> &InteractionMapInner {
-        &self.0
-    }
-}
-
-impl From<Vec<Interaction>> for InteractionMap<'_> {
-    fn from(ix_list: Vec<Interaction>) -> Self {
-        let hash = ix_list
-            .into_iter()
-            .map(|ix| {
-                let Interaction { id, pages, ending } = ix;
-                (id.as_str(), ix)
-            })
-            .collect::<HashMap<_, _>>();
-
-        Self(hash)
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Interaction {
-    pub id: String,
     pub pages: Vec<Page>,
     pub ending: DialogueEnding,
 }
 
 impl Interaction {
-    pub fn new_with_id(id: &str) -> Self {
-        Self {
-            id: id.to_owned(),
-            pages: vec![],
-            ending: DialogueEnding::default(),
-        }
-    }
-
     /// Will try to either push onto the list or start a list.
     /// It will error if there's currently a goto label.
     pub fn push_choice(&mut self, to_push: DialogueChoice) -> ParseResult<()> {
@@ -130,7 +99,7 @@ impl Interaction {
                 Ok(())
             }
 
-            Label(_) => Err(ParseError::MixedEndings(self.id.clone())),
+            Label(l) => Err(ParseError::MixedEndings(l.to_string())),
         }
     }
 }

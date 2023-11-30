@@ -5,6 +5,8 @@
 
 use serde::{Deserialize, Serialize};
 
+use std::fmt;
+
 use crate::consts::*;
 use crate::pages::{ParseError, ParseState};
 use crate::{DgParser, ParseResult};
@@ -36,6 +38,15 @@ impl Label {
 
     pub fn new_fn(name: &str) -> Self {
         Self::Function(name.to_owned())
+    }
+}
+
+impl fmt::Display for Label {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Function(name) => write!(f, "{}", name),
+            Self::Goto(id) => write!(f, "{}", id),
+        }
     }
 }
 

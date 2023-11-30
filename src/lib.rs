@@ -43,13 +43,7 @@ macro_rules! log {
     };
 }
 
-pub fn as_hashmap(data: &[u8]) -> Result<InteractionMap, Error> {
-    let v = as_vec(data)?;
-    let map = InteractionMap::from(v);
-    Ok(map)
-}
-
-pub fn as_vec(data: &[u8]) -> Result<Vec<Interaction>, Error> {
+pub fn deserialize(data: &[u8]) -> Result<InteractionMap, Error> {
     bincode::deserialize(data).map_err(Into::into)
 }
 

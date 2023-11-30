@@ -50,7 +50,7 @@ macro_rules! meta_double {
 macro_rules! expected {
     (small_ix) => {
         Interaction {
-            id: "Test1".to_string(),
+            // id: "Test1".to_string(),
             pages: vec![
                 Page {
                     metadata: meta_double!("Siva"),
@@ -67,7 +67,7 @@ macro_rules! expected {
 
     (link) => {
         Interaction {
-            id: "Link Test".to_string(),
+            // id: "Link Test".to_string(),
             pages: vec![
                 Page {
                     metadata: PageMeta {
@@ -92,7 +92,7 @@ macro_rules! expected {
     (two_ix) => {
         vec![
             Interaction {
-                id: "First".to_string(),
+                // id: "First".to_string(),
                 pages: vec![
                     Page {
                         metadata: meta_double!("Porky"),
@@ -106,7 +106,7 @@ macro_rules! expected {
                 ending: DialogueEnding::End,
             },
             Interaction {
-                id: "Second".to_string(),
+                // id: "Second".to_string(),
                 pages: vec![
                     Page {
                         metadata: meta_double!("Terra"),
@@ -124,7 +124,7 @@ macro_rules! expected {
 
     (one_ix_many_pages) => {
         Interaction {
-            id: "Interaction".to_string(),
+            // id: "Interaction".to_string(),
             pages: vec![
                 Page {
                     metadata: meta_double!("Deez"),
@@ -152,7 +152,7 @@ macro_rules! expected {
 
     (import_others) => {
         vec![
-            Interaction::new_with_id("Import Test"),
+            Interaction::default(),
             expected!(small_ix),
             expected!(link),
             expected!(two_ix)[0].clone(),
@@ -162,7 +162,7 @@ macro_rules! expected {
     };
 
     (import_sub) => {
-        vec![Interaction::new_with_id("Import Sub-imports")]
+        vec![Interaction::default()]
             .into_iter()
             .chain(expected!(import_others))
             .collect::<Vec<_>>()
@@ -176,7 +176,7 @@ macro_rules! expected {
 
         vec![
             Interaction {
-                id: "RodrickSign".to_string(),
+                // id: "RodrickSign".to_string(),
                 pages: vec![
                     Page {
                         metadata: first_meta.clone(),
@@ -203,7 +203,7 @@ macro_rules! expected {
                 ]),
             },
             Interaction {
-                id: "RodrickSign_Nope".to_string(),
+                // id: "RodrickSign_Nope".to_string(),
                 pages: vec![Page {
                     metadata: first_meta.clone(),
                     content: "Yeah, I didn't think so.".to_owned(),
@@ -211,7 +211,7 @@ macro_rules! expected {
                 ending: DialogueEnding::Label(Label::new_goto("RodrickSign_Exit")),
             },
             Interaction {
-                id: "RodrickSign_DefNot".to_string(),
+                // id: "RodrickSign_DefNot".to_string(),
                 pages: vec![Page {
                     metadata: first_meta.clone(),
                     content: "Yeah, I definitely didn't think so.".to_owned(),
@@ -219,7 +219,7 @@ macro_rules! expected {
                 ending: DialogueEnding::Label(Label::new_goto("RodrickSign_Exit")),
             },
             Interaction {
-                id: "RodrickSign_Exit".to_string(),
+                // id: "RodrickSign_Exit".to_string(),
                 pages: vec![Page {
                     metadata: first_meta.clone(),
                     content: "Come back when you're smart.".to_owned(),
@@ -276,10 +276,7 @@ fn parse_one_ix_many_pages() {
 #[test]
 fn page_after_end() {
     let parsed = parse_dummy_err!("vsauce");
-    assert_eq!(
-        parsed,
-        ParseError::PageAfterEnding("ItNeverEnds".to_owned())
-    );
+    assert_eq!(parsed, ParseError::PageAfterEnding);
 }
 
 #[test]
@@ -315,7 +312,7 @@ fn newline_tricks() {
 fn unlink_name_to_vox() {
     let parsed = parse_dummy!("unlink");
     let expected = Interaction {
-        id: "Unlink Test".to_string(),
+        // id: "Unlink Test".to_string(),
         pages: vec![
             Page {
                 metadata: meta_double!("Mira"),
@@ -351,7 +348,7 @@ fn unlink_name_to_vox() {
 fn parse_filter_empties() {
     let parsed = parse_dummy!("empties");
     let expected = vec![Interaction {
-        id: "Empties Test".to_string(),
+        // id: "Empties Test".to_string(),
         pages: vec![
             Page {
                 metadata: meta_double!("Siva"),
@@ -380,7 +377,7 @@ fn parse_filter_empties() {
 fn parse_pageonly() {
     let parsed = parse_dummy!("pageonly");
     let expected = Interaction {
-        id: "PageOnly Test".to_string(),
+        // id: "PageOnly Test".to_string(),
         pages: vec![
             Page {
                 metadata: meta_double!("Mira"),
