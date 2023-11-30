@@ -19,10 +19,12 @@ mod consts;
 mod pages;
 mod parser;
 
+use comptime::{Link, LinkKVPair};
+use parser::{DgParser, Result as ParseResult};
+
 // Re-exports
-pub use comptime::{Link, LinkKVPair, Result as ScriptResult};
-pub use pages::Interaction;
-pub use parser::{DgParser, Result as ParseResult};
+pub use pages::{Interaction, Metaline, Page, PageMeta, Speaker};
+pub use parser::{DialogueChoice, DialogueEnding};
 
 type Error = Box<dyn std::error::Error>;
 

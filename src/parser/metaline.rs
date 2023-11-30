@@ -1,6 +1,6 @@
 use crate::comptime::LinkKVPair;
 use crate::consts::COMPTIME_BORDER;
-use crate::pages::{Metadata, ParseError, ParseState, Speaker};
+use crate::pages::{Metaline, ParseError, ParseState, Speaker};
 
 use super::{DgParser, Result};
 
@@ -48,7 +48,7 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
                 Speaker::Unknown
             };
 
-            parser.page.metadata.speaker = Metadata::new(speaker, pageonly);
+            parser.page.metadata.speaker = Metaline::new(speaker, pageonly);
             return Ok(());
         }
 
@@ -69,10 +69,10 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
         match key {
             "NAME" => {
                 let name = Speaker::Named(val.to_owned());
-                parser.page.metadata.speaker = Metadata::new(name, pageonly)
+                parser.page.metadata.speaker = Metaline::new(name, pageonly)
             }
 
-            "VOX" => parser.page.metadata.vox = Metadata::new(val.to_owned(), pageonly),
+            "VOX" => parser.page.metadata.vox = Metaline::new(val.to_owned(), pageonly),
 
             _ => {
                 return Err(ParseError::InvalidMeta(line.to_string()));

@@ -1,7 +1,7 @@
 use super::*;
 use crate::comptime::ScriptError;
-use crate::pages::Metadata::*;
-use crate::pages::PageMetadata;
+use crate::pages::Metaline::*;
+use crate::pages::PageMeta;
 use crate::pages::Speaker::*;
 use crate::parser::endings::Label;
 use crate::parser::ParseError;
@@ -40,7 +40,7 @@ macro_rules! parse_dummy {
 /// good for writing quick unit tests
 macro_rules! meta_double {
     ($name:expr) => {
-        PageMetadata {
+        PageMeta {
             speaker: Permanent(Named($name.to_owned())),
             vox: Permanent($name.to_owned()),
         }
@@ -70,18 +70,18 @@ macro_rules! expected {
             id: "Link Test".to_string(),
             pages: vec![
                 Page {
-                    metadata: PageMetadata {
+                    metadata: PageMeta {
                         speaker: Permanent(Named("Cherry".to_owned())),
                         vox: Permanent("Mira".to_owned()),
                     },
                     content: "Page 1".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata::nochange(),
+                    metadata: PageMeta::nochange(),
                     content: "Page 2".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata::nochange(),
+                    metadata: PageMeta::nochange(),
                     content: "Page 3".to_owned(),
                 },
             ],
@@ -131,14 +131,14 @@ macro_rules! expected {
                     content: "When the words are sus".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata {
+                    metadata: PageMeta {
                         speaker: Permanent(Named("Gamer".to_owned())),
                         vox: NoChange,
                     },
                     content: "Words go brrr".to_owned(),
                 },
                 Page {
-                    metadata: PageMetadata::nochange(),
+                    metadata: PageMeta::nochange(),
                     content: "When the imposter is sus".to_owned(),
                 },
                 Page {
@@ -169,7 +169,7 @@ macro_rules! expected {
     };
 
     (rodrick) => {{
-        let first_meta = PageMetadata {
+        let first_meta = PageMeta {
             speaker: Permanent(Named("Rodrick Sign Co.".to_owned())),
             vox: Permanent("Default".to_owned()),
         };
@@ -183,11 +183,11 @@ macro_rules! expected {
                         content: "So... you're reading a sign, eh?".to_owned(),
                     },
                     Page {
-                        metadata: PageMetadata::nochange(),
+                        metadata: PageMeta::nochange(),
                         content: "Well...".to_owned(),
                     },
                     Page {
-                        metadata: PageMetadata::nochange(),
+                        metadata: PageMeta::nochange(),
                         content: "Are you smart?".to_owned(),
                     },
                 ],
@@ -322,7 +322,7 @@ fn unlink_name_to_vox() {
                 content: "Page 1".to_owned(),
             },
             Page {
-                metadata: PageMetadata::nochange(),
+                metadata: PageMeta::nochange(),
                 content: "Page 2".to_owned(),
             },
             Page {
@@ -330,7 +330,7 @@ fn unlink_name_to_vox() {
                 content: "Page 3".to_owned(),
             },
             Page {
-                metadata: PageMetadata {
+                metadata: PageMeta {
                     speaker: Permanent(Named("Mira".to_owned())),
                     vox: NoChange,
                 },
@@ -362,11 +362,11 @@ fn parse_filter_empties() {
                 content: "...".to_owned(),
             },
             Page {
-                metadata: PageMetadata::nochange(),
+                metadata: PageMeta::nochange(),
                 content: "--- ---".to_owned(),
             },
             Page {
-                metadata: PageMetadata::nochange(),
+                metadata: PageMeta::nochange(),
                 content: "*runs away*".to_owned(),
             },
         ],
@@ -387,7 +387,7 @@ fn parse_pageonly() {
                 content: "What's up?".to_owned(),
             },
             Page {
-                metadata: PageMetadata {
+                metadata: PageMeta {
                     speaker: NoChange,
                     vox: PageOnly("Ethan".to_owned()),
                 },
@@ -395,7 +395,7 @@ fn parse_pageonly() {
                 content: "Nothing much...".to_owned(),
             },
             Page {
-                metadata: PageMetadata::default(),
+                metadata: PageMeta::default(),
                 content: r#"Alright, why am I talking to myself?
 Who's making me do this?"#
                     .to_owned(),

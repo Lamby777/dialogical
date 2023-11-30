@@ -109,7 +109,7 @@ impl Interaction {
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
 pub struct Page {
-    pub metadata: PageMetadata,
+    pub metadata: PageMeta,
     pub content: String,
 }
 
@@ -117,7 +117,7 @@ impl Page {
     pub fn from_content(content: String) -> Self {
         Self {
             content,
-            metadata: PageMetadata::default(),
+            metadata: PageMeta::default(),
         }
     }
 }
@@ -136,14 +136,14 @@ pub enum Speaker {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-pub struct PageMetadata {
-    pub speaker: Metadata<Speaker>,
-    pub vox: Metadata<String>,
+pub struct PageMeta {
+    pub speaker: Metaline<Speaker>,
+    pub vox: Metaline<String>,
 }
 
-impl PageMetadata {
+impl PageMeta {
     pub fn nochange() -> Self {
-        use Metadata::NoChange;
+        use Metaline::NoChange;
 
         Self {
             speaker: NoChange,
@@ -154,7 +154,7 @@ impl PageMetadata {
 
 /// Represents a metadata directive
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
-pub enum Metadata<T> {
+pub enum Metaline<T> {
     /// Any change is implicitly permanent
     /// Example:
     /// `NAME &Cherry`
@@ -170,7 +170,7 @@ pub enum Metadata<T> {
     NoChange,
 }
 
-impl<T> Metadata<T> {
+impl<T> Metaline<T> {
     pub fn new(val: T, pageonly: bool) -> Self {
         if pageonly {
             Self::PageOnly(val)
