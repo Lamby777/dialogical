@@ -120,14 +120,6 @@ impl Page {
             metadata: PageMeta::default(),
         }
     }
-
-    pub fn speaker(&self) -> &Speaker {
-        &self.metadata.speaker.unwrap()
-    }
-
-    pub fn vox(&self) -> &str {
-        &self.metadata.vox.unwrap()
-    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Serialize, Deserialize)]
