@@ -26,6 +26,12 @@ use parser::{DgParser, Result as ParseResult};
 pub use pages::{Interaction, Metaline, Page, PageMeta, Speaker};
 pub use parser::{DialogueChoice, DialogueEnding, Label};
 
+pub mod prelude {
+    pub use crate::deserialize as deserialize_interactions;
+    pub use crate::{DialogueChoice, DialogueEnding, Label};
+    pub use crate::{Interaction, Metaline, Page, PageMeta, Speaker};
+}
+
 type Error = Box<dyn std::error::Error>;
 
 pub(crate) static SILENT: OnceLock<bool> = OnceLock::new();
@@ -52,7 +58,7 @@ pub fn deserialize(data: &[u8]) -> Result<Vec<Interaction>, Error> {
     }
 }
 
-pub fn main(args: Args) -> Result<(), Error> {
+pub fn cli_main(args: Args) -> Result<(), Error> {
     SILENT.set(args.silent).unwrap();
 
     // TODO error handling for file rw

@@ -4,7 +4,7 @@ use dialogical::Args;
 fn main() {
     let args = Args::parse();
 
-    if let Err(e) = dialogical::main(args) {
+    if let Err(e) = dialogical::cli_main(args) {
         eprintln!("Error: {}", e);
         std::process::exit(1);
     }
