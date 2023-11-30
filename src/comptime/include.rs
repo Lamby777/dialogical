@@ -16,7 +16,7 @@ use std::path::PathBuf;
 
 use super::{Result, ScriptError};
 use crate::parser::DgParser;
-use crate::{Interaction, ParseResult};
+use crate::{InteractionMap, ParseResult};
 
 /// Used for `Execute` and `Import` directives.
 #[derive(Clone, Debug)]
@@ -39,10 +39,10 @@ impl ScriptPath {
 
     /// Run a second parser instance on the script at the path.
     /// Used by the `Import` directive.
-    pub fn parse(&self) -> ParseResult<Vec<Interaction>> {
+    pub fn parse(&self) -> ParseResult<InteractionMap> {
         let contents = self.read()?;
 
         let mut parser = DgParser::new(self.0.clone());
-        parser.parse_all(&contents).map(|v| v.to_vec())
+        parser.parse_all(&contents)
     }
 }

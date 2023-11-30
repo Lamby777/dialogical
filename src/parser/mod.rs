@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use crate::comptime::{Script, ScriptPath};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
 use crate::pages::{Interaction, Page, ParseError, ParseState};
+use crate::InteractionMap;
 
 mod context;
 mod endings;
@@ -25,7 +26,7 @@ pub struct DgParser {
     path: PathBuf,
 
     /// the end result it's putting together
-    interactions: Vec<Interaction>,
+    interactions: InteractionMap,
 
     // temp buffers for parsing
     // TODO store these inside `ParseState`
@@ -44,7 +45,7 @@ impl DgParser {
             context: ScriptContext::default(),
             path,
 
-            interactions: vec![],
+            interactions: InteractionMap::new(),
             interaction: None,
             ix_id: None,
             page: Page::default(),
@@ -157,7 +158,7 @@ impl DgParser {
         let ix_id = self.ix_id.take().ok_or(ParseError::PushEmptyIX)?;
         let ix = self.interaction.take().ok_or(ParseError::PushEmptyIX)?;
 
-        self.interactions.push(ix);
+        self.interactions.insert(ix_id, ix);
 
         // push any interactions imported from comptime scripts
         self.interactions.extend(self.context.drain_interactions());
@@ -166,7 +167,7 @@ impl DgParser {
         Ok(())
     }
 
-    pub fn parse_all(&mut self, data: &str) -> Result<&[Interaction]> {
+    pub fn parse_all(&mut self, data: &str) -> Result<InteractionMap> {
         let lines = data.lines();
 
         self.pagebuf.clear();
@@ -189,7 +190,9 @@ impl DgParser {
         }
 
         self.push_ix()?;
-        Ok(&self.interactions)
+        let res = self.interactions.clone();
+        self.interactions.clear();
+        Ok(res)
     }
 }
 

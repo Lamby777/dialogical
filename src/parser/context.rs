@@ -1,5 +1,5 @@
 use crate::comptime::{ScriptOutput, Unlink};
-use crate::{Interaction, Link, LinkKVPair};
+use crate::{InteractionMap, Link, LinkKVPair};
 
 /// Wrapper type around `Vec<ScriptOutput>`.
 ///
@@ -14,13 +14,13 @@ impl ScriptContext {
         self.0.push(ScriptOutput::LogMessage(msg.to_owned()));
     }
 
-    pub fn drain_interactions(&mut self) -> Vec<Interaction> {
-        let mut interactions = vec![];
+    pub fn drain_interactions(&mut self) -> InteractionMap {
+        let mut interactions = InteractionMap::new();
 
         // TODO probably a better way to do this
         self.0.retain(|output| match output {
-            ScriptOutput::Interaction(interaction) => {
-                interactions.push(interaction.clone());
+            ScriptOutput::Interaction(ix_id, ix) => {
+                interactions.insert(ix_id.to_owned(), ix.clone());
                 false
             }
             _ => true,

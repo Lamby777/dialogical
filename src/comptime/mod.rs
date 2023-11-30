@@ -69,7 +69,7 @@ pub struct Script {
 pub enum ScriptOutput {
     LogMessage(String),
     Link(Link),
-    Interaction(Interaction),
+    Interaction(String, Interaction),
 }
 
 impl Script {
@@ -133,7 +133,7 @@ impl Script {
 
                 let mapped = interactions
                     .into_iter()
-                    .map(|v| ScriptOutput::Interaction(v));
+                    .map(|(id, v)| ScriptOutput::Interaction(id, v));
 
                 out.0.extend(mapped);
             }
