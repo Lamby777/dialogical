@@ -158,6 +158,7 @@ impl DgParser {
     fn push_ix(&mut self) -> Result<()> {
         let ix_id = self.ix_id.take();
         let ix = self.interaction.take();
+        let comptime_imports = self.context.drain_interactions();
 
         if let (Some(ix_id), Some(ix)) = (ix_id, ix) {
             if self.interactions.contains_key(&ix_id) {
@@ -165,17 +166,14 @@ impl DgParser {
             }
 
             self.interactions.insert(ix_id, ix);
-        } else {
-            // allow empty ix if there are comptime imports
-            let comptime_imports = self.context.drain_interactions();
-
-            if comptime_imports.is_empty() {
-                return Err(ParseError::PushEmptyIX);
-            }
-
-            // push any interactions imported from comptime scripts
-            self.interactions.extend(comptime_imports);
+        } else if comptime_imports.is_empty() {
+            // empty ix are not allowed... UNLESS there are
+            // imports in a comptime script inside it
+            return Err(ParseError::PushEmptyIX);
         }
+
+        // push any interactions imported from comptime scripts
+        self.interactions.extend(comptime_imports);
 
         self.page_had_ending = false;
 

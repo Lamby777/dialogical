@@ -39,7 +39,7 @@ impl ScriptPath {
 
     /// Run a second parser instance on the script at the path.
     /// Used by the `Import` directive.
-    pub fn parse(&self) -> ParseResult<InteractionMap> {
+    pub fn parse_import(&self) -> ParseResult<InteractionMap> {
         let contents = self.read()?;
 
         let mut parser = DgParser::new(self.0.clone());

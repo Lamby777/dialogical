@@ -128,7 +128,7 @@ impl Script {
                 // later on when the language has more features.
                 let path = script_path(self, split);
                 let interactions = path
-                    .parse()
+                    .parse_import()
                     .map_err(|e| ScriptError::Import(path.0, Box::new(e)))?;
 
                 let mapped = interactions
