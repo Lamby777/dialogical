@@ -8,13 +8,14 @@ use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
-use crate::pages::{Interaction, Page, ParseError, ParseState};
+use crate::pages::{Interaction, Page, ParseState};
 use crate::InteractionMap;
 
 mod context;
 mod endings;
 mod metaline;
 
+pub use crate::pages::ParseError;
 pub use context::ScriptContext;
 pub use endings::{DialogueChoice, DialogueEnding, Label};
 

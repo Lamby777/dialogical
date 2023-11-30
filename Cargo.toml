@@ -17,6 +17,7 @@ categories = ["command-line-utilities", "game-development", "parser-implementati
 [dependencies]
 bincode = "1.3.3"
 clap = { version = "4.4.8", features = ["derive"] }
+map-macro = "0.2.6"
 pretty_assertions = "1.4.0"
 serde = { version = "1.0.193", features = ["derive"] }
 thiserror = "1.0.50"
