@@ -12,23 +12,21 @@ use clap::Parser;
 
 use std::fs::File;
 use std::io::{self, Read, Write};
+use std::sync::OnceLock;
 
 mod comptime;
 mod consts;
 mod pages;
 mod parser;
 
-pub use parser::DgParser;
-
 // Re-exports
 pub use comptime::{Link, LinkKVPair, Result as ScriptResult};
 pub use pages::Interaction;
-pub use parser::Result as ParseResult;
+pub use parser::{DgParser, Result as ParseResult};
 
 type Error = Box<dyn std::error::Error>;
 
-use once_cell::sync::OnceCell;
-pub(crate) static SILENT: OnceCell<bool> = OnceCell::new();
+pub(crate) static SILENT: OnceLock<bool> = OnceLock::new();
 
 macro_rules! log {
     ($($arg:tt)*) => {
