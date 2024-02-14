@@ -27,8 +27,10 @@ pub use pages::{Interaction, InteractionMap, Metaline, Page, PageMeta, Speaker};
 pub use parser::{DialogueChoice, DialogueEnding, Label};
 
 pub mod prelude {
-    pub use crate::{DialogueChoice, DialogueEnding, Label};
-    pub use crate::{Interaction, InteractionMap, Metaline, Page, PageMeta, Speaker};
+    pub use crate::{
+        DialogueChoice, DialogueEnding, Interaction, InteractionMap, Label, Metaline, Page,
+        PageMeta, Speaker,
+    };
 }
 
 type Error = Box<dyn std::error::Error>;
@@ -45,6 +47,19 @@ macro_rules! log {
 
 pub fn deserialize(data: &[u8]) -> Result<InteractionMap, Error> {
     bincode::deserialize(data).map_err(Into::into)
+}
+
+/// Compile one `.dg` file into a packed `.dgc` via a simple
+/// Rust interface... Pretty much does the same stuff as the
+/// CLI version.
+pub fn compile(entry: &str, out: &str, verbose: bool) -> Result<(), Error> {
+    let args = Args {
+        file: Some(entry.into()),
+        output: Some(out.into()),
+        silent: !verbose,
+    };
+
+    cli_main(args)
 }
 
 pub fn cli_main(args: Args) -> Result<(), Error> {
