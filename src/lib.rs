@@ -12,6 +12,7 @@ use clap::Parser;
 
 use std::fs::File;
 use std::io::{self, Read, Write};
+use std::path::{Path, PathBuf};
 use std::sync::OnceLock;
 
 mod comptime;
@@ -51,18 +52,19 @@ pub fn deserialize(data: &[u8]) -> Result<InteractionMap, Error> {
 
 /// Compile one `.dg` file into a packed `.dgc` via a simple
 /// Rust interface... Pretty much does the same stuff as the
-/// CLI version.
-pub fn compile(entry: &str, out: &str, verbose: bool) -> Result<(), Error> {
+/// CLI version. Reasonable defaults, but you can always use
+/// `cli_main` directly if you need more control.
+pub fn compile(entry: &str, out: &str) -> Result<(), Error> {
     let args = Args {
         file: Some(entry.into()),
         output: Some(out.into()),
-        silent: !verbose,
+        silent: true,
     };
 
-    cli_main(args)
+    cli_main(args, None)
 }
 
-pub fn cli_main(args: Args) -> Result<(), Error> {
+pub fn cli_main(args: Args, cwd: Option<&Path>) -> Result<(), Error> {
     SILENT.set(args.silent).unwrap();
 
     // TODO error handling for file rw
@@ -79,13 +81,15 @@ pub fn cli_main(args: Args) -> Result<(), Error> {
     log!("Reading...");
     let data = io::read_to_string(input_stream)?;
 
+    // priority:
+    // 1. path is the cwd argument passed in, if any
+    // 2. if file argument, `path` is the path of the file
+    // 3. if reading stdin, `path` is the current dir
     log!("Parsing...");
-    // if stdin, the path is the cwd
-    let path = if let Some(ref path) = args.file {
-        std::path::PathBuf::from(path)
-    } else {
-        std::env::current_dir()?
-    };
+    let path = cwd
+        .map(PathBuf::from)
+        .or_else(|| args.file.as_ref().map(PathBuf::from))
+        .unwrap_or_else(|| std::env::current_dir().unwrap());
 
     let mut parser = DgParser::new(path);
     let res = parser.parse_all(&data)?;
