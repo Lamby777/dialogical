@@ -16,24 +16,16 @@ game can load into memory.
 
 ## Building
 
-Want to get this up and running so you can compile P/E/T/S? Simple as shit.
-
-```
-cargo install dialogical
-```
-
-If you want to actually work on this specific tool, or you need the latest
-version for whatever reason, then just `cargo build` inside the folder.
-
-Probably gonna write a crate for loading these files into memory at some
-point... or maybe I'll just make that be a part of the game's code to avoid the
-extra complexity of spamming a bunch of wrapper types just to add traits to
-types from external crates.
+Just `cargo build`. If you're here from P/E/T/S, you don't actually need to
+install this system-wide anymore, as it's now a build dependency and does all
+the work using the library instead of running system commands. The only reasons
+you'd need to install this separately are if you want to use it as a standalone
+tool or if you're helping to develop it.
 
 ## Usage
 
 All of these commands will print the help screen. Pick your favorite, and don't
-forget it!
+forget it! :>
 
 ```
 dg
@@ -41,12 +33,24 @@ dg -h
 dg --help
 ```
 
-Here's an example of how you'd use it for a project... Ideally, you'd slap this
-line into your build script or Makefile or something like that before all your
-other build steps.
+Here's an example of how you'd use it from the command line...
 
 ```
 dg pets37.dg -o ./pets37.dgc
+```
+
+For a full project, you'd ideally slap this line into your build script or
+Makefile or something like that before all your other build steps.
+
+Here's how it works in P/E/T/S, as an example.
+
+```rs
+fn main() {
+    println!("cargo:rerun-if-changed=./dg/src");
+    println!("cargo:rerun-if-changed=build.rs");
+
+    dialogical::compile("dg/src/main.dg", "dg/packed.dgc").unwrap();
+}
 ```
 
 ---
