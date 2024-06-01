@@ -101,6 +101,31 @@ macro_rules! expected {
         }
     };
 
+    (link_between_ix) => {{
+        let mut pt1 = expected!(link);
+
+        let pt2 = hash_map! {
+            "Link Test 2".to_string() => Interaction {
+                pages: vec![
+                    Page {
+                        metadata: PageMeta {
+                            speaker: Permanent(
+                                Named("Cherry".to_owned()),
+                            ),
+                            vox: Permanent("Mira".to_owned()),
+                        },
+                        content: "Page 1, Second Interaction".to_owned(),
+                    },
+                ],
+                ending: DialogueEnding::End,
+            }
+        };
+
+        pt1.extend(pt2);
+
+        pt1
+    }};
+
     (two_ix) => {
         hash_map! {
             "First".to_string() => Interaction {
@@ -257,6 +282,12 @@ fn import_others() {
 fn link_name_to_vox() {
     let parsed = parse_dummy!("link");
     assert_eq!(parsed, expected!(link));
+}
+
+#[test]
+fn link_between_ix() {
+    let parsed = parse_dummy!("link_between_ix");
+    assert_eq!(parsed, expected!(link_between_ix));
 }
 
 #[test]
