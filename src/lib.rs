@@ -3,7 +3,7 @@
 //! of trying to make modules work properly instead of
 //! being able to write actual code
 //!
-//!  - &Cherry, 11/20/2023
+//!  \- &Cherry, 11/20/2023
 //!
 
 #![feature(if_let_guard)]
@@ -21,11 +21,11 @@ mod pages;
 mod parser;
 
 use comptime::{Link, LinkKVPair};
-use parser::{DgParser, Result as ParseResult};
+use parser::Result as ParseResult;
 
 // Re-exports
 pub use pages::{Interaction, InteractionMap, Metaline, Page, PageMeta, Speaker};
-pub use parser::{DialogueChoice, DialogueEnding, Label};
+pub use parser::{DgParser, DialogueChoice, DialogueEnding, Label};
 
 pub mod prelude {
     pub use crate::{
