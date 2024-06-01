@@ -23,9 +23,28 @@ pub struct DialogueChoice {
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+/// Argument variants to bind for function calls
+pub enum ArgVariant {
+    String(String),
+    Int(i64),
+    Float(f64),
+}
+
+impl fmt::Display for ArgVariant {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::String(s) => write!(f, "\"{}\"", s),
+            Self::Int(i) => write!(f, "{}", i),
+            Self::Float(fl) => write!(f, "{}", fl),
+        }
+    }
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub enum Label {
-    /// Function label - name of a function to run
-    Function(String),
+    /// Function label - name of a function to run, along
+    /// with any arguments that should be passed
+    Function(String, Vec<ArgVariant>),
 
     /// Interaction label - ID of an interaction to go to
     Goto(String),
@@ -36,16 +55,31 @@ impl Label {
         Self::Goto(id.to_owned())
     }
 
-    pub fn new_fn(name: &str) -> Self {
-        Self::Function(name.to_owned())
+    pub fn new_fn(line: &str) -> Self {
+        // parse arguments
+        let (fn_name, args) = parse_fn_args(line);
+
+        Self::Function(fn_name.to_owned(), args)
     }
+}
+
+fn parse_fn_args(_line: &str) -> (String, Vec<ArgVariant>) {
+    todo!()
 }
 
 impl fmt::Display for Label {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Function(name) => write!(f, "{}", name),
             Self::Goto(id) => write!(f, "{}", id),
+
+            Self::Function(name, args) => {
+                let args = args
+                    .iter()
+                    .map(|arg| arg.to_string())
+                    .collect::<Vec<_>>()
+                    .join(", ");
+                write!(f, "{}({})", name, args)
+            }
         }
     }
 }
