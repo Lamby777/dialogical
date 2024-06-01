@@ -63,10 +63,6 @@ impl Label {
     }
 }
 
-fn parse_fn_args(_line: &str) -> (String, Vec<ArgVariant>) {
-    todo!()
-}
-
 impl fmt::Display for Label {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
@@ -196,4 +192,60 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
     }
 
     Ok(())
+}
+
+fn parse_fn_args(line: &str) -> (String, Vec<ArgVariant>) {
+    let mut it = line.splitn(2, ' ');
+    let fn_name = it.next().expect("no fn name");
+
+    // return early with just the fn name if no args
+    let Some(rest) = it.next() else {
+        return (fn_name.to_owned(), vec![]);
+    };
+
+    // split string by spaces, but keep spaces inside quotes, and allow escaping
+    // quotes via backslash
+    // let mut args = vec![];
+    // let mut arg = String::new();
+    // let mut in_quotes = false;
+    // let mut escaped = false;
+    todo!();
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn fn_args_space() {
+        let line = "fn_name arg1 arg2 arg3";
+        let parsed = parse_fn_args(line);
+
+        assert_eq!(parsed.0, "fn_name");
+        assert_eq!(
+            parsed.1,
+            vec![
+                ArgVariant::String("arg1".to_owned()),
+                ArgVariant::String("arg2".to_owned()),
+                ArgVariant::String("arg3".to_owned()),
+            ]
+        );
+    }
+
+    #[test]
+    fn fn_args_all() {
+        let line = r#"fn_name pop rock "hard rock" "\"dream\" pop""#;
+        let parsed = parse_fn_args(line);
+
+        assert_eq!(parsed.0, "fn_name");
+        assert_eq!(
+            parsed.1,
+            vec![
+                ArgVariant::String("pop".to_owned()),
+                ArgVariant::String("rock".to_owned()),
+                ArgVariant::String("hard rock".to_owned()),
+                ArgVariant::String("\"dream\" pop".to_owned()),
+            ]
+        );
+    }
 }
