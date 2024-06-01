@@ -57,7 +57,13 @@ impl Label {
 
     pub fn new_fn(line: &str) -> Self {
         // parse arguments
-        let (fn_name, args) = parse_fn_args(line);
+        let mut it = line.splitn(2, ' ');
+        let fn_name = it.next().expect("no fn name");
+
+        let args = match it.next() {
+            Some(rest) => parse_fn_args(rest),
+            None => vec![],
+        };
 
         Self::Function(fn_name.to_owned(), args)
     }
@@ -194,17 +200,10 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
     Ok(())
 }
 
-fn parse_fn_args(line: &str) -> (String, Vec<ArgVariant>) {
-    let mut it = line.splitn(2, ' ');
-    let fn_name = it.next().expect("no fn name");
+fn parse_fn_args(line: &str) -> Vec<ArgVariant> {
+    // split string by spaces, but keep spaces inside quotes, and
+    // allow escaping quotes via backslash
 
-    // return early with just the fn name if no args
-    let Some(rest) = it.next() else {
-        return (fn_name.to_owned(), vec![]);
-    };
-
-    // split string by spaces, but keep spaces inside quotes, and allow escaping
-    // quotes via backslash
     // let mut args = vec![];
     // let mut arg = String::new();
     // let mut in_quotes = false;
@@ -218,12 +217,11 @@ mod tests {
 
     #[test]
     fn fn_args_space() {
-        let line = "fn_name arg1 arg2 arg3";
+        let line = "arg1 arg2 arg3";
         let parsed = parse_fn_args(line);
 
-        assert_eq!(parsed.0, "fn_name");
         assert_eq!(
-            parsed.1,
+            parsed,
             vec![
                 ArgVariant::String("arg1".to_owned()),
                 ArgVariant::String("arg2".to_owned()),
@@ -234,12 +232,11 @@ mod tests {
 
     #[test]
     fn fn_args_all() {
-        let line = r#"fn_name pop rock "hard rock" "\"dream\" pop""#;
+        let line = r#"pop rock "hard rock" "\"dream\" pop""#;
         let parsed = parse_fn_args(line);
 
-        assert_eq!(parsed.0, "fn_name");
         assert_eq!(
-            parsed.1,
+            parsed,
             vec![
                 ArgVariant::String("pop".to_owned()),
                 ArgVariant::String("rock".to_owned()),
