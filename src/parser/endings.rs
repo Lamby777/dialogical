@@ -221,6 +221,21 @@ mod tests {
     use super::*;
 
     #[test]
+    fn fn_args_types() {
+        let line = "arg 1 2.3";
+        let parsed = parse_fn_args(line).unwrap();
+
+        assert_eq!(
+            parsed,
+            vec![
+                ArgVariant::String("arg".to_owned()),
+                ArgVariant::Int(1),
+                ArgVariant::Float(2.3),
+            ]
+        );
+    }
+
+    #[test]
     fn fn_args_space() {
         let line = "arg1 arg2 arg3";
         let parsed = parse_fn_args(line).unwrap();
