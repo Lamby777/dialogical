@@ -64,8 +64,8 @@ pub enum ParseError {
     #[error("Attempt to push a page after an ending in interaction")]
     PageAfterEnding,
 
-    #[error("Function label arguments could not be parsed.")]
-    BadFnArgs,
+    #[error("Function label arguments could not be parsed at: {0}.")]
+    BadFnArgs(String),
 
     #[error("Failed while running comptime script")]
     Panic(ScriptError),

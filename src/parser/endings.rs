@@ -182,7 +182,7 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
 }
 
 fn parse_fn_args(line: &str) -> Result<Vec<String>, ParseError> {
-    shlex::split(line).ok_or(ParseError::BadFnArgs)
+    shlex::split(line).ok_or(ParseError::BadFnArgs(line.to_owned()))
 }
 
 #[cfg(test)]
