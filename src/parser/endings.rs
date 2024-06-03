@@ -23,28 +23,10 @@ pub struct DialogueChoice {
 }
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
-/// Argument variants to bind for function calls
-pub enum ArgVariant {
-    String(String),
-    Int(i64),
-    Float(f64),
-}
-
-impl fmt::Display for ArgVariant {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Self::String(s) => write!(f, "\"{}\"", s),
-            Self::Int(i) => write!(f, "{}", i),
-            Self::Float(fl) => write!(f, "{}", fl),
-        }
-    }
-}
-
-#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub enum Label {
     /// Function label - name of a function to run, along
     /// with any arguments that should be passed
-    Function(String, Vec<ArgVariant>),
+    Function(String, Vec<String>),
 
     /// Interaction label - ID of an interaction to go to
     Goto(String),
@@ -199,56 +181,13 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
     Ok(())
 }
 
-fn parse_fn_args(line: &str) -> Result<Vec<ArgVariant>, ParseError> {
-    // split string by spaces, but keep spaces inside quotes, and
-    // allow escaping quotes via backslash
-    let args = shlex::split(line).ok_or(ParseError::BadFnArgs)?;
-    args.into_iter()
-        .map(|v| {
-            if let Some(i) = v.parse::<i64>().ok() {
-                Ok(ArgVariant::Int(i))
-            } else if let Some(fl) = v.parse::<f64>().ok() {
-                Ok(ArgVariant::Float(fl))
-            } else {
-                Ok(ArgVariant::String(v))
-            }
-        })
-        .collect()
+fn parse_fn_args(line: &str) -> Result<Vec<String>, ParseError> {
+    shlex::split(line).ok_or(ParseError::BadFnArgs)
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn fn_args_types() {
-        let line = "arg 1 2.3";
-        let parsed = parse_fn_args(line).unwrap();
-
-        assert_eq!(
-            parsed,
-            vec![
-                ArgVariant::String("arg".to_owned()),
-                ArgVariant::Int(1),
-                ArgVariant::Float(2.3),
-            ]
-        );
-    }
-
-    #[test]
-    fn fn_args_space() {
-        let line = "arg1 arg2 arg3";
-        let parsed = parse_fn_args(line).unwrap();
-
-        assert_eq!(
-            parsed,
-            vec![
-                ArgVariant::String("arg1".to_owned()),
-                ArgVariant::String("arg2".to_owned()),
-                ArgVariant::String("arg3".to_owned()),
-            ]
-        );
-    }
 
     #[test]
     fn fn_args_all() {
@@ -258,10 +197,10 @@ mod tests {
         assert_eq!(
             parsed.unwrap(),
             vec![
-                ArgVariant::String("pop".to_owned()),
-                ArgVariant::String("rock".to_owned()),
-                ArgVariant::String("hard rock".to_owned()),
-                ArgVariant::String("\"dream\" pop".to_owned()),
+                "pop".to_owned(),
+                "rock".to_owned(),
+                "hard rock".to_owned(),
+                "\"dream\" pop".to_owned(),
             ]
         );
     }
