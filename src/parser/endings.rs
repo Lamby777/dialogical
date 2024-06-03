@@ -55,17 +55,17 @@ impl Label {
         Self::Goto(id.to_owned())
     }
 
-    pub fn new_fn(line: &str) -> Self {
+    pub fn new_fn(line: &str) -> Result<Self, ParseError> {
         // parse arguments
         let mut it = line.splitn(2, ' ');
         let fn_name = it.next().expect("no fn name");
 
         let args = match it.next() {
-            Some(rest) => parse_fn_args(rest),
+            Some(rest) => parse_fn_args(rest)?,
             None => vec![],
         };
 
-        Self::Function(fn_name.to_owned(), args)
+        Ok(Self::Function(fn_name.to_owned(), args))
     }
 }
 
@@ -166,13 +166,12 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
         // OR set the label of the entire interaction if there is none
         // if one exists, error out.
         _ => {
-            let variant = match first_ch {
-                PREFIX_GOTO_LABEL => Label::new_goto,
-                PREFIX_GOTO_FN => Label::new_fn,
+            let label = match first_ch {
+                PREFIX_GOTO_LABEL => Label::new_goto(rest),
+                PREFIX_GOTO_FN => Label::new_fn(rest)?,
                 _ => return Err(ParseError::MalformedEnding(line.to_owned())),
             };
 
-            let label = variant(rest);
             match ix.ending {
                 DialogueEnding::Choices(ref mut choices) => {
                     let choice = choices
@@ -200,15 +199,21 @@ pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
     Ok(())
 }
 
-fn parse_fn_args(line: &str) -> Vec<ArgVariant> {
+fn parse_fn_args(line: &str) -> Result<Vec<ArgVariant>, ParseError> {
     // split string by spaces, but keep spaces inside quotes, and
     // allow escaping quotes via backslash
-
-    // let mut args = vec![];
-    // let mut arg = String::new();
-    // let mut in_quotes = false;
-    // let mut escaped = false;
-    todo!();
+    let args = shlex::split(line).ok_or(ParseError::BadFnArgs)?;
+    args.into_iter()
+        .map(|v| {
+            if let Some(i) = v.parse::<i64>().ok() {
+                Ok(ArgVariant::Int(i))
+            } else if let Some(fl) = v.parse::<f64>().ok() {
+                Ok(ArgVariant::Float(fl))
+            } else {
+                Ok(ArgVariant::String(v))
+            }
+        })
+        .collect()
 }
 
 #[cfg(test)]
@@ -218,7 +223,7 @@ mod tests {
     #[test]
     fn fn_args_space() {
         let line = "arg1 arg2 arg3";
-        let parsed = parse_fn_args(line);
+        let parsed = parse_fn_args(line).unwrap();
 
         assert_eq!(
             parsed,
@@ -236,7 +241,7 @@ mod tests {
         let parsed = parse_fn_args(line);
 
         assert_eq!(
-            parsed,
+            parsed.unwrap(),
             vec![
                 ArgVariant::String("pop".to_owned()),
                 ArgVariant::String("rock".to_owned()),
