@@ -1,4 +1,4 @@
-% GDScript Test
+% GDScript Choices Test
 NAME Mom
 VOX Mom
 
@@ -12,6 +12,17 @@ $$$
 > Orange
 $$$
 set_bed_color(orange)
+$$$
+
+---
+% GDScript End Test
+NAME Dad
+VOX Dad
+
+What's up?
+
+$$$
+# Nothing much...
 $$$
 
 ---

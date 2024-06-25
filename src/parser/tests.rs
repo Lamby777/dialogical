@@ -436,24 +436,35 @@ fn parse_filter_empties() {
 fn parse_gdscript_blocks() {
     let parsed = parse_dummy!("gdscript");
     let expected = hash_map! {
-        "GDScript Test".to_string() => Interaction {
-        pages: vec![
-            Page {
-                metadata: meta_double!("Mom"),
-                content: "What color bed?".to_owned(),
-            },
-        ],
-        ending: DialogueEnding::Choices(vec![
-            DialogueChoice {
-                text: "Red".to_string(),
-                label: Some(Label::new_gdscript("set_bed_color(red)")),
-            },
-            DialogueChoice {
-                text: "Orange".to_string(),
-                label: Some(Label::new_gdscript("set_bed_color(orange)")),
-            },
-        ]),
-    }};
+        "GDScript Choices Test".to_string() => Interaction {
+            pages: vec![
+                Page {
+                    metadata: meta_double!("Mom"),
+                    content: "What color bed?".to_owned(),
+                },
+            ],
+            ending: DialogueEnding::Choices(vec![
+                DialogueChoice {
+                    text: "Red".to_string(),
+                    label: Some(Label::new_gdscript("set_bed_color(red)")),
+                },
+                DialogueChoice {
+                    text: "Orange".to_string(),
+                    label: Some(Label::new_gdscript("set_bed_color(orange)")),
+                },
+            ]),
+        },
+
+        "GDScript End Test".to_string() => Interaction {
+            pages: vec![
+                Page {
+                    metadata: meta_double!("Dad"),
+                    content: "What's up?".to_owned(),
+                },
+            ],
+            ending: DialogueEnding::Label(Label::new_gdscript("# Nothing much...")),
+        }
+    };
 
     assert_eq!(parsed, expected);
 }
