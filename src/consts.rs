@@ -1,6 +1,6 @@
 pub const SEPARATOR: &str = "---";
 
-// comptime stuff
+// comptime segment stuff
 pub const COMPTIME_BORDER: &str = "###";
 pub const PREFIX_COMMENT: &str = "//";
 
@@ -8,3 +8,6 @@ pub const PREFIX_COMMENT: &str = "//";
 pub const PREFIX_CHOICE: char = '>';
 pub const PREFIX_GOTO_LABEL: char = '@';
 pub const PREFIX_GOTO_FN: char = '$';
+
+// GDScript segment stuff
+pub const GDSCRIPT_BORDER: &str = "$$$";

@@ -29,7 +29,17 @@ pub enum ParseState {
     Message,
 
     /// Empty line after message, before the separator
+    Choices(ChoicesState),
+}
+
+#[derive(Clone, Debug, Default)]
+pub enum ChoicesState {
+    /// Parsing choices
+    #[default]
     Choices,
+
+    /// Parsing a GDScript block
+    GDScript,
 }
 
 #[derive(Debug, Error, PartialEq)]

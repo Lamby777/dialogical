@@ -8,7 +8,7 @@ use std::path::PathBuf;
 
 use crate::comptime::{Script, ScriptPath};
 use crate::consts::{COMPTIME_BORDER, SEPARATOR};
-use crate::pages::{Interaction, Page, ParseState};
+use crate::pages::{ChoicesState, Interaction, Page, ParseState};
 use crate::InteractionMap;
 
 mod context;
@@ -33,7 +33,8 @@ pub struct DgParser {
     // TODO store these inside `ParseState`
     interaction: Option<Interaction>,
     ix_id: Option<String>,
-    script: Vec<String>,
+    comptime_script: Vec<String>,
+    gdscript: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
     page_had_ending: bool,
@@ -51,7 +52,8 @@ impl DgParser {
             ix_id: None,
             page: Page::default(),
             pagebuf: vec![],
-            script: vec![],
+            comptime_script: vec![],
+            gdscript: vec![],
             page_had_ending: false,
         }
     }
@@ -69,24 +71,24 @@ impl DgParser {
 
     fn parse_comptime(&mut self, line: &str) -> Result<()> {
         // if current line is the closing `---`
-        if line == SEPARATOR && self.script.last() == Some(&COMPTIME_BORDER.to_owned()) {
-            self.script.pop();
+        if line == SEPARATOR && self.comptime_script.last() == Some(&COMPTIME_BORDER.to_owned()) {
+            self.comptime_script.pop();
 
-            let content = self.script.join("\n");
+            let content = self.comptime_script.join("\n");
             let path = ScriptPath(self.path.clone());
             let mut script = Script::new(content, path);
             script.execute(&mut self.context)?;
 
             // TODO no `self.script`, make the enum variant
             // store the script built up so far
-            self.script.clear();
+            self.comptime_script.clear();
 
             self.state = match &self.state {
                 ParseState::ComptimeScript(state) => *state.clone(),
                 _ => unreachable!(),
             };
         } else {
-            self.script.push(line.to_owned());
+            self.comptime_script.push(line.to_owned());
         }
 
         Ok(())
@@ -96,7 +98,7 @@ impl DgParser {
         // if parsing a message, add it to the result
         // OR stop parsing if empty line
         if line.is_empty() {
-            self.state = ParseState::Choices;
+            self.state = ParseState::Choices(ChoicesState::Choices);
         } else {
             self.pagebuf.push(line.to_string());
         }
@@ -198,7 +200,8 @@ impl DgParser {
 
                 Metadata => metaline::parse(self, line)?,
                 Message => self.parse_message(line)?,
-                Choices => endings::parse(self, line)?,
+                Choices(ChoicesState::Choices) => endings::parse_choice(self, line)?,
+                Choices(ChoicesState::GDScript) => endings::parse_gd(self, line)?,
             };
         }
 

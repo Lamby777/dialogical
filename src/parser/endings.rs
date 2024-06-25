@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::fmt;
 
 use crate::consts::*;
-use crate::pages::{ParseError, ParseState};
+use crate::pages::{ChoicesState, ParseError, ParseState};
 use crate::{DgParser, ParseResult};
 
 /// One choice in a list of dialogue choices
@@ -30,11 +30,18 @@ pub enum Label {
 
     /// Interaction label - ID of an interaction to go to
     Goto(String),
+
+    /// GDScript label - Some GDScript code to run
+    GDScript(String),
 }
 
 impl Label {
     pub fn new_goto(id: &str) -> Self {
         Self::Goto(id.to_owned())
+    }
+
+    pub fn new_gdscript(script: &str) -> Self {
+        Self::GDScript(script.to_owned())
     }
 
     pub fn new_fn(line: &str) -> Result<Self, ParseError> {
@@ -64,6 +71,8 @@ impl fmt::Display for Label {
                     .join(", ");
                 write!(f, "{}({})", name, args)
             }
+
+            Self::GDScript(script) => write!(f, "{}", script),
         }
     }
 }
@@ -101,7 +110,54 @@ impl DialogueEnding {
     }
 }
 
-pub fn parse(parser: &mut DgParser, line: &str) -> ParseResult<()> {
+pub fn parse_gd(parser: &mut DgParser, line: &str) -> ParseResult<()> {
+    if line != GDSCRIPT_BORDER {
+        parser.gdscript.push(line.to_owned());
+        return Ok(());
+    }
+
+    // we reached the end of the script, so push it as the label
+    // attached to the last declared choice.
+
+    parser.state = ParseState::Choices(ChoicesState::Choices);
+    let label = Label::new_gdscript(&parser.gdscript.join("\n"));
+
+    let ix = parser
+        .interaction
+        .as_mut()
+        .ok_or(ParseError::PushPageNoIX)?;
+
+    match ix.ending {
+        DialogueEnding::Choices(ref mut choices) => {
+            let choice = choices
+                .last_mut()
+                .ok_or_else(|| ParseError::MalformedEnding(line.to_owned()))?;
+
+            if choice.label.is_some() {
+                return Err(ParseError::MixedEndings(line.to_owned()));
+            }
+
+            choice.label = Some(label);
+        }
+
+        DialogueEnding::Label(_) => {
+            return Err(ParseError::MixedEndings(line.to_owned()));
+        }
+
+        DialogueEnding::End => {
+            ix.ending = DialogueEnding::Label(label);
+        }
+    }
+
+    Ok(())
+}
+
+pub fn parse_choice(parser: &mut DgParser, line: &str) -> ParseResult<()> {
+    if line == GDSCRIPT_BORDER {
+        parser.state = ParseState::Choices(ChoicesState::GDScript);
+        return Ok(());
+    }
+
     // skip empty lines
     if line.is_empty() {
         return Ok(());

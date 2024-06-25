@@ -1,0 +1,18 @@
+% GDScript Test
+NAME Mom
+VOX Default
+
+What color bed?
+
+> Red
+$$$
+set_bed_color(red)
+$$$
+
+> Orange
+$$$
+set_bed_color(orange)
+$$$
+
+---
+
