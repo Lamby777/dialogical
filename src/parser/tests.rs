@@ -433,6 +433,32 @@ fn parse_filter_empties() {
 }
 
 #[test]
+fn parse_gdscript_blocks() {
+    let parsed = parse_dummy!("gdscript");
+    let expected = hash_map! {
+        "Empties Test".to_string() => Interaction {
+        pages: vec![
+            Page {
+                metadata: meta_double!("Mom"),
+                content: "What color bed?".to_owned(),
+            },
+        ],
+        ending: DialogueEnding::Choices(vec![
+            DialogueChoice {
+                text: "Red".to_string(),
+                label: Some(Label::new_gdscript("set_bed_color(red)")),
+            },
+            DialogueChoice {
+                text: "Orange".to_string(),
+                label: Some(Label::new_gdscript("set_bed_color(orange)")),
+            },
+        ]),
+    }};
+
+    assert_eq!(parsed, expected);
+}
+
+#[test]
 #[rustfmt::skip] // ffs stop formatting raw strings
 fn parse_pageonly() {
     let parsed = parse_dummy!("pageonly");
