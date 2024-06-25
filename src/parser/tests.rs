@@ -436,7 +436,7 @@ fn parse_filter_empties() {
 fn parse_gdscript_blocks() {
     let parsed = parse_dummy!("gdscript");
     let expected = hash_map! {
-        "Empties Test".to_string() => Interaction {
+        "GDScript Test".to_string() => Interaction {
         pages: vec![
             Page {
                 metadata: meta_double!("Mom"),

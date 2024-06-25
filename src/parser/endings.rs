@@ -121,6 +121,7 @@ pub fn parse_gd(parser: &mut DgParser, line: &str) -> ParseResult<()> {
 
     parser.state = ParseState::Choices(ChoicesState::Choices);
     let label = Label::new_gdscript(&parser.gdscript.join("\n"));
+    parser.gdscript.clear();
 
     let ix = parser
         .interaction
