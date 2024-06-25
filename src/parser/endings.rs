@@ -50,7 +50,7 @@ impl Label {
         let fn_name = it.next().expect("no fn name");
 
         let args = match it.next() {
-            Some(rest) => parse_fn_args(rest)?,
+            Some(_rest) => todo!(),
             None => vec![],
         };
 
@@ -236,29 +236,4 @@ pub fn parse_choice(parser: &mut DgParser, line: &str) -> ParseResult<()> {
     }
 
     Ok(())
-}
-
-fn parse_fn_args(line: &str) -> Result<Vec<String>, ParseError> {
-    shlex::split(line).ok_or(ParseError::BadFnArgs(line.to_owned()))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn fn_args_all() {
-        let line = r#"pop rock "hard rock" "\"dream\" pop""#;
-        let parsed = parse_fn_args(line);
-
-        assert_eq!(
-            parsed.unwrap(),
-            vec![
-                "pop".to_owned(),
-                "rock".to_owned(),
-                "hard rock".to_owned(),
-                "\"dream\" pop".to_owned(),
-            ]
-        );
-    }
 }
