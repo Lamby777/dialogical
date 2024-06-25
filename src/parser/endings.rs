@@ -24,10 +24,6 @@ pub struct DialogueChoice {
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub enum Label {
-    /// Function label - name of a function to run, along
-    /// with any arguments that should be passed
-    Function(String, Vec<String>),
-
     /// Interaction label - ID of an interaction to go to
     Goto(String),
 
@@ -43,35 +39,12 @@ impl Label {
     pub fn new_gdscript(script: &str) -> Self {
         Self::GDScript(script.to_owned())
     }
-
-    pub fn new_fn(line: &str) -> Result<Self, ParseError> {
-        // parse arguments
-        let mut it = line.splitn(2, ' ');
-        let fn_name = it.next().expect("no fn name");
-
-        let args = match it.next() {
-            Some(_rest) => todo!(),
-            None => vec![],
-        };
-
-        Ok(Self::Function(fn_name.to_owned(), args))
-    }
 }
 
 impl fmt::Display for Label {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Goto(id) => write!(f, "{}", id),
-
-            Self::Function(name, args) => {
-                let args = args
-                    .iter()
-                    .map(|arg| arg.to_string())
-                    .collect::<Vec<_>>()
-                    .join(", ");
-                write!(f, "{}({})", name, args)
-            }
-
             Self::GDScript(script) => write!(f, "{}", script),
         }
     }
@@ -207,7 +180,7 @@ pub fn parse_choice(parser: &mut DgParser, line: &str) -> ParseResult<()> {
         _ => {
             let label = match first_ch {
                 PREFIX_GOTO_LABEL => Label::new_goto(rest),
-                PREFIX_GOTO_FN => Label::new_fn(rest)?,
+                PREFIX_GOTO_FN => Label::new_gdscript(rest),
                 _ => return Err(ParseError::MalformedEnding(line.to_owned())),
             };
 
