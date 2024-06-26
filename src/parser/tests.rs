@@ -433,6 +433,36 @@ fn parse_filter_empties() {
 }
 
 #[test]
+fn parse_narrator() {
+    let parsed = parse_dummy!("narrator");
+    let expected = hash_map! {
+        "GDScript Choices Test".to_string() => Interaction {
+            pages: vec![
+                Page {
+                    metadata: meta_double!("Raine"),
+                    content: "haiiiiii >w<".to_owned(),
+                },
+                Page {
+                    metadata: meta_double!("Taine"),
+                    content: "Ugh, don't mind her. She's always like this.".to_owned(),
+                },
+                Page {
+                    metadata: PageMeta {
+                        speaker: Permanent(Narrator),
+                        vox: Permanent("Default".to_owned()),
+                    },
+                    content: "Needless to say, they're quite an interesting duo.".to_owned(),
+                },
+
+            ],
+            ending: DialogueEnding::End
+        },
+    };
+
+    assert_eq!(parsed, expected);
+}
+
+#[test]
 fn parse_gdscript_blocks() {
     let parsed = parse_dummy!("gdscript");
     let expected = hash_map! {

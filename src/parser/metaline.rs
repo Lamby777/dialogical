@@ -41,8 +41,8 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
     };
 
     match kv.0 {
-        "NARRATOR" | "SOMEONE" => {
-            let speaker = if kv.0 == "NARRATOR" {
+        "_" | "?" => {
+            let speaker = if kv.0 == "_" {
                 Speaker::Narrator
             } else {
                 Speaker::Unknown
