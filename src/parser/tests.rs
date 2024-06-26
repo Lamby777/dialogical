@@ -436,7 +436,7 @@ fn parse_filter_empties() {
 fn parse_narrator() {
     let parsed = parse_dummy!("narrator");
     let expected = hash_map! {
-        "GDScript Choices Test".to_string() => Interaction {
+        "Narrator Test".to_string() => Interaction {
             pages: vec![
                 Page {
                     metadata: meta_double!("Raine"),

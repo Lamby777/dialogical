@@ -40,9 +40,14 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
         }
     };
 
-    match kv.0 {
-        "_" | "?" => {
-            let speaker = if kv.0 == "_" {
+    if kv.0 == "%" && !pageonly {
+        return parser.set_ix_id(kv.1);
+    }
+
+    dbg!(kv);
+    match kv.1 {
+        k @ ("_" | "?") => {
+            let speaker = if k == "_" {
                 Speaker::Narrator
             } else {
                 Speaker::Unknown
@@ -50,10 +55,6 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
 
             parser.page.metadata.speaker = Metaline::new(speaker, pageonly);
             return Ok(());
-        }
-
-        "%" if !pageonly => {
-            return parser.set_ix_id(kv.1);
         }
 
         _ => {}
