@@ -37,9 +37,6 @@ pub enum ChoicesState {
     /// Parsing choices
     #[default]
     Choices,
-
-    /// Parsing a GDScript block
-    GDScript,
 }
 
 #[derive(Debug, Error, PartialEq)]

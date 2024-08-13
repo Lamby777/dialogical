@@ -34,7 +34,6 @@ pub struct DgParser {
     interaction: Option<Interaction>,
     ix_id: Option<String>,
     comptime_script: Vec<String>,
-    gdscript: Vec<String>,
     page: Page,
     pagebuf: Vec<String>,
     page_had_ending: bool,
@@ -53,7 +52,6 @@ impl DgParser {
             page: Page::default(),
             pagebuf: vec![],
             comptime_script: vec![],
-            gdscript: vec![],
             page_had_ending: false,
         }
     }
@@ -201,7 +199,6 @@ impl DgParser {
                 Metadata => metaline::parse(self, line)?,
                 Message => self.parse_message(line)?,
                 Choices(ChoicesState::Choices) => endings::parse_choice(self, line)?,
-                Choices(ChoicesState::GDScript) => endings::parse_gd(self, line)?,
             };
         }
 

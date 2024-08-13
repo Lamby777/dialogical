@@ -7,7 +7,3 @@ pub const PREFIX_COMMENT: &str = "//";
 // interaction ending stuff
 pub const PREFIX_CHOICE: char = '>';
 pub const PREFIX_GOTO_LABEL: char = '@';
-pub const PREFIX_GOTO_FN: char = '$';
-
-// GDScript segment stuff
-pub const GDSCRIPT_BORDER: &str = "$$$";

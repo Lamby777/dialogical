@@ -44,7 +44,6 @@ pub fn parse(parser: &mut DgParser, line: &str) -> Result<()> {
         return parser.set_ix_id(kv.1);
     }
 
-    dbg!(kv);
     match kv.1 {
         k @ ("_" | "?") => {
             let speaker = if k == "_" {
